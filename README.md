@@ -1,38 +1,28 @@
-# sv
+# One Learn
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## How To Self Host
 
-## Creating a project
+One Learn can be self hosted on your own server. This guide will help you set up the server and deploy the application.
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Recommended Method (Serverless)
 
-```bash
-# create a new project in the current directory
-npx sv create
+#### Requirements
 
-# create a new project in my-app
-npx sv create my-app
-```
+1. Cloudflare Account
+   One Learn uses Cloudflare Pages for deployment, D1 for database and R2 for storage, all are services provided by Cloudflare. You will need to create an account on Cloudflare and set up the required services.
+2. GitHub Account
+   You will need a GitHub account to clone and connect the repositories to Cloudflare pages.
 
-## Developing
+#### Steps
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+1. Clone the repository
+   Clone the repository to your local machine using the following command:
 
-```bash
-npm run dev
+   ```bash
+   git clone https://github.com/One-Learn/one-learn.git
+   ```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Alternative Method (Docker)
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Coming soon...
+[Tutorial](https://www.sveltesociety.dev/recipes/publishing-and-deploying/dockerize-a-svelte-app)
