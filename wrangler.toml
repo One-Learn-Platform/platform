@@ -12,11 +12,11 @@ PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAAA5h5cmpBN6IvbtJ"
 
 [env.production]
 d1_databases = [
-  { binding = "prod-db", database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9", database_name = "prod-db", migrations_dir = "./src/lib/server/db/migrations" },
+  { binding = "DB", database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9", database_name = "prod-db", migrations_dir = "./src/lib/server/db/migrations" },
 ]
 
 [[d1_databases]]
-binding = "prod-db"
+binding = "DB"
 database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9"
 database_name = "prod-db"
 migrations_dir = "./src/lib/server/db/migrations"
