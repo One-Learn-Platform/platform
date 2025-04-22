@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema } from "drizzle-zod";
 
 export const school = sqliteTable("school", {
 	id: integer("school_id").primaryKey({ autoIncrement: true }),
@@ -21,6 +22,7 @@ export const user = sqliteTable(
 	"user",
 	{
 		id: integer("user_id").primaryKey({ autoIncrement: true }),
+		avatar: text("avatar").notNull(),
 		schooldId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -209,3 +211,5 @@ export type Comment = typeof comment.$inferSelect;
 export type Assignment = typeof assignment.$inferSelect;
 export type Submission = typeof submission.$inferSelect;
 export type Enrollment = typeof enrollment.$inferSelect;
+
+export const userInsertSchema = createInsertSchema(user);

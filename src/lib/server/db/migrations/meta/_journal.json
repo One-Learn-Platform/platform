@@ -8,6 +8,13 @@
 			"when": 1744443953419,
 			"tag": "0000_gray_night_thrasher",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1744454639089,
+			"tag": "0001_ancient_hercules",
+			"breakpoints": true
 		}
 	]
 }
