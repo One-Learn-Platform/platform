@@ -5,6 +5,8 @@
 	import "@fontsource-variable/jetbrains-mono";
 	import "../app.css";
 	let { children } = $props();
+
+	import { Toaster } from "$lib/components/ui/sonner/index.js";
 </script>
 
 <svelte:head>
@@ -14,5 +16,6 @@
 </svelte:head>
 
 <ParaglideJS {i18n}>
+	<Toaster />
 	{@render children()}
 </ParaglideJS>
