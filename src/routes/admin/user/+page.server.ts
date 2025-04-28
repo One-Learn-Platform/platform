@@ -38,7 +38,6 @@ export const actions: Actions = {
 
 		const form = await superValidate(event, zod(formSchema));
 		if (!form.valid) {
-			console.log(form);
 			setError(form, "", "Content is invalid, please try again");
 			return fail(400, {
 				form,
@@ -55,8 +54,8 @@ export const actions: Actions = {
 				return fail(400, { form });
 			}
 		} catch (error) {
-			setError(form, "", "Database error, please try again", { status: 500 });
 			console.error(error);
+			setError(form, "", "Database error, please try again", { status: 500 });
 			return fail(500, { form });
 		}
 

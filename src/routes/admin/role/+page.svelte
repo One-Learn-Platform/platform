@@ -1,31 +1,40 @@
 <script lang="ts">
-	import type { PageServerData } from "./$types";
+	import type { PageServerData, ActionData } from "./$types";
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
-	import { formSchema, type FormSchema } from "./schema";
+	import { formSchema } from "./schema";
 
+	import { toast } from "svelte-sonner";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
 
 	import DataTable from "$lib/components/table/data-table.svelte";
 	import { columns } from "./columns";
 
-	let { data }: { data: PageServerData } = $props();
-	const form = superForm(data.form, {
+	let { data, form }: { data: PageServerData; form: ActionData } = $props();
+	const superform = superForm(data.form, {
 		validators: zodClient(formSchema),
 	});
 
-	const { form: formData, enhance, errors } = form;
+	const { form: formData, enhance, errors: formErrors } = superform;
 	$effect(() => {
-		$inspect(data.roleList);
+		if (form?.delete) {
+			if (form.delete.success) toast.success(`Role ${form.delete.data?.name} successfully deleted`);
+			else toast.error(form.delete.message ?? "Unknown error");
+		} else {
+			if (form?.create) {
+				if (form.create.success)
+					toast.success(`Role ${form.create.data?.name} successfully created`);
+				else toast.error(form.create.message ?? "Unknown error");
+			}
+		}
 	});
 
-	let role_data = data.roleList;
+	let role_data = $derived(data.roleList);
 </script>
 
 <div class="flex flex-col gap-2">
@@ -36,8 +45,8 @@
 				<Dialog.Title>Add Role</Dialog.Title>
 				<Dialog.Description>Create a new role by filling out the form below.</Dialog.Description>
 			</Dialog.Header>
-			<form method="POST" use:enhance>
-				<Form.Field {form} name="roleName">
+			<form method="POST" action="?/create" use:enhance>
+				<Form.Field form={superform} name="roleName">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Role Name</Form.Label>
@@ -45,7 +54,7 @@
 						{/snippet}
 					</Form.Control>
 					<Form.FieldErrors />
-					{#if !$errors.roleName}
+					{#if !$formErrors.roleName}
 						<Form.Description>
 							This is the Role Name that you want to assign to the user.
 						</Form.Description>
@@ -53,8 +62,8 @@
 				</Form.Field>
 
 				<Dialog.Footer class="items-center">
-					{#if $errors._errors}
-						<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+					{#if $formErrors._errors}
+						<p class="text-sm text-destructive">{Object.values($formErrors._errors).join(", ")}</p>
 					{/if}
 					<Form.Button>Submit</Form.Button></Dialog.Footer
 				>
