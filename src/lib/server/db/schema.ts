@@ -32,7 +32,7 @@ export const user = sqliteTable(
 		gradesId: integer("grades_id").references(() => grades.id),
 		username: text("username").unique().notNull(),
 		password: text("password").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" })
+		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
 	},
@@ -92,7 +92,9 @@ export const material = sqliteTable(
 		description: text("description").notNull(),
 		content: text("content").notNull(),
 		attachment: text("attachment").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(current_timestamp)`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		index("material_subject_index").on(table.subjectId),
@@ -113,7 +115,9 @@ export const forum = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(current_timestamp)`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		index("forum_material_index").on(table.materialId),
@@ -132,7 +136,9 @@ export const comment = sqliteTable(
 			.references(() => user.id)
 			.notNull(),
 		content: text("content").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(current_timestamp)`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		index("comment_forum_index").on(table.forumId),
@@ -153,7 +159,9 @@ export const assignment = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(current_timestamp)`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		index("assignment_material_index").on(table.materialId),
@@ -174,7 +182,9 @@ export const submission = sqliteTable(
 		score: integer("score"),
 		content: text("content").notNull(),
 		attachment: text("attachment").notNull(),
-		createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(current_timestamp)`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		index("submission_user_index").on(table.userId),
