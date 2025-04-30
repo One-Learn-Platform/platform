@@ -43,7 +43,6 @@ export const columns: ColumnDef<UserRole>[] = [
 					render: () => `<div class="text-left font-mono">${value}</div>`,
 				};
 			});
-
 			return renderSnippet(amountCellSnippet, value);
 		},
 	},
