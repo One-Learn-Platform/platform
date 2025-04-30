@@ -22,7 +22,7 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-56">
 		<DropdownMenu.Group>
-			<DropdownMenu.GroupHeading>{name}</DropdownMenu.GroupHeading>
+			<DropdownMenu.Label>{name}</DropdownMenu.Label>
 			<DropdownMenu.Group>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Item onclick={() => navigator.clipboard.writeText(id)}>
