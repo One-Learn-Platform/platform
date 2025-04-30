@@ -15,6 +15,20 @@
 			"when": 1744454639089,
 			"tag": "0001_ancient_hercules",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1745916583834,
+			"tag": "0002_solid_changeling",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "6",
+			"when": 1745918420818,
+			"tag": "0003_worried_bloodscream",
+			"breakpoints": true
 		}
 	]
 }

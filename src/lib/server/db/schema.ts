@@ -22,18 +22,14 @@ export const user = sqliteTable(
 	"user",
 	{
 		id: integer("user_id").primaryKey({ autoIncrement: true }),
-		avatar: text("avatar").notNull(),
-		schooldId: integer("school_id")
-			.references(() => school.id)
-			.notNull(),
+		avatar: text("avatar"),
+		schooldId: integer("school_id").references(() => school.id),
 		roleId: integer("role_id")
 			.references(() => userRole.id)
 			.notNull(),
 		fullname: text("fullname").notNull(),
 		dob: text("dob").notNull(),
-		gradesId: integer("grades_id")
-			.references(() => grades.id)
-			.notNull(),
+		gradesId: integer("grades_id").references(() => grades.id),
 		username: text("username").unique().notNull(),
 		password: text("password").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp" })
