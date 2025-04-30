@@ -85,7 +85,11 @@
 				</p>
 			{/if}
 			<div class="leading-none">
-				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} size="flexible" appearance="always" />
+				<Turnstile
+					siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+					size="flexible"
+					appearance="interaction-only"
+				/>
 				{#if form?.captcha}
 					<p class="text-xs text-red-500">
 						{form.captcha}
