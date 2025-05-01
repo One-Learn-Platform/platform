@@ -49,6 +49,21 @@ export const columns: ColumnDef<User>[] = [
 	{
 		accessorKey: "avatar",
 		header: "Avatar",
+		cell: ({ row }) => {
+			const value = row.getValue("avatar");
+			const amountCellSnippet = createRawSnippet(() => {
+				if (value) {
+					return {
+						render: () => `<img src="${value}" alt="Avatar" class="w-8 h-8 rounded-full" />`,
+					};
+				} else {
+					return {
+						render: () => `<div class="">-</div>`,
+					};
+				}
+			});
+			return renderSnippet(amountCellSnippet, value);
+		},
 	},
 	{
 		accessorKey: "fullname",
@@ -112,6 +127,15 @@ export const columns: ColumnDef<User>[] = [
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
+		cell: ({ row }) => {
+			const value = row.getValue("gradesId");
+			const amountCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="">${value ?? "-"}</div>`,
+				};
+			});
+			return renderSnippet(amountCellSnippet, value);
+		},
 	},
 	{
 		accessorKey: "schoolId",
@@ -121,6 +145,15 @@ export const columns: ColumnDef<User>[] = [
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
+		cell: ({ row }) => {
+			const value = row.getValue("gradesId");
+			const amountCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="">${value ?? "-"}</div>`,
+				};
+			});
+			return renderSnippet(amountCellSnippet, value);
+		},
 	},
 	{
 		accessorKey: "createdAt",

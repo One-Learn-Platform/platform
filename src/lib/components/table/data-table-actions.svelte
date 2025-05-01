@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 
+	import { toast } from "svelte-sonner";
 	import Ellipsis from "@lucide/svelte/icons/ellipsis";
 	import Trash from "@lucide/svelte/icons/trash";
 	import Pencil from "@lucide/svelte/icons/pencil";
@@ -25,7 +26,21 @@
 			<DropdownMenu.Label>{name}</DropdownMenu.Label>
 			<DropdownMenu.Group>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={() => navigator.clipboard.writeText(id)}>
+				<DropdownMenu.Item
+					onclick={() => {
+						navigator.clipboard.writeText(id);
+						toast.success("ID copied to clipboard");
+					}}
+				>
+					<Copy class="mr-2 size-4" />
+					<span>Copy ID</span>
+				</DropdownMenu.Item>
+				<DropdownMenu.Item
+					onclick={() => {
+						navigator.clipboard.writeText(name);
+						toast.success("Name copied to clipboard");
+					}}
+				>
 					<Copy class="mr-2 size-4" />
 					<span>Copy Name</span>
 				</DropdownMenu.Item>
@@ -36,6 +51,9 @@
 					<Pencil class="mr-2 size-4" />
 					<span>Edit</span>
 				</DropdownMenu.Item>
+			</DropdownMenu.Group>
+			<DropdownMenu.Separator />
+			<DropdownMenu.Group>
 				<DropdownMenu.Item
 					class="w-full data-[highlighted]:bg-destructive data-[highlighted]:text-destructive-foreground"
 					onclick={() => (openDialog = true)}
