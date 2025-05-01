@@ -6,11 +6,12 @@
 	import AppSidebar from "$lib/components/sidebar.svelte";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
-	let role = 1; //temporary placeholder
+	let role = data.user?.role ?? 1; //temporary placeholder
+	const user = data.user;
 </script>
 
 <Sidebar.Provider>
-	<AppSidebar {role} />
+	<AppSidebar {role} {user} />
 	<main class="w-full py-2">
 		{@render children?.()}
 	</main>
