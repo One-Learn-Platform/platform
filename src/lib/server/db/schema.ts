@@ -23,7 +23,7 @@ export const user = sqliteTable(
 	{
 		id: integer("user_id").primaryKey({ autoIncrement: true }),
 		avatar: text("avatar"),
-		schooldId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id").references(() => school.id),
 		roleId: integer("role_id")
 			.references(() => userRole.id)
 			.notNull(),
@@ -37,7 +37,7 @@ export const user = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		index("school_index").on(table.schooldId),
+		index("school_index").on(table.schoolId),
 		index("role_index").on(table.roleId),
 		index("grades_index").on(table.gradesId),
 	],

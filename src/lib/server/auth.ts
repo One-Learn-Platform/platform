@@ -39,7 +39,7 @@ export async function validateSessionToken(event: RequestEvent, token: string) {
 				username: table.user.username,
 				fullname: table.user.fullname,
 				role: table.user.roleId,
-				school: table.user.schooldId,
+				school: table.user.schoolId,
 			},
 			session: table.session,
 		})
