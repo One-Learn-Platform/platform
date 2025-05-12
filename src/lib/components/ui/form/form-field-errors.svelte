@@ -25,7 +25,7 @@
 			{@render childrenProp({ errors, errorProps })}
 		{:else}
 			{#each errors as error (error)}
-				<div {...errorProps} class={cn("flex items-center gap-1 pl-px", errorClasses)}>
+				<div {...errorProps} class={cn("flex items-center gap-1 pl-px text-sm", errorClasses)}>
 					<TriangleAlert class="size-4" strokeWidth={1.5} />{error}
 				</div>
 			{/each}
