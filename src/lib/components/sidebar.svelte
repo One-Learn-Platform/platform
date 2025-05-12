@@ -95,7 +95,7 @@
 							{#if role !== 1}
 								{#if !item.superadmin}
 									<Sidebar.MenuItem>
-										<Sidebar.MenuButton isActive={item.url === page.url.pathname}>
+										<Sidebar.MenuButton isActive={page.url.pathname.startsWith(item.url)}>
 											{#snippet child({ props })}
 												<a href={item.url} {...props}>
 													<item.icon />
@@ -107,7 +107,7 @@
 								{/if}
 							{:else}
 								<Sidebar.MenuItem>
-									<Sidebar.MenuButton isActive={item.url === page.url.pathname}>
+									<Sidebar.MenuButton isActive={page.url.pathname.startsWith(item.url)}>
 										{#snippet child({ props })}
 											<a href={item.url} {...props}>
 												<item.icon />
