@@ -174,6 +174,7 @@ export const columns: ColumnDef<User>[] = [
 			return renderComponent(DataTableActions, {
 				id: row.original.id.toString(),
 				name: row.original.fullname,
+				href: "user",
 			});
 		},
 	},

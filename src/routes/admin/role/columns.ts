@@ -61,6 +61,7 @@ export const columns: ColumnDef<UserRole>[] = [
 			return renderComponent(DataTableActions, {
 				id: row.original.id.toString(),
 				name: row.original.name,
+				href: "role",
 			});
 		},
 	},

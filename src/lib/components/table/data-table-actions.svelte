@@ -6,6 +6,7 @@
 	import Trash from "@lucide/svelte/icons/trash";
 	import Pencil from "@lucide/svelte/icons/pencil";
 	import Copy from "@lucide/svelte/icons/copy";
+	import Logs from "@lucide/svelte/icons/logs";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -13,7 +14,7 @@
 
 	let openDialog = $state(false);
 
-	let { id, name }: { id: string; name: string } = $props();
+	let { id, name, href }: { id: string; name: string; href: string } = $props();
 </script>
 
 <DropdownMenu.Root>
@@ -48,8 +49,20 @@
 			<DropdownMenu.Separator />
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
-					<Pencil class="mr-2 size-4" />
-					<span>Edit</span>
+					{#snippet child({ props })}
+						<a {...props} href="{href}/{id}">
+							<Logs class="mr-2 size-4" />
+							<span>Detail</span>
+						</a>
+					{/snippet}
+				</DropdownMenu.Item>
+				<DropdownMenu.Item>
+					{#snippet child({ props })}
+						<a {...props} href="{href}/{id}?ref=table">
+							<Pencil class="mr-2 size-4" />
+							<span>Edit</span>
+						</a>
+					{/snippet}
 				</DropdownMenu.Item>
 			</DropdownMenu.Group>
 			<DropdownMenu.Separator />
