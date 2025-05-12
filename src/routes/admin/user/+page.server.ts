@@ -4,7 +4,7 @@ import { fail } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import { formSchema } from "./schema";
+import { formSchemaCreate } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
@@ -22,14 +22,14 @@ export const load: PageServerLoad = async (event) => {
 			userList: userList,
 			schoolList: schoolList,
 			roleList: roleList,
-			form: await superValidate(zod(formSchema)),
+			form: await superValidate(zod(formSchemaCreate)),
 		};
 	}
 	return {
 		userList: userList,
 		schoolList: schoolList,
 		roleList: roleList,
-		form: await superValidate(zod(formSchema)),
+		form: await superValidate(zod(formSchemaCreate)),
 	};
 };
 
@@ -37,7 +37,7 @@ export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
 
-		const form = await superValidate(event, zod(formSchema));
+		const form = await superValidate(event, zod(formSchemaCreate));
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
 			return fail(400, {

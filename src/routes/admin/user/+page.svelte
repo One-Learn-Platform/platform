@@ -11,7 +11,7 @@
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
 	import Plus from "@lucide/svelte/icons/plus";
-	import { formSchema, Role, type RoleEnum } from "./schema";
+	import { formSchemaCreate, Role, type RoleEnum } from "../../../lib/schema/user/schema";
 	import { superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { cn } from "$lib/utils.js";
@@ -32,7 +32,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchema),
+		validators: zodClient(formSchemaCreate),
 	});
 	const { form: formData, enhance, errors, reset } = superform;
 
@@ -181,7 +181,6 @@
 								<Select.Content>
 									<Select.Group>
 										<Select.GroupHeading>Role</Select.GroupHeading>
-
 										{#each Object.values(Role.options) as role (role)}
 											{@const roleTitleCase = role.replace(
 												/\w\S*/g,
@@ -208,10 +207,11 @@
 							<Form.Label>School</Form.Label>
 							<Select.Root
 								type="single"
-								bind:value={$formData.school}
+								value={$formData.school}
 								name={props.name}
 								allowDeselect
 								disabled={$formData.role === Role.enum["super admin"]}
+								onValueChange={(value) => ($formData.school = value)}
 							>
 								<Select.Trigger {...props}>
 									{$formData.school
