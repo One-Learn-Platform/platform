@@ -14,6 +14,10 @@
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 			},
+			outline: {
+				true: "border bg-background",
+			},
+
 			size: {
 				default: "h-10 px-4 py-2",
 				xs: "h-8 rounded-md px-2",
@@ -26,15 +30,29 @@
 			variant: "default",
 			size: "default",
 		},
+		compoundVariants: [
+			{
+				variant: "default",
+				outline: true,
+				class: "border-input text-primary hover:bg-accent hover:text-accent-foreground",
+			},
+			{
+				variant: "destructive",
+				outline: true,
+				class: "border-destructive text-destructive hover:text-destructive-foreground",
+			},
+		],
 	});
 
 	export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
 	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
+	export type ButtonOutline = VariantProps<typeof buttonVariants>["outline"];
 
 	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
 		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
+			outline?: ButtonOutline;
 		};
 </script>
 
@@ -48,19 +66,25 @@
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",
+		outline = false,
 		children,
 		...restProps
 	}: ButtonProps = $props();
 </script>
 
 {#if href}
-	<a bind:this={ref} class={cn(buttonVariants({ variant, size }), className)} {href} {...restProps}>
+	<a
+		bind:this={ref}
+		class={cn(buttonVariants({ variant, size, outline }), className)}
+		{href}
+		{...restProps}
+	>
 		{@render children?.()}
 	</a>
 {:else}
 	<button
 		bind:this={ref}
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={cn(buttonVariants({ variant, size, outline }), className)}
 		{type}
 		{...restProps}
 	>
