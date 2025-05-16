@@ -8,7 +8,7 @@ import { formSchemaCreate } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -45,7 +45,6 @@ export const actions: Actions = {
 				form,
 			});
 		}
-
 		try {
 			const existingUser = await db
 				.select()
@@ -142,5 +141,57 @@ export const actions: Actions = {
 				},
 			});
 		}
+	},
+	multidelete: async (event) => {
+		const db = getDb(event);
+		const formData = await event.request.formData();
+		const ids = formData.get("ids");
+		const idArray = ids
+			?.toString()
+			.split(",")
+			.map((id) => Number(id));
+
+		if (!idArray) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
+			});
+		}
+
+		const userArray = await db
+			.select()
+			.from(table.user)
+			.where(or(...idArray.map((id) => eq(table.user.id, id))));
+		const userNameArray = userArray.map((user) => user.fullname);
+
+		idArray.forEach(async (id) => {
+			if (isNaN(id)) {
+				return fail(400, {
+					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+				});
+			}
+			try {
+				await db.delete(table.user).where(eq(table.user.id, id));
+			} catch (error) {
+				console.error(error);
+				return fail(500, {
+					delete: {
+						success: false,
+						data: null,
+						message: "Database Connection error, please try again.",
+					},
+				});
+			}
+		});
+
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: idArray?.join(","),
+					name: userNameArray.join(", "),
+				},
+				message: null,
+			},
+		};
 	},
 };
