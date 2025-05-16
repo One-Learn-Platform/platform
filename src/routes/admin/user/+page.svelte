@@ -239,6 +239,9 @@
 				</Form.Field>
 
 				<Dialog.Footer class="items-center">
+					{#if $errors._errors}
+						<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+					{/if}
 					<Dialog.Close
 						class={buttonVariants({ variant: "outline" })}
 						type="reset"
@@ -246,9 +249,6 @@
 					>
 						Cancel
 					</Dialog.Close>
-					{#if $errors._errors}
-						<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
-					{/if}
 					<Form.Button>Submit</Form.Button>
 				</Dialog.Footer>
 			</form>
