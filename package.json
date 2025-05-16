@@ -24,6 +24,7 @@
 		"@eslint/compat": "^1.2.9",
 		"@eslint/js": "^9.26.0",
 		"@fontsource-variable/jetbrains-mono": "^5.2.5",
+		"@fontsource-variable/outfit": "^5.2.5",
 		"@internationalized/date": "^3.8.0",
 		"@lucide/svelte": "^0.509.0",
 		"@playwright/test": "^1.52.0",
@@ -66,7 +67,6 @@
 		"zod": "^3.24.4"
 	},
 	"dependencies": {
-		"@fontsource-variable/outfit": "^5.2.5",
 		"@inlang/paraglide-sveltekit": "^0.16.1",
 		"@libsql/client": "^0.15.6",
 		"@oslojs/crypto": "^1.0.1",
