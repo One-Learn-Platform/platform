@@ -16,5 +16,10 @@ export const load: LayoutServerLoad = async (event) => {
 			schoolCount: await db.select({ count: count() }).from(table.school),
 		};
 	}
-	return error(404, { message: "Not Found" });
+	// TEMPORARY, REMOVE THIS AFTER DONE
+	return {
+		userCount: await db.select({ count: count() }).from(table.user),
+		schoolCount: await db.select({ count: count() }).from(table.school),
+	};
+	// return error(404, { message: "Not Found" });
 };
