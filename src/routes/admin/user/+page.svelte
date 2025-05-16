@@ -37,6 +37,7 @@
 	const { form: formData, enhance, errors, reset } = superform;
 
 	let value = $state<DateValue | undefined>();
+	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
@@ -81,6 +82,19 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
+				<Form.Field form={superform} name="username">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Username</Form.Label>
+							<Input {...props} bind:value={$formData.username} placeholder="Enter your username" />
+						{/snippet}
+					</Form.Control>
+					{#if !$errors.username}
+						<Form.Description>Username will be used for login</Form.Description>
+					{/if}
+					<Form.FieldErrors />
+				</Form.Field>
+
 				<Form.Field form={superform} name="dob">
 					<Form.Control>
 						{#snippet children({ props })}
@@ -118,21 +132,8 @@
 							<input type="hidden" hidden value={$formData.dob} name={props.name} />
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.name}
-						<Form.Description>The fullname of the user.</Form.Description>
-					{/if}
-					<Form.FieldErrors />
-				</Form.Field>
-
-				<Form.Field form={superform} name="username">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>Username</Form.Label>
-							<Input {...props} bind:value={$formData.username} placeholder="Enter your username" />
-						{/snippet}
-					</Form.Control>
-					{#if !$errors.username}
-						<Form.Description>Username will be used for login</Form.Description>
+					{#if !$errors.dob}
+						<Form.Description>date of birth of the user.</Form.Description>
 					{/if}
 					<Form.FieldErrors />
 				</Form.Field>

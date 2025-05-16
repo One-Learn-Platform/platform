@@ -146,18 +146,19 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(table.user).where(eq(table.user.id, numberId));
-			await db.delete(table.user).where(eq(table.user.id, numberId));
-			return {
-				delete: {
-					success: true,
-					data: {
-						id: numberId,
-						name: name[0].fullname,
+			const selectName = await db.select().from(table.user).where(eq(table.user.id, numberId));
+			const name = selectName.at(0);
+			if (!name) {
+				return fail(404, {
+					delete: {
+						success: false,
+						data: null,
+						message: "User not found. Please try again.",
 					},
-					message: null,
-				},
-			};
+				});
+			}
+			await db.delete(table.user).where(eq(table.user.id, numberId));
+			redirect(303, "/admin/user");
 		} catch (error) {
 			console.error(error);
 			return fail(500, {

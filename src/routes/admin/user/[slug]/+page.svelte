@@ -2,6 +2,7 @@
 	import type { PageProps } from "./$types";
 	import { page } from "$app/state";
 	import { invalidateAll } from "$app/navigation";
+	import { enhance as svelteEnhance } from "$app/forms";
 
 	import {
 		CalendarDate,
@@ -12,6 +13,7 @@
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
+	import Info from "@lucide/svelte/icons/info";
 	import { formSchemaEdit, Role, type RoleEnum } from "$lib/schema/user/schema";
 	import { superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
@@ -26,6 +28,8 @@
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
+	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import * as Alert from "$lib/components/ui/alert/index.js";
 
 	import { acronym } from "$lib/utils";
 
@@ -131,20 +135,17 @@
 			if (form.delete.success) {
 				toast.success(`User ${form.delete.data?.name} deleted`);
 				invalidateAll();
-			} else if (form.delete.message === "User not found") toast.error("User not found");
-			else toast.error(form.delete.message ?? "Unknown error");
-		} else {
-			if (form?.edit) {
-				if (form.edit.success) {
-					toast.success(`User ${form.edit.data?.name} edited`);
-					invalidateAll();
-					changes.name = false;
-					changes.username = false;
-					changes.dob = false;
-					changes.role = false;
-					changes.school = false;
-				} else toast.error(form.edit.message ?? "Unknown error");
-			}
+			} else toast.error(form.delete.message ?? "Unknown error");
+		} else if (form?.edit) {
+			if (form.edit.success) {
+				toast.success(`User ${form.edit.data?.name} edited successfully`);
+				invalidateAll();
+				changes.name = false;
+				changes.username = false;
+				changes.dob = false;
+				changes.role = false;
+				changes.school = false;
+			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});
 </script>
@@ -173,7 +174,7 @@
 			method="POST"
 			action="?/edit{page.url.searchParams.get('ref')
 				? '&ref=' + page.url.searchParams.get('ref')
-				: null}"
+				: ''}"
 			class="space-y-2"
 			use:enhance
 		>
@@ -376,8 +377,31 @@
 		</form>
 	</Card.Root>
 
-	<form action="?/delete" method="POST" class="contents">
-		<input type="hidden" name="id" value={userDetail.id} />
-		<Button variant="destructive" type="submit" class="w-full">Delete User</Button>
-	</form>
+	<Alert.Root variant="informative" outline>
+		<Info class="size-4" />
+		<Alert.Title>Information</Alert.Title>
+		<Alert.Description>Password can only be changed by the User.</Alert.Description>
+	</Alert.Root>
+
+	<AlertDialog.Root>
+		<AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
+			Delete
+		</AlertDialog.Trigger>
+		<AlertDialog.Content>
+			<form class="contents" action="?/delete" method="POST" use:svelteEnhance>
+				<AlertDialog.Header>
+					<AlertDialog.Title>Do you want to delete user {userDetail.fullname}?</AlertDialog.Title>
+					<AlertDialog.Description>
+						<input type="hidden" name="id" value={userDetail.id} />
+						This action is irreversible. Are you sure you want to delete
+						<b>{userDetail.fullname}</b>?
+					</AlertDialog.Description>
+				</AlertDialog.Header>
+				<AlertDialog.Footer>
+					<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+					<AlertDialog.Action type="submit">Delete</AlertDialog.Action>
+				</AlertDialog.Footer>
+			</form>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
 </div>
