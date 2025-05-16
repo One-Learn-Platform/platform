@@ -10,6 +10,10 @@
 	const user = data.user;
 </script>
 
+<svelte:head>
+	<title>Admin | One Learn</title>
+</svelte:head>
+
 <Sidebar.Provider>
 	<AppSidebar {role} {user} />
 	<main class="w-full py-2">
