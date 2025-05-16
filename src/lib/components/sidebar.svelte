@@ -95,7 +95,11 @@
 							{#if role !== 1}
 								{#if !item.superadmin}
 									<Sidebar.MenuItem>
-										<Sidebar.MenuButton isActive={page.url.pathname.startsWith(item.url)}>
+										<Sidebar.MenuButton
+											isActive={category.title === "Overview"
+												? page.url.pathname === item.url
+												: page.url.pathname.startsWith(item.url)}
+										>
 											{#snippet child({ props })}
 												<a href={item.url} {...props}>
 													<item.icon />
@@ -107,7 +111,11 @@
 								{/if}
 							{:else}
 								<Sidebar.MenuItem>
-									<Sidebar.MenuButton isActive={page.url.pathname.startsWith(item.url)}>
+									<Sidebar.MenuButton
+										isActive={category.title === "Overview"
+											? page.url.pathname === item.url
+											: page.url.pathname.startsWith(item.url)}
+									>
 										{#snippet child({ props })}
 											<a href={item.url} {...props}>
 												<item.icon />
