@@ -12,6 +12,8 @@
 	import { Skeleton } from "$lib/components/ui/skeleton/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
 	import * as Tabs from "$lib/components/ui/tabs/index.js";
+
+	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 </script>
 
 <h1>All Components</h1>
@@ -19,9 +21,41 @@
 	<section class="mx-8 my-4 h-fit w-fit rounded-md border px-4 py-2 pb-4">
 		<h2 class="text-xl font-medium">Alert</h2>
 		<div class="mt-2 flex gap-2">
-			<Alert.Root>
-				<Alert.Title>Heads up!</Alert.Title>
-				<Alert.Description>You can add components to your app using the cli.</Alert.Description>
+			<Alert.Root variant="default">
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Default</Alert.Title>
+				<Alert.Description>Default</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="destructive">
+				<BadgeInfo class="size-4" />
+
+				<Alert.Title>Destructive</Alert.Title>
+				<Alert.Description>Fill</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="destructive" outline>
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Destructive</Alert.Title>
+				<Alert.Description>Outline</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="informative">
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Informative</Alert.Title>
+				<Alert.Description>Informative</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="informative" outline>
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Informative</Alert.Title>
+				<Alert.Description>Informative</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="warning">
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Warning</Alert.Title>
+				<Alert.Description>Warning</Alert.Description>
+			</Alert.Root>
+			<Alert.Root variant="warning" outline>
+				<BadgeInfo class="size-4" />
+				<Alert.Title>Warning</Alert.Title>
+				<Alert.Description>Warning</Alert.Description>
 			</Alert.Root>
 		</div>
 	</section>

@@ -42,6 +42,10 @@
 		--accent-foreground: 0 0% 9%;
 		--destructive: 0 72.2% 50.6%;
 		--destructive-foreground: 0 0% 98%;
+		--informative: 216.89 100% 59.61%;
+		--informative-foreground: 0 0% 98%;
+		--warning: 44.25 100% 47.06%;
+		--warning-foreground: 0 0% 98%;
 		--ring: 0 0% 3.9%;
 		--radius: 0.5rem;
 		--sidebar-background: 0 0% 98%;
@@ -73,6 +77,10 @@
 		--accent-foreground: 0 0% 98%;
 		--destructive: 0 62.8% 30.6%;
 		--destructive-foreground: 0 0% 98%;
+		--informative: 224.74 67.06% 33.33%;
+		--informative-foreground: 0 0% 98%;
+		--warning: 29.71 84% 24.51%;
+		--warning-foreground: 0 0% 98%;
 		--ring: 0 0% 83.1%;
 		--sidebar-background: 240 5.9% 10%;
 		--sidebar-foreground: 240 4.8% 95.9%;
