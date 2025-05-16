@@ -91,7 +91,9 @@
 			</AlertDialog.Header>
 			<AlertDialog.Footer>
 				<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
-				<AlertDialog.Action type="submit">Delete</AlertDialog.Action>
+				<AlertDialog.Action type="submit" onclick={() => (openDialog = false)}>
+					Delete
+				</AlertDialog.Action>
 			</AlertDialog.Footer>
 		</form>
 	</AlertDialog.Content>
