@@ -12,9 +12,16 @@ import { eq } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
 	const roleList = await db.select().from(table.userRole);
+	if (event.locals.user) {
+		return {
+			user: event.locals.user,
+			role: event.locals.user?.role,
+			roleList: roleList,
+			form: await superValidate(zod(formSchema)),
+		};
+	}
 	return {
 		user: event.locals.user,
-		role: event.locals.user?.role,
 		roleList: roleList,
 		form: await superValidate(zod(formSchema)),
 	};
@@ -25,6 +32,7 @@ export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
 		const form = await superValidate(event, zod(formSchema));
+
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
 			return fail(400, {

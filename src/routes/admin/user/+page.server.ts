@@ -36,8 +36,8 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-
 		const form = await superValidate(event, zod(formSchemaCreate));
+
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
 			return fail(400, {
@@ -45,6 +45,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
+
 		try {
 			const existingUser = await db
 				.select()
@@ -102,6 +103,7 @@ export const actions: Actions = {
 			form,
 		};
 	},
+
 	delete: async (event) => {
 		const db = getDb(event);
 		const formData = await event.request.formData();
