@@ -13,7 +13,9 @@
 		<h1 class="font-mono text-6xl font-black md:text-7xl lg:text-8xl xl:text-9xl">
 			{page.status}
 		</h1>
-		<p class="text-3  xl font-medium tracking-tight sm:text-4xl lg:text-5xl">{page.error?.message}</p>
+		<p class="text-3 xl font-medium tracking-tight sm:text-4xl lg:text-5xl">
+			{page.error?.message}
+		</p>
 	</section>
 	<Button variant="outline" href="/" class="text-base">Home</Button>
 </main>
