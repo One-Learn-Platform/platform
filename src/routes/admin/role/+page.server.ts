@@ -94,7 +94,7 @@ export const actions: Actions = {
 				delete: {
 					success: false,
 					data: null,
-					message: "Database Connection error, please try again.",
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
 				},
 			});
 		}

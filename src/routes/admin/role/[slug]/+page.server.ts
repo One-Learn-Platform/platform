@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 				form: await superValidate(zod(formSchema)),
 			};
 		} else {
-			return error(404, { message: "User Not Found" });
+			return error(404, { message: "Role Not Found" });
 		}
 	}
 	// return error(404, { message: "Not Found" });
@@ -52,10 +52,11 @@ export const actions: Actions = {
 			});
 		}
 
-		const prevUserData = (await db.select().from(table.user).where(eq(table.user.id, roleId))).at(
+		const prevRoleData = (await db.select().from(table.user).where(eq(table.user.id, roleId))).at(
 			0,
 		);
-		if (!prevUserData) return fail(404, { message: "User not found" });
+		if (!prevRoleData)
+			return fail(404, { edit: { success: false, data: null, message: "Role not found" } });
 
 		try {
 			await db
@@ -66,9 +67,18 @@ export const actions: Actions = {
 				.where(eq(table.userRole.id, roleId));
 		} catch (error) {
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				edit: { success: false, data: null, message: "Database error, please try again" },
+				edit: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
 				form,
 			});
 		}
@@ -122,7 +132,7 @@ export const actions: Actions = {
 				delete: {
 					success: false,
 					data: null,
-					message: "Database Connection error, please try again.",
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
 				},
 			});
 		}

@@ -91,9 +91,18 @@ export const actions: Actions = {
 				}
 			} catch (error) {
 				console.error(error);
-				setError(form, "", "Database error, please try again", { status: 500 });
+				setError(
+					form,
+					"",
+					error instanceof Error ? error.message : "Unknown error. Please try again.",
+					{ status: 500 },
+				);
 				return fail(500, {
-					edit: { success: false, data: null, message: "Database error, please try again" },
+					edit: {
+						success: false,
+						data: null,
+						message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+					},
 					form,
 				});
 			}
@@ -111,9 +120,18 @@ export const actions: Actions = {
 				.where(eq(table.user.id, userId));
 		} catch (error) {
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				edit: { success: false, data: null, message: "Database error, please try again" },
+				edit: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
 				form,
 			});
 		}
@@ -165,7 +183,7 @@ export const actions: Actions = {
 				delete: {
 					success: false,
 					data: null,
-					message: "Database Connection error, please try again.",
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
 				},
 			});
 		}
