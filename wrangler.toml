@@ -6,9 +6,11 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 NODE_VERSION = "22.14.0"
+PNPM_VERSION = "10.11.0"
 
 [env.production.vars]
 NODE_VERSION = "22.14.0"
+PNPM_VERSION = "10.11.0"
 PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAAA5h5cmpBN6IvbtJ"
 
 [env.production]
