@@ -19,5 +19,5 @@
 			{page.error?.message}
 		</p>
 	</section>
-<Button variant="outline" href={href} class="text-base">Home</Button>
+	<Button variant="outline" {href} class="text-base">Home</Button>
 </div>

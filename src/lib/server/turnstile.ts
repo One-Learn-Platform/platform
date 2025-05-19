@@ -1,5 +1,3 @@
-import type {} from "@sveltejs/kit";
-
 interface TokenValidateResponse {
 	"error-codes": string[];
 	success: boolean;
