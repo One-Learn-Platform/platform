@@ -6,6 +6,7 @@ import { i18n } from "$lib/i18n";
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	event.locals.DB = event.platform?.env.DB;
+	event.locals.R2 = event.platform?.env.MEDIA;
 	const sessionToken = event.cookies.get(auth.sessionCookieName);
 	if (!sessionToken) {
 		event.locals.user = null;

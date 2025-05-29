@@ -12,14 +12,20 @@ PNPM_VERSION = "10.11.0"
 NODE_VERSION = "22.14.0"
 PNPM_VERSION = "10.11.0"
 PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAAA5h5cmpBN6IvbtJ"
+PUBLIC_R2_URL = "https://media.onelearn.id"
 
 [env.production]
 d1_databases = [
   { binding = "DB", database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9", database_name = "prod-db", migrations_dir = "./src/lib/server/db/migrations" },
 ]
+r2_buckets = [{ binding = "MEDIA", bucket_name = "media" }]
 
 [[d1_databases]]
 binding = "DB"
 database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9"
 database_name = "prod-db"
 migrations_dir = "./src/lib/server/db/migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "media"
