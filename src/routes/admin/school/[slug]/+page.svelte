@@ -7,7 +7,6 @@
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { superForm, fileProxy } from "sveltekit-superforms";
-	import SuperDebug from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { formSchemaEdit } from "$lib/schema/school/schema";
 
@@ -31,7 +30,7 @@
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zodClient(formSchemaEdit),
-
+		id: "edit",
 		onChange(event) {
 			if (event) {
 				if (event.paths.includes("name")) {
@@ -52,7 +51,6 @@
 	let fileValue = $state();
 
 	$effect(() => {
-		console.log("HITx");
 		$formData.name = schoolDetail.name;
 	});
 
@@ -63,7 +61,6 @@
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
-				$inspect(form.edit);
 				invalidateAll();
 				toast.success(`School ${form.edit.data?.name} edited successfully`);
 			} else toast.error(form.edit.message ?? "Unknown error");
@@ -77,8 +74,6 @@
 		<Card.Header>
 			<Card.Title class="font-display">Edit School</Card.Title>
 		</Card.Header>
-		<SuperDebug data={formData} />
-
 		<form
 			method="POST"
 			action="?/edit{page.url.searchParams.get('ref')
