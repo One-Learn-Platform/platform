@@ -52,11 +52,11 @@ export const actions: Actions = {
 			});
 		}
 
-		const prevRoleData = (await db.select().from(table.user).where(eq(table.user.id, roleId))).at(
-			0,
-		);
+		const prevRoleData = (
+			await db.select().from(table.userRole).where(eq(table.userRole.id, roleId))
+		).at(0);
 		if (!prevRoleData)
-			return fail(404, { edit: { success: false, data: null, message: "Role not found" } });
+			return fail(404, { edit: { success: false, data: null, message: "Role not found" }, form });
 
 		try {
 			await db

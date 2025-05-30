@@ -6,44 +6,54 @@
 
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
-	import { superForm } from "sveltekit-superforms";
+	import { superForm, fileProxy } from "sveltekit-superforms";
+	import SuperDebug from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
-	import { formSchema } from "../schema";
+	import { formSchemaEdit } from "$lib/schema/school/schema";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 
 	let { data, form }: PageProps = $props();
 
-	const roleDetail = $derived(data.roleData);
+	const schoolDetail = $derived(data.schoolData);
 
-	let changes = $state(false);
+	let changes = $state({
+		name: false,
+		logo: false,
+	});
 	const isChanged = $derived(changes);
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchema),
-		id: "edit",
+		validators: zodClient(formSchemaEdit),
 
 		onChange(event) {
 			if (event) {
-				if (event.paths.includes("roleName")) {
-					if ($formData.roleName !== roleDetail.name) {
-						changes = true;
+				if (event.paths.includes("name")) {
+					if ($formData.name !== schoolDetail.name) {
+						changes.name = true;
 					} else {
-						changes = false;
+						changes.name = false;
 					}
+				}
+				if (event.paths.includes("logo")) {
+					changes.logo = true;
 				}
 			}
 		},
 	});
-	const { form: formData, enhance, errors, reset } = superform;
+	const { form: formData, enhance, errors: formErrors, reset } = superform;
+	const proxy = fileProxy(formData, "logo");
+	let fileValue = $state();
 
 	$effect(() => {
-		$formData.roleName = roleDetail.name;
+		console.log("HITx");
+		$formData.name = schoolDetail.name;
 	});
 
 	$effect(() => {
@@ -53,50 +63,80 @@
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
-				toast.success(`User ${form.edit.data?.name} edited successfully`);
+				$inspect(form.edit);
 				invalidateAll();
+				toast.success(`School ${form.edit.data?.name} edited successfully`);
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});
 </script>
 
 <div class="space-y-2 pr-2 pb-2">
-	<h1 class="font-display text-3xl font-semibold tracking-tight">User Detail</h1>
+	<h1 class="font-display text-3xl font-semibold tracking-tight">School Detail</h1>
 	<Card.Root id="edit">
 		<Card.Header>
-			<Card.Title class="font-display">Edit Role</Card.Title>
+			<Card.Title class="font-display">Edit School</Card.Title>
 		</Card.Header>
+		<SuperDebug data={formData} />
+
 		<form
 			method="POST"
 			action="?/edit{page.url.searchParams.get('ref')
 				? '&ref=' + page.url.searchParams.get('ref')
 				: ''}"
 			class="space-y-2"
+			enctype="multipart/form-data"
 			use:enhance
 		>
-			<Card.Content>
-				<Form.Field form={superform} name="roleName">
+			<Card.Content class="space-y-2">
+				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
-							<Form.Label>Name</Form.Label>
+							<Form.Label>School Name</Form.Label>
 							<Input
 								{...props}
-								bind:value={$formData.roleName}
-								placeholder="John Doe"
-								class={changes ? changesClass : ""}
+								bind:value={$formData.name}
+								class={changes.name ? changesClass : ""}
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.roleName}
-						<Form.Description>Name of the role to be displayed.</Form.Description>
-					{/if}
 					<Form.FieldErrors />
+					{#if !$formErrors.name}
+						<Form.Description
+							>This is the School Name that will be available to choose.
+						</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="logo">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>School Logo</Form.Label>
+							<Input
+								{...props}
+								type="file"
+								accept="image/*"
+								bind:files={$proxy}
+								bind:value={fileValue}
+								class={changes.logo ? changesClass : ""}
+							/>
+						{/snippet}
+					</Form.Control>
+					<Form.FieldErrors />
+					{#if !$formErrors.logo}
+						<Form.Description>This is the Logo that will be displayed..</Form.Description>
+					{/if}
 				</Form.Field>
 			</Card.Content>
 
 			<Card.Footer class="justify-end gap-4">
-				{#if $errors._errors}
-					<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+				{#if $formErrors._errors}
+					<div
+						class="flex max-w-md items-center gap-2 rounded-md bg-destructive/5 p-2 text-sm text-destructive"
+					>
+						<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
+						<p>{Object.values($formErrors._errors).join(", ")}</p>
+					</div>
 				{/if}
 				<Button
 					variant="outline"
@@ -105,10 +145,12 @@
 					onclick={() => {
 						reset({
 							data: {
-								roleName: roleDetail.name,
+								name: schoolDetail.name ?? "",
+								logo: undefined,
 							},
 						});
-						changes = false;
+						changes.name = false;
+						changes.logo = false;
 					}}>Cancel</Button
 				>
 				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>
@@ -123,11 +165,11 @@
 		<AlertDialog.Content>
 			<form class="contents" action="?/delete" method="POST" use:svelteEnhance>
 				<AlertDialog.Header>
-					<AlertDialog.Title>Do you want to delete role {roleDetail.name}?</AlertDialog.Title>
+					<AlertDialog.Title>Do you want to delete school {schoolDetail.name}?</AlertDialog.Title>
 					<AlertDialog.Description>
-						<input type="hidden" name="id" value={roleDetail.id} />
+						<input type="hidden" name="id" value={schoolDetail.id} />
 						This action is irreversible. Are you sure you want to delete
-						<b>{roleDetail.name}</b>?
+						<b>{schoolDetail.name}</b>?
 					</AlertDialog.Description>
 				</AlertDialog.Header>
 				<AlertDialog.Footer>

@@ -372,7 +372,7 @@
 						changes.school = false;
 					}}>Cancel</Button
 				>
-				<Form.Button class="self-end" disabled={!isChanged}>Save Changes</Form.Button>
+				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>
 			</Card.Footer>
 		</form>
 	</Card.Root>

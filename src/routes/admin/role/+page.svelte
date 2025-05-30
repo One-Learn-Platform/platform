@@ -2,6 +2,7 @@
 	import type { PageServerData, ActionData } from "./$types";
 
 	import Plus from "@lucide/svelte/icons/plus";
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 	import { superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { formSchema } from "./schema";
@@ -63,7 +64,12 @@
 
 				<Dialog.Footer class="items-center">
 					{#if $formErrors._errors}
-						<p class="text-sm text-destructive">{Object.values($formErrors._errors).join(", ")}</p>
+						<div
+							class="flex max-w-md items-center gap-2 rounded-md bg-destructive/10 p-2 text-sm text-destructive"
+						>
+							<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
+							<p>{Object.values($formErrors._errors).join(", ")}</p>
+						</div>
 					{/if}
 					<Form.Button>Submit</Form.Button></Dialog.Footer
 				>
