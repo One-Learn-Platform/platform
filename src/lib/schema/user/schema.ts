@@ -7,6 +7,12 @@ export const Role = z.enum(["super admin", "admin", "teacher", "student"], {
 
 export const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
+	avatar: z
+		.instanceof(File, { message: "Logo is required" })
+		.refine((file) => file.size > 0 && file.size < 5 * 1024 * 1024, {
+			message: "Logo must be less than 5MB",
+		})
+		.optional(),
 	dob: z.string().refine((v) => v, { message: "A date of birth is required." }),
 	username: z.string().min(1, "Username is required"),
 	password: z.string().min(1, "Password is required"),

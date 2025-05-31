@@ -1,14 +1,15 @@
 import type { Actions, PageServerLoad } from "./$types";
-import { fail } from "@sveltejs/kit";
 
 import bcryptjs from "bcryptjs";
-import { setError, superValidate } from "sveltekit-superforms";
+import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { formSchemaCreate } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
+import { getR2 } from "$lib/server/r2";
 import * as table from "$lib/server/db/schema";
 import { eq, or } from "drizzle-orm";
+import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -76,8 +77,30 @@ export const actions: Actions = {
 				default:
 					break;
 			}
+
+			const uniqueFileName = `user/avatar/${getFileName(form.data.username)}-${getTimeStamp()}.png`;
+			if (form.data.avatar) {
+				const fileBuffer = await form.data.avatar.arrayBuffer();
+				try {
+					await getR2(event).put(uniqueFileName, fileBuffer, {
+						httpMetadata: {
+							contentType: form.data.avatar.type,
+						},
+					});
+				} catch (r2Error) {
+					console.error("Failed to upload to R2:", r2Error);
+					return fail(500, {
+						create: { success: false, data: null, message: "Failed to upload file" },
+
+						form,
+					});
+				}
+			}
+			const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
+
 			await db.insert(table.user).values({
 				roleId: roleId,
+				avatar: imageUrl,
 				fullname: form.data.name,
 				dob: form.data.dob,
 				username: form.data.username,
@@ -92,7 +115,7 @@ export const actions: Actions = {
 			});
 		}
 
-		return {
+		return withFiles({
 			create: {
 				success: true,
 				data: {
@@ -101,7 +124,7 @@ export const actions: Actions = {
 				message: "User created successfully",
 			},
 			form,
-		};
+		});
 	},
 
 	delete: async (event) => {

@@ -44,7 +44,6 @@ export const actions: Actions = {
 			});
 		}
 		const uniqueFileName = `school/logo/${getFileName(form.data.name)}-${getTimeStamp()}.png`;
-		console.log("uniqueFileName", uniqueFileName);
 		const fileBuffer = await form.data.logo.arrayBuffer();
 		try {
 			await getR2(event).put(uniqueFileName, fileBuffer, {
