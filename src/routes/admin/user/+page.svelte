@@ -37,8 +37,7 @@
 	const { form: formData, enhance, errors, reset } = superform;
 
 	let value = $state<DateValue | undefined>();
-	// @ts-expect-error - value is undefined so the browser default will be used
-	const df = new DateFormatter(undefined, {
+	const df = new DateFormatter(getLocalTimeZone(), {
 		dateStyle: "long",
 	});
 	$effect(() => {

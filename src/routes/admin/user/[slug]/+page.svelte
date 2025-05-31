@@ -113,8 +113,7 @@
 	const { form: formData, enhance, errors, reset } = superform;
 
 	let value = $state<DateValue | undefined>();
-	// @ts-expect-error - Let the value be undefined so the user locale will be used
-	const df = new DateFormatter(undefined, {
+	const df = new DateFormatter(getLocalTimeZone(), {
 		dateStyle: "long",
 	});
 	$effect(() => {
