@@ -29,19 +29,19 @@
 	const overview = [
 		{
 			title: "Statistic",
-			url: `${prefix}`,
+			href: `${prefix}`,
 			icon: ChartArea,
 			superadmin: false,
 		},
 		{
 			title: "Search",
-			url: `${prefix}/search`,
+			href: `${prefix}/search`,
 			icon: Search,
 			superadmin: false,
 		},
 		{
 			title: "Settings",
-			url: `${prefix}/settings`,
+			href: `${prefix}/settings`,
 			icon: Settings,
 			superadmin: false,
 		},
@@ -50,19 +50,19 @@
 	const management = [
 		{
 			title: "User",
-			url: `${prefix}/user`,
+			href: `${prefix}/user`,
 			icon: User,
 			superadmin: false,
 		},
 		{
 			title: "Role",
-			url: `${prefix}/role`,
+			href: `${prefix}/role`,
 			icon: UserCog,
 			superadmin: true,
 		},
 		{
 			title: "School",
-			url: `${prefix}/school`,
+			href: `${prefix}/school`,
 			icon: School,
 			superadmin: true,
 		},
@@ -97,11 +97,11 @@
 									<Sidebar.MenuItem>
 										<Sidebar.MenuButton
 											isActive={category.title === "Overview"
-												? page.url.pathname === item.url
-												: page.url.pathname.startsWith(item.url)}
+												? page.url.pathname === item.href
+												: page.url.pathname.startsWith(item.href)}
 										>
 											{#snippet child({ props })}
-												<a href={item.url} {...props}>
+												<a href={item.href} {...props}>
 													<item.icon />
 													<span>{item.title}</span>
 												</a>
@@ -113,11 +113,11 @@
 								<Sidebar.MenuItem>
 									<Sidebar.MenuButton
 										isActive={category.title === "Overview"
-											? page.url.pathname === item.url
-											: page.url.pathname.startsWith(item.url)}
+											? page.url.pathname === item.href
+											: page.url.pathname.startsWith(item.href)}
 									>
 										{#snippet child({ props })}
-											<a href={item.url} {...props}>
+											<a href={item.href} {...props}>
 												<item.icon />
 												<span>{item.title}</span>
 											</a>

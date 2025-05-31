@@ -1,4 +1,4 @@
-import { House } from "@lucide/svelte";
+import House from "@lucide/svelte/icons/house";
 
 export const nav = [
 	{
