@@ -16,6 +16,8 @@
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 
+	import FormErrors from "$lib/components/error/form-errors.svelte";
+
 	let { data, form }: PageProps = $props();
 
 	const roleDetail = $derived(data.roleData);
@@ -96,7 +98,7 @@
 
 			<Card.Footer class="justify-end gap-4">
 				{#if $errors._errors}
-					<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+					<FormErrors message={Object.values($errors._errors).join(", ")} />
 				{/if}
 				<Button
 					variant="outline"

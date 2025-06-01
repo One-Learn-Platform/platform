@@ -1,20 +1,20 @@
 <script lang="ts">
-	import type { PageServerData, ActionData } from "./$types";
+	import type { ActionData, PageServerData } from "./$types";
 
+	import { formSchemaCreate } from "$lib/schema/school/schema";
 	import Plus from "@lucide/svelte/icons/plus";
-	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
-	import { superForm, fileProxy } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 
-	import { toast } from "svelte-sonner";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { toast } from "svelte-sonner";
 
+	import FormErrors from "$lib/components/error/form-errors.svelte";
 	import DataTable from "$lib/components/table/data-table.svelte";
 	import { columns } from "./columns";
-	import { formSchemaCreate } from "$lib/schema/school/schema";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const schoolList = $derived(data.schoolList);
@@ -22,7 +22,7 @@
 		validators: zodClient(formSchemaCreate),
 	});
 
-	const { form: formData, enhance, errors: formErrors } = superform;
+	const { form: formData, enhance, errors: formErrors, reset } = superform;
 	const proxy = fileProxy(formData, "logo");
 	let fileValue = $state();
 
@@ -91,14 +91,18 @@
 				</Form.Field>
 
 				<Dialog.Footer class="items-center">
+					<Dialog.Close
+						class={buttonVariants({ variant: "outline" })}
+						type="reset"
+						onclick={() => reset()}
+					>
+						Cancel
+					</Dialog.Close>
+
 					{#if $formErrors._errors}
-						<div
-							class="flex max-w-md items-center gap-2 rounded-md bg-destructive/10 p-2 text-sm text-destructive"
-						>
-							<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
-							<p>{Object.values($formErrors._errors).join(", ")}</p>
-						</div>
+						<FormErrors message={Object.values($formErrors._errors).join(", ")} />
 					{/if}
+
 					<Form.Button>Submit</Form.Button>
 				</Dialog.Footer>
 			</form>

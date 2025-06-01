@@ -34,6 +34,7 @@
 	import { acronym } from "$lib/utils";
 
 	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "$lib/components/error/form-errors.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -349,7 +350,7 @@
 			</Card.Content>
 			<Card.Footer class="justify-end gap-4">
 				{#if $errors._errors}
-					<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+					<FormErrors message={Object.values($errors._errors).join(", ")} />
 				{/if}
 				<Button
 					variant="outline"

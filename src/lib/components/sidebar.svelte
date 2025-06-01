@@ -21,6 +21,7 @@
 	import Search from "@lucide/svelte/icons/search";
 	import Settings from "@lucide/svelte/icons/settings";
 	import User from "@lucide/svelte/icons/user";
+	import BookMarked from "@lucide/svelte/icons/book-marked";
 	import UserCog from "@lucide/svelte/icons/user-cog";
 
 	const sidebar = useSidebar();
@@ -65,6 +66,12 @@
 			href: `${prefix}/school`,
 			icon: School,
 			superadmin: true,
+		},
+		{
+			title: "Subject",
+			href: `${prefix}/subject`,
+			icon: BookMarked,
+			superadmin: false,
 		},
 	];
 

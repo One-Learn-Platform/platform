@@ -4,18 +4,19 @@
 	import { page } from "$app/state";
 	import type { PageProps } from "./$types";
 
+	import { formSchemaEdit } from "$lib/schema/school/schema";
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
-	import { superForm, fileProxy } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
-	import { formSchemaEdit } from "$lib/schema/school/schema";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+
+	import FormErrors from "$lib/components/error/form-errors.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -126,12 +127,7 @@
 
 			<Card.Footer class="justify-end gap-4">
 				{#if $formErrors._errors}
-					<div
-						class="flex max-w-md items-center gap-2 rounded-md bg-destructive/5 p-2 text-sm text-destructive"
-					>
-						<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
-						<p>{Object.values($formErrors._errors).join(", ")}</p>
-					</div>
+					<FormErrors message={Object.values($formErrors._errors).join(", ")} />
 				{/if}
 				<Button
 					variant="outline"

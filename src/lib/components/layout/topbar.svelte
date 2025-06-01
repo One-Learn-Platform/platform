@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-  
+
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";

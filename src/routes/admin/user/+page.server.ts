@@ -1,4 +1,5 @@
 import type { Actions, PageServerLoad } from "./$types";
+import { error } from "@sveltejs/kit";
 
 import bcryptjs from "bcryptjs";
 import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
@@ -8,12 +9,13 @@ import { formSchemaCreate } from "$lib/schema/user/schema";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import * as table from "$lib/server/db/schema";
-import { eq, or } from "drizzle-orm";
+import { eq, getTableColumns, or } from "drizzle-orm";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
-	const userList = await db.select().from(table.user);
+	const { password, ...rest } = getTableColumns(table.user);
+	const userList = await db.select({ ...rest }).from(table.user);
 	const schoolList = await db.select().from(table.school);
 	const roleList = await db.select().from(table.userRole);
 	if (event.locals.user) {
@@ -26,12 +28,7 @@ export const load: PageServerLoad = async (event) => {
 			form: await superValidate(zod(formSchemaCreate)),
 		};
 	}
-	return {
-		userList: userList,
-		schoolList: schoolList,
-		roleList: roleList,
-		form: await superValidate(zod(formSchemaCreate)),
-	};
+	return error(404, { message: "Not found" });
 };
 
 export const actions: Actions = {
@@ -46,7 +43,6 @@ export const actions: Actions = {
 				form,
 			});
 		}
-
 		try {
 			const existingUser = await db
 				.select()

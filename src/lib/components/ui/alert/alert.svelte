@@ -16,6 +16,9 @@
 			outline: {
 				true: "",
 			},
+			muted: {
+				true: "",
+			},
 		},
 		compoundVariants: [
 			{
@@ -23,6 +26,12 @@
 				outline: true,
 				class:
 					"border-destructive/50 bg-background text-destructive dark:border-destructive [&>svg]:text-destructive",
+			},
+			{
+				variant: "destructive",
+				outline: false,
+				muted: true,
+				class: "bg-destructive/10 text-destructive [&>svg]:text-destructive",
 			},
 			{
 				variant: "informative",
@@ -44,6 +53,7 @@
 
 	export type AlertVariant = VariantProps<typeof alertVariants>["variant"];
 	export type AlertOutline = VariantProps<typeof alertVariants>["outline"];
+	export type AlertMuted = VariantProps<typeof alertVariants>["muted"];
 </script>
 
 <script lang="ts">
@@ -56,17 +66,19 @@
 		class: className,
 		variant = "default",
 		outline,
+		muted,
 		children,
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		variant?: AlertVariant;
 		outline?: AlertOutline;
+		muted?: AlertMuted;
 	} = $props();
 </script>
 
 <div
 	bind:this={ref}
-	class={cn(alertVariants({ variant, outline }), className)}
+	class={cn(alertVariants({ variant, outline, muted }), className)}
 	{...restProps}
 	role="alert"
 >

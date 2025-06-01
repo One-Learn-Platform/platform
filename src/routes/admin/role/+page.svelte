@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { PageServerData, ActionData } from "./$types";
+	import type { ActionData, PageServerData } from "./$types";
 
 	import Plus from "@lucide/svelte/icons/plus";
-	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 	import { superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { formSchema } from "./schema";
 
-	import { toast } from "svelte-sonner";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { toast } from "svelte-sonner";
 
+	import FormErrors from "$lib/components/error/form-errors.svelte";
 	import DataTable from "$lib/components/table/data-table.svelte";
 	import { columns } from "./columns";
 
@@ -64,12 +64,7 @@
 
 				<Dialog.Footer class="items-center">
 					{#if $formErrors._errors}
-						<div
-							class="flex max-w-md items-center gap-2 rounded-md bg-destructive/10 p-2 text-sm text-destructive"
-						>
-							<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
-							<p>{Object.values($formErrors._errors).join(", ")}</p>
-						</div>
+						<FormErrors message={Object.values($formErrors._errors).join(", ")} />
 					{/if}
 					<Form.Button>Submit</Form.Button></Dialog.Footer
 				>

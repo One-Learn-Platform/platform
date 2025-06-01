@@ -10,8 +10,9 @@
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 	import Plus from "@lucide/svelte/icons/plus";
-	import { formSchemaCreate, Role, type RoleEnum } from "../../../lib/schema/user/schema";
+	import { formSchemaCreate, Role, type RoleEnum } from "$lib/schema/user/schema";
 	import { superForm, fileProxy } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 	import { cn } from "$lib/utils.js";
@@ -27,6 +28,7 @@
 	import DataTable from "$lib/components/table/data-table.svelte";
 	import { columns } from "./columns.js";
 	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "$lib/components/error/form-errors.svelte";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -34,7 +36,7 @@
 		taintedMessage: null,
 		validators: zodClient(formSchemaCreate),
 	});
-	const { form: formData, enhance, errors, reset } = superform;
+	const { form: formData, enhance, errors: formErrors, reset } = superform;
 	const proxy = fileProxy(formData, "avatar");
 	let fileValue = $state();
 
@@ -63,7 +65,13 @@
 	<Dialog.Root>
 		<Dialog.Trigger class={buttonVariants({ variant: "outline" })}><Plus />Add</Dialog.Trigger>
 		<Dialog.Content class="">
-			<form method="POST" action="?/create" class="space-y-2" use:enhance>
+			<form
+				method="POST"
+				action="?/create"
+				class="space-y-2"
+				enctype="multipart/form-data"
+				use:enhance
+			>
 				<Dialog.Header>
 					<Dialog.Title>Add User</Dialog.Title>
 					<Dialog.Description>
@@ -86,7 +94,7 @@
 							{/snippet}
 						</Form.Control>
 						<Form.FieldErrors />
-						{#if !$errors.avatar}
+						{#if !$formErrors.avatar}
 							<Form.Description>This is the Avatar of the User</Form.Description>
 						{/if}
 					</Form.Field>
@@ -98,7 +106,7 @@
 								<Input {...props} bind:value={$formData.name} placeholder="John Doe" />
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.name}
+						{#if !$formErrors.name}
 							<Form.Description>The fullname of the user.</Form.Description>
 						{/if}
 						<Form.FieldErrors />
@@ -115,7 +123,7 @@
 								/>
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.username}
+						{#if !$formErrors.username}
 							<Form.Description>Username will be used for login</Form.Description>
 						{/if}
 						<Form.FieldErrors />
@@ -158,7 +166,7 @@
 								<input type="hidden" hidden value={$formData.dob} name={props.name} />
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.dob}
+						{#if !$formErrors.dob}
 							<Form.Description>date of birth of the user.</Form.Description>
 						{/if}
 						<Form.FieldErrors />
@@ -175,7 +183,7 @@
 								/>
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.password}
+						{#if !$formErrors.password}
 							<Form.Description>
 								This a just a temporary password. Choose an easy one
 							</Form.Description>
@@ -225,7 +233,7 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.role}
+						{#if !$formErrors.role}
 							<Form.Description>
 								Select a role for the user. This will determine their access level.
 							</Form.Description>
@@ -262,7 +270,7 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$errors.school}
+						{#if !$formErrors.school}
 							<Form.Description>
 								This will determine the school affiliation of the user.
 							</Form.Description>
@@ -272,8 +280,8 @@
 				</div>
 
 				<Dialog.Footer class="items-center">
-					{#if $errors._errors}
-						<p class="text-sm text-destructive">{Object.values($errors._errors).join(", ")}</p>
+					{#if $formErrors._errors}
+						<FormErrors message={Object.values($formErrors._errors).join(", ")} />
 					{/if}
 					<Dialog.Close
 						class={buttonVariants({ variant: "outline" })}
