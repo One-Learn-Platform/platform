@@ -1,3 +1,5 @@
+import { PUBLIC_R2_URL } from "$env/static/public";
+
 import type { User } from "$lib/server/db/schema";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
@@ -8,7 +10,8 @@ import DataTableActions from "$lib/components/table/data-table-actions.svelte";
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-export const columns: ColumnDef<User>[] = [
+type SafeUser = Omit<User, "password">;
+export const columns: ColumnDef<SafeUser>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>
@@ -54,7 +57,8 @@ export const columns: ColumnDef<User>[] = [
 			const amountCellSnippet = createRawSnippet(() => {
 				if (value) {
 					return {
-						render: () => `<img src="${value}" alt="Avatar" class="w-8 h-8 rounded-full" />`,
+						render: () =>
+							`<img src="${PUBLIC_R2_URL}/${value}" alt="Avatar" class="w-8 h-8 rounded-full" />`,
 					};
 				} else {
 					return {

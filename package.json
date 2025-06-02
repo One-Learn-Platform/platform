@@ -41,7 +41,7 @@
 		"drizzle-zod": "^0.8.2",
 		"eslint": "^9.28.0",
 		"eslint-config-prettier": "^10.1.5",
-		"eslint-plugin-svelte": "^3.9.0",
+		"eslint-plugin-svelte": "^3.9.1",
 		"formsnap": "^2.0.1",
 		"globals": "^16.2.0",
 		"mdsvex": "^0.12.6",
@@ -49,8 +49,8 @@
 		"prettier": "^3.5.3",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.6.12",
-		"simple-icons": "^14.15.0",
-		"svelte": "^5.33.11",
+		"simple-icons": "^15.0.0",
+		"svelte": "^5.33.13",
 		"svelte-check": "^4.2.1",
 		"svelte-sonner": "^1.0.4",
 		"svelte-turnstile": "^0.11.0",
@@ -64,7 +64,7 @@
 		"vite": "^6.3.5",
 		"vitest": "^3.1.4",
 		"wrangler": "^4.18.0",
-		"zod": "^3.25.45"
+		"zod": "^3.25.46"
 	},
 	"dependencies": {
 		"@inlang/paraglide-sveltekit": "^0.16.1",

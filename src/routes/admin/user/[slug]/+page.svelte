@@ -1,9 +1,17 @@
 <script lang="ts">
-	import type { PageProps } from "./$types";
-	import { page } from "$app/state";
-	import { invalidateAll } from "$app/navigation";
 	import { enhance as svelteEnhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
+	import { page } from "$app/state";
+	import { PUBLIC_R2_URL } from "$env/static/public";
+	import type { PageProps } from "./$types";
 
+	import {
+		formSchemaEdit,
+		formSchemaUploadImage,
+		Role,
+		type RoleEnum,
+	} from "$lib/schema/user/schema";
+	import { cn } from "$lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -14,29 +22,31 @@
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
 	import Info from "@lucide/svelte/icons/info";
-	import { formSchemaEdit, Role, type RoleEnum } from "$lib/schema/user/schema";
-	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
-	import { cn } from "$lib/utils.js";
-	import { toast } from "svelte-sonner";
 	import { clsx } from "clsx";
+	import { toast } from "svelte-sonner";
+	import { fileProxy, superForm } from "sveltekit-superforms";
+	import { zodClient } from "sveltekit-superforms/adapters";
 
-	import { buttonVariants, Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import * as Alert from "$lib/components/ui/alert/index.js";
+	import * as Avatar from "$lib/components/ui/avatar/index.js";
+	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as Card from "$lib/components/ui/card/index.js";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import * as Form from "$lib/components/ui/form/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import * as Popover from "$lib/components/ui/popover/index.js";
+	import * as Select from "$lib/components/ui/select/index.js";
 
 	import { acronym } from "$lib/utils";
 
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
 	import FormErrors from "$lib/components/error/form-errors.svelte";
+	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
 
 	let { data, form }: PageProps = $props();
+
+	let dialogOpen = $state(false);
+	let alertDialogOpen = $state(false);
 
 	const userDetail = $derived(data.userData);
 	const currentRole = $derived.by(() => {
@@ -64,6 +74,7 @@
 	});
 	const isChanged = $derived(Object.values(changes).some((value) => value === true));
 	const changesClass = clsx("border-blue-500 bg-blue-50");
+
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zodClient(formSchemaEdit),
@@ -111,7 +122,16 @@
 			}
 		},
 	});
+	const superformUpload = superForm(data.uploadForm, {
+		taintedMessage: null,
+		validators: zodClient(formSchemaUploadImage),
+	});
+	const avatarProxy = fileProxy(superformUpload, "avatar");
+	let avatarName = $state();
+	const avatarUrl = $derived(URL.createObjectURL($avatarProxy?.[0] ?? new Blob()));
+
 	const { form: formData, enhance, errors, reset } = superform;
+	const { enhance: enhanceUpload, errors: errorsUpload } = superformUpload;
 
 	let value = $state<DateValue | undefined>();
 	// @ts-expect-error - Let the value be undefined so the user locale will be used
@@ -157,12 +177,108 @@
 	<Card.Root>
 		<Card.Content class="flex items-center justify-between px-6 py-4">
 			<Avatar.Root class="size-16">
-				<Avatar.Image src={userDetail.avatar} alt={`Avatar of ${userDetail.fullname}`} />
+				<Avatar.Image
+					src="{PUBLIC_R2_URL}/{userDetail.avatar}"
+					alt={`Avatar of ${userDetail.fullname}`}
+				/>
 				<Avatar.Fallback>{initial}</Avatar.Fallback>
 			</Avatar.Root>
 			<div>
-				<Button variant="outline">Upload</Button>
-				<Button variant="destructive" outline>Remove</Button>
+				<Dialog.Root
+					open={dialogOpen}
+					onOpenChange={(open) => {
+						dialogOpen = open;
+						if (!open) {
+							avatarName = "";
+							URL.revokeObjectURL(avatarUrl);
+						}
+					}}
+				>
+					<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>Upload</Dialog.Trigger>
+					<Dialog.Content>
+						<Dialog.Header>
+							<Dialog.Title>Upload Image</Dialog.Title>
+							<Dialog.Description>
+								Preview and update avatar for user <b>{userDetail.fullname}</b>.
+							</Dialog.Description>
+						</Dialog.Header>
+						{#if $avatarProxy?.[0]}
+							<div>
+								<img src={avatarUrl} alt="" class="border border-muted" />
+								<p class="text-sm leading-tight text-muted-foreground">Preview</p>
+							</div>
+						{/if}
+						<form
+							action="?/upload"
+							method="POST"
+							enctype="multipart/form-data"
+							class="flex w-full flex-col gap-2"
+							use:enhanceUpload
+						>
+							<div class="flex w-full flex-row items-center gap-2">
+								<Form.Field form={superformUpload} name="avatar" class="grow">
+									<Form.Control>
+										{#snippet children({ props })}
+											<Form.Label>Avatar</Form.Label>
+											<Input
+												{...props}
+												type="file"
+												accept="image/*"
+												bind:files={$avatarProxy}
+												bind:value={avatarName}
+												placeholder="Select an image"
+											/>
+										{/snippet}
+									</Form.Control>
+									{#if !$errorsUpload.avatar}
+										<Form.Description>Upload a new avatar for the user.</Form.Description>
+									{/if}
+									<Form.FieldErrors />
+								</Form.Field>
+
+								<Form.Button type="submit">Upload</Form.Button>
+							</div>
+							{#if $errorsUpload._errors}
+								<FormErrors
+									message={Object.values($errorsUpload._errors).join(", ")}
+									class="w-full justify-start"
+								/>
+							{/if}
+						</form>
+					</Dialog.Content>
+				</Dialog.Root>
+				<AlertDialog.Root open={alertDialogOpen} onOpenChange={(open) => (alertDialogOpen = open)}>
+					<AlertDialog.Trigger
+						class={buttonVariants({ variant: "destructive", outline: true })}
+						disabled={!userDetail.avatar}
+					>
+						Remove
+					</AlertDialog.Trigger>
+					<AlertDialog.Content>
+						<form action="?/deleteAvatar" method="POST" class="contents" use:svelteEnhance>
+							<AlertDialog.Header>
+								<AlertDialog.Title>
+									Are you sure you want to remove current Avatar?
+								</AlertDialog.Title>
+								<AlertDialog.Description class="flex items-center justify-center">
+									{#if userDetail.avatar}
+										<img
+											src="{PUBLIC_R2_URL}/{userDetail.avatar}"
+											alt="{userDetail.username} Avatar"
+										/>
+									{/if}
+									<input type="hidden" name="avatarId" value={userDetail.id} />
+								</AlertDialog.Description>
+							</AlertDialog.Header>
+							<AlertDialog.Footer>
+								<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+								<AlertDialog.Action type="submit" onclick={() => (alertDialogOpen = false)}>
+									Continue
+								</AlertDialog.Action>
+							</AlertDialog.Footer>
+						</form>
+					</AlertDialog.Content>
+				</AlertDialog.Root>
 			</div>
 		</Card.Content>
 	</Card.Root>

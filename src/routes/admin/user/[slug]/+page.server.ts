@@ -1,13 +1,15 @@
-import type { PageServerLoad, Actions } from "./$types";
-import { error, fail, redirect } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
-import { setError, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { formSchemaEdit } from "$lib/schema/user/schema";
-
+import { formSchemaEdit, formSchemaUploadImage } from "$lib/schema/user/schema";
 import { eq } from "drizzle-orm";
+import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
+
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
+import { getR2 } from "$lib/server/r2";
+import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -26,6 +28,7 @@ export const load: PageServerLoad = async (event) => {
 			return {
 				userData: user,
 				form: await superValidate(zod(formSchemaEdit)),
+				uploadForm: await superValidate(zod(formSchemaUploadImage)),
 			};
 		} else {
 			return error(404, { message: "User Not Found" });
@@ -146,6 +149,148 @@ export const actions: Actions = {
 			},
 			form,
 		};
+	},
+	upload: async (event) => {
+		const db = getDb(event);
+		const r2 = getR2(event);
+		const params = event.params;
+		const { slug } = params;
+		const userId = parseInt(slug, 10);
+		const form = await superValidate(event, zod(formSchemaUploadImage));
+
+		if (!form.valid) {
+			setError(form, "", "Content is invalid, please try again");
+			return fail(400, {
+				upload: { success: false, data: null, message: "Content is invalid, please try again" },
+				form,
+			});
+		}
+		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
+		if (!user) {
+			return fail(404, { message: "User not found" });
+		}
+		const uniqueFileName = `user/avatar/${getFileName(user?.username)}-${getTimeStamp()}.png`;
+		const fileBuffer = await form.data.avatar.arrayBuffer();
+		try {
+			await r2.put(uniqueFileName, fileBuffer, {
+				httpMetadata: {
+					contentType: form.data.avatar.type,
+				},
+			});
+		} catch (r2Error) {
+			console.error("Failed to upload to R2:", r2Error);
+			return fail(500, {
+				create: { success: false, data: null, message: "Failed to upload file" },
+
+				form,
+			});
+		}
+		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
+
+		try {
+			await db
+				.update(table.user)
+				.set({
+					avatar: imageUrl,
+				})
+				.where(eq(table.user.id, userId));
+		} catch (error) {
+			console.error(error);
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
+			return fail(500, {
+				upload: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
+				form,
+			});
+		}
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/user");
+		return withFiles({
+			upload: {
+				success: true,
+				data: {
+					name: user?.fullname,
+					avatar: imageUrl,
+				},
+				message: "Avatar updated successfully",
+			},
+			form,
+		});
+	},
+	deleteAvatar: async (event) => {
+		const db = getDb(event);
+		const r2 = getR2(event);
+		const formData = await event.request.formData();
+		const id = formData.get("avatarId");
+
+		if (!id) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
+			});
+		}
+		const numberId = Number(id);
+		if (isNaN(numberId)) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+			});
+		}
+		const user = await db.select().from(table.user).where(eq(table.user.id, numberId)).get();
+		if (!user) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "User not found. Please try again.",
+				},
+			});
+		}
+		if (user.avatar === null || user.avatar === "") {
+			return fail(400, {
+				delete: {
+					success: false,
+					data: null,
+					message: "User does not have an avatar to delete.",
+				},
+			});
+		}
+
+		try {
+			await r2.delete(user.avatar);
+		} catch (error) {
+			console.error("Failed to delete avatar from R2:", error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
+			});
+		}
+
+		try {
+			await db
+				.update(table.user)
+				.set({
+					avatar: null,
+				})
+				.where(eq(table.user.id, numberId));
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
+			});
+		}
 	},
 	delete: async (event) => {
 		const db = getDb(event);

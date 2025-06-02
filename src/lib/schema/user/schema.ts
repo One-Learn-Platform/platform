@@ -54,6 +54,12 @@ export const formSchemaCreate = formSchema
 		},
 	);
 
+export const formSchemaUploadImage = formSchema
+	.pick({
+		avatar: true,
+	})
+	.required();
+
 export const formSchemaEdit = formSchema
 	.omit({ password: true })
 	.refine(
@@ -90,6 +96,7 @@ export const formSchemaEdit = formSchema
 	);
 
 export type FormSchema = z.infer<typeof formSchema>;
+export type FormSchemaUploadImage = z.infer<typeof formSchemaUploadImage>;
 export type FormSchemaCreate = z.infer<typeof formSchemaCreate>;
 export type FormSchemaEdit = z.infer<typeof formSchemaEdit>;
 export type RoleEnum = z.infer<typeof Role>;
