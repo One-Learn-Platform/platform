@@ -1,0 +1,194 @@
+<script lang="ts">
+	import { enhance as svelteEnhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
+	import { page } from "$app/state";
+	import type { PageProps } from "./$types";
+
+	import { formSchemaEdit } from "$lib/schema/subject/schema";
+	import { clsx } from "clsx";
+	import { toast } from "svelte-sonner";
+	import { superForm } from "sveltekit-superforms";
+	import { zodClient } from "sveltekit-superforms/adapters";
+
+	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as Card from "$lib/components/ui/card/index.js";
+	import * as Form from "$lib/components/ui/form/index.js";
+	import * as Select from "$lib/components/ui/select/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+
+	let { data, form }: PageProps = $props();
+
+	const subjectDetail = $derived(data.subjectData);
+
+	let changes = $state({
+		name: false,
+		teacher: false,
+	});
+	const isChanged = $derived(changes);
+	const changesClass = clsx("border-blue-500 bg-blue-50");
+	const superform = superForm(data.form, {
+		taintedMessage: null,
+		validators: zodClient(formSchemaEdit),
+		id: "edit",
+		onChange(event) {
+			if (event) {
+				if (event.paths.includes("name")) {
+					if ($formData.name !== subjectDetail.name) {
+						changes.name = true;
+					} else {
+						changes.name = false;
+					}
+				}
+				if (event.paths.includes("teacher")) {
+					if (Number($formData.teacher) !== subjectDetail.teacher) {
+						changes.teacher = true;
+					} else {
+						changes.teacher = false;
+					}
+				}
+			}
+		},
+	});
+	const { form: formData, enhance, errors: formErrors, reset } = superform;
+
+	$effect(() => {
+		$formData.name = subjectDetail.name;
+		$formData.teacher = subjectDetail.teacher?.toString() ?? "";
+	});
+
+	$effect(() => {
+		if (form?.delete) {
+			if (form.delete.success) {
+				invalidateAll();
+			} else toast.error(form.delete.message ?? "Unknown error");
+		} else if (form?.edit) {
+			if (form.edit.success) {
+				invalidateAll();
+				toast.success(`Subject ${form.edit.data?.name} edited successfully`);
+			} else toast.error(form.edit.message ?? "Unknown error");
+		}
+	});
+</script>
+
+<div class="space-y-2 pr-2 pb-2">
+	<h1 class="font-display text-3xl font-semibold tracking-tight">Subject Detail</h1>
+	<Card.Root id="edit">
+		<Card.Header>
+			<Card.Title class="font-display">Edit Subject</Card.Title>
+		</Card.Header>
+		<form
+			method="POST"
+			action="?/edit{page.url.searchParams.get('ref')
+				? '&ref=' + page.url.searchParams.get('ref')
+				: ''}"
+			class="space-y-2"
+			enctype="multipart/form-data"
+			use:enhance
+		>
+			<Card.Content class="space-y-2">
+				<Form.Field form={superform} name="name">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>School Name</Form.Label>
+							<Input
+								{...props}
+								bind:value={$formData.name}
+								class={changes.name ? changesClass : ""}
+							/>
+						{/snippet}
+					</Form.Control>
+					<Form.FieldErrors />
+					{#if !$formErrors.name}
+						<Form.Description
+							>This is the School Name that will be available to choose.
+						</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="teacher">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Teacher</Form.Label>
+							<Select.Root
+								type="single"
+								value={$formData.teacher}
+								name={props.name}
+								allowDeselect
+								onValueChange={(value) => ($formData.teacher = value)}
+							>
+								<Select.Trigger {...props}>
+									{$formData.teacher
+										? data.teacherList.find((t) => t.id.toString() === $formData.teacher)?.fullname
+										: "Select a teacher"}
+								</Select.Trigger>
+								<Select.Content>
+									{#each data.teacherList as teacher (teacher.id)}
+										<Select.Item value={teacher.id.toString()} label={teacher.fullname}>
+											{teacher.fullname}
+										</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						{/snippet}
+					</Form.Control>
+					<Form.FieldErrors />
+					{#if !$formErrors.teacher}
+						<Form.Description>This is the Teacher that will be displayed.</Form.Description>
+					{/if}
+				</Form.Field>
+			</Card.Content>
+
+			<Card.Footer class="justify-end gap-4">
+				{#if $formErrors._errors}
+					<div
+						class="flex max-w-md items-center gap-2 rounded-md bg-destructive/5 p-2 text-sm text-destructive"
+					>
+						<TriangleAlert strokeWidth={1.5} class="min-w-fit" />
+						<p>{Object.values($formErrors._errors).join(", ")}</p>
+					</div>
+				{/if}
+				<Button
+					variant="outline"
+					type="button"
+					disabled={!isChanged}
+					onclick={() => {
+						reset({
+							data: {
+								name: subjectDetail.name ?? "",
+								teacher: undefined,
+							},
+						});
+						changes.name = false;
+						changes.teacher = false;
+					}}>Cancel</Button
+				>
+				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>
+			</Card.Footer>
+		</form>
+	</Card.Root>
+
+	<AlertDialog.Root>
+		<AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
+			Delete
+		</AlertDialog.Trigger>
+		<AlertDialog.Content>
+			<form class="contents" action="?/delete" method="POST" use:svelteEnhance>
+				<AlertDialog.Header>
+					<AlertDialog.Title>Do you want to delete subject {subjectDetail.name}?</AlertDialog.Title>
+					<AlertDialog.Description>
+						<input type="hidden" name="id" value={subjectDetail.id} />
+						This action is irreversible. Are you sure you want to delete
+						<b>{subjectDetail.name}</b>?
+					</AlertDialog.Description>
+				</AlertDialog.Header>
+				<AlertDialog.Footer>
+					<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+					<AlertDialog.Action type="submit">Delete</AlertDialog.Action>
+				</AlertDialog.Footer>
+			</form>
+		</AlertDialog.Content>
+	</AlertDialog.Root>
+</div>
