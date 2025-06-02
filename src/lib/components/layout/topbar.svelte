@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { PUBLIC_R2_URL } from "$env/static/public";
 
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
@@ -9,6 +10,7 @@
 	import ChevronDown from "@lucide/svelte/icons/chevron-down";
 	import CircleUser from "@lucide/svelte/icons/circle-user";
 	import LogOut from "@lucide/svelte/icons/log-out";
+	import UserCog from "@lucide/svelte/icons/user-cog";
 
 	import { nav } from "$lib/assets/nav/main";
 
@@ -21,13 +23,16 @@
 	let alertDialogOpen = $state(false);
 </script>
 
-<header class="flex w-full items-center justify-end border-b bg-white px-4 py-1">
+<header class="fixed flex w-full left-0 top-0 items-center justify-end gap-2 border-b bg-white px-4 py-1">
+	{#if user?.role === 0 || user?.role === 1}
+		<Button variant="outline" href="/admin"><UserCog />Admin Panel</Button>
+	{/if}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger class={buttonVariants({ variant: "default", outline: true })}>
 			{#snippet child({ props })}
 				<Button variant="outline" size="sm" class="py-1" {...props}>
 					<Avatar.Root class="h-full w-auto">
-						<Avatar.Image src={user?.avatar ?? undefined} />
+						<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
 						<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
 					</Avatar.Root>
 					{user?.fullname ?? "User"}

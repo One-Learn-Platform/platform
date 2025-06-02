@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import type { ActionData, PageServerData } from "./$types";
-	import { PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
+	import { PUBLIC_R2_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
 	import { Turnstile } from "svelte-turnstile";
 
 	import { clsx } from "clsx";
@@ -44,7 +44,7 @@
 					class="flex w-full flex-row items-center justify-between gap-2 rounded-md border p-2 shadow-sm"
 				>
 					<Avatar.Root>
-						<Avatar.Image src={data.user?.avatar ?? undefined} />
+						<Avatar.Image src="{PUBLIC_R2_URL}/{data.user?.avatar}" />
 						<Avatar.Fallback>{initial ?? "ID"}</Avatar.Fallback>
 					</Avatar.Root>
 					<p class="grow font-medium">{data.user?.username}</p>

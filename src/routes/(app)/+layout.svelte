@@ -11,7 +11,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<main class="w-full">
+	<main class="w-full nth-[2]:pt-12">
 		<Topbar user={data.user} />
 		{@render children?.()}
 	</main>
