@@ -255,17 +255,16 @@
 								>
 									<Select.Trigger {...props}>
 										{$formData.school
-											? $formData.school.replace(
-													/\w\S*/g,
-													(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-												)
+											? data.schoolList.find((school) => school.id.toString() === $formData.school)
+													?.name
 											: "Select a school"}
 									</Select.Trigger>
 									<Select.Content>
-										<Select.Item value="school a" label="School A">School A</Select.Item>
-										<Select.Item value="school b" label="School B">School B</Select.Item>
-										<Select.Item value="school c" label="School C">School C</Select.Item>
-										<Select.Item value="school d" label="School D">School D</Select.Item>
+										{#each data.schoolList as school (school)}
+											<Select.Item value={school.id.toString()} label={school.name}>
+												{school.name}
+											</Select.Item>
+										{/each}
 									</Select.Content>
 								</Select.Root>
 							{/snippet}
