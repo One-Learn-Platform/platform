@@ -23,7 +23,9 @@
 	let alertDialogOpen = $state(false);
 </script>
 
-<header class="fixed flex w-full left-0 top-0 items-center justify-end gap-2 border-b bg-white px-4 py-1">
+<header
+	class="fixed top-0 left-0 flex w-full items-center justify-end gap-2 border-b bg-white px-4 py-1"
+>
 	{#if user?.role === 0 || user?.role === 1}
 		<Button variant="outline" href="/admin"><UserCog />Admin Panel</Button>
 	{/if}
