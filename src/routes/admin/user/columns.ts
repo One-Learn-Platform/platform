@@ -10,7 +10,9 @@ import DataTableActions from "$lib/components/table/data-table-actions.svelte";
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-type SafeUser = Omit<User, "password">;
+type SafeUser = Omit<User, "password"> & {
+	schoolName: string | null;
+};
 export const columns: ColumnDef<SafeUser>[] = [
 	{
 		id: "select",
@@ -150,7 +152,25 @@ export const columns: ColumnDef<SafeUser>[] = [
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
 		cell: ({ row }) => {
-			const value = row.getValue("gradesId");
+			const value = row.getValue("schoolId");
+			const amountCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="">${value ?? "-"}</div>`,
+				};
+			});
+			return renderSnippet(amountCellSnippet, value);
+		},
+	},
+	{
+		accessorKey: "schoolName",
+		header: ({ column }) =>
+			renderComponent(sortable, {
+				name: "School Name",
+				sort: column.getIsSorted(),
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+		cell: ({ row }) => {
+			const value = row.getValue("schoolName");
 			const amountCellSnippet = createRawSnippet(() => {
 				return {
 					render: () => `<div class="">${value ?? "-"}</div>`,

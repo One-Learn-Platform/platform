@@ -23,10 +23,12 @@ export const load: PageServerLoad = async (event) => {
 		return error(400, { message: "Invalid User ID" });
 	} else {
 		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
+		const schoolList = await db.select().from(table.school);
 		if (user) {
 			user.password = "";
 			return {
 				userData: user,
+				schoolList: schoolList,
 				form: await superValidate(zod(formSchemaEdit)),
 				uploadForm: await superValidate(zod(formSchemaUploadImage)),
 			};

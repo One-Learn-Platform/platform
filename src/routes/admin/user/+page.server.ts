@@ -15,7 +15,10 @@ import { getFileName, getTimeStamp } from "$lib/utils";
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
 	const { password, ...rest } = getTableColumns(table.user);
-	const userList = await db.select({ ...rest }).from(table.user);
+	const userList = await db
+		.select({ ...rest, schoolName: table.school.name })
+		.from(table.user)
+		.leftJoin(table.school, eq(table.user.schoolId, table.school.id));
 	const schoolList = await db.select().from(table.school);
 	const roleList = await db.select().from(table.userRole);
 	if (event.locals.user) {
@@ -93,7 +96,8 @@ export const actions: Actions = {
 				}
 			}
 			const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
-
+			const schoolId = form.data.school ? Number(form.data.school) : null;
+			console.log(form.data.school, schoolId);
 			await db.insert(table.user).values({
 				roleId: roleId,
 				avatar: imageUrl,
@@ -101,6 +105,7 @@ export const actions: Actions = {
 				dob: form.data.dob,
 				username: form.data.username,
 				password: passwordHash,
+				schoolId: schoolId,
 			});
 		} catch (error) {
 			console.error(error);
