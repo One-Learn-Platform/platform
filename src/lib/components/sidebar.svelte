@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import { enhance } from "$app/forms";
+	import { PUBLIC_R2_URL } from "$env/static/public";
 
 	import type { SessionValidationResult } from "$lib/server/auth";
 
@@ -148,7 +149,7 @@
 						{...props}
 					>
 						<Avatar.Root class="h-8 w-8 rounded-lg">
-							<Avatar.Image src={user?.avatar} alt={user?.fullname} />
+							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
 							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
@@ -168,7 +169,7 @@
 				<DropdownMenu.Label class="p-0 font-normal">
 					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 						<Avatar.Root class="h-8 w-8 rounded-lg">
-							<Avatar.Image src={user?.avatar} alt={user?.fullname} />
+							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
 							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
@@ -216,7 +217,7 @@
 				<AlertDialog.Header>
 					<AlertDialog.Description class="flex items-center gap-2">
 						<Avatar.Root class="">
-							<Avatar.Image src={user?.avatar ?? undefined} />
+							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
 							<Avatar.Fallback>{initial ?? "ID"}</Avatar.Fallback>
 						</Avatar.Root>
 						<div class="flex flex-col">
