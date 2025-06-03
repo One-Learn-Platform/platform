@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { i18n } from "$lib/i18n";
 	import { ParaglideJS } from "@inlang/paraglide-sveltekit";
+	import { ModeWatcher } from "mode-watcher";
 	import "@fontsource-variable/outfit";
 	import "@fontsource-variable/jetbrains-mono";
 	import "../app.css";
@@ -16,6 +17,7 @@
 </svelte:head>
 
 <ParaglideJS {i18n}>
+	<ModeWatcher />
 	<Toaster />
 	{@render children()}
 </ParaglideJS>

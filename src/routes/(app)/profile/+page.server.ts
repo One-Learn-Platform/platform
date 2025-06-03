@@ -349,6 +349,7 @@ export const actions: Actions = {
 				},
 				message: "Password changed successfully",
 			},
+			form,
 		};
 	},
 	deleteAvatar: async (event) => {
