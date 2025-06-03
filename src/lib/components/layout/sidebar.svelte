@@ -27,14 +27,14 @@
 						{#snippet child({ props })}
 							<Sidebar.MenuButton
 								{...props}
-								size="lg"
+								size="md"
 								class="border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div
-									class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
+									class="flex aspect-square size-6 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground duration-150 group-data-[collapsible=icon]:size-8"
 								>
 									<div
-										class="flex size-4 items-center justify-center font-mono text-xl font-extrabold tracking-tight"
+										class="flex size-6 items-center justify-center font-mono text-base font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-xl"
 									>
 										{selectedGrade.number}
 									</div>
