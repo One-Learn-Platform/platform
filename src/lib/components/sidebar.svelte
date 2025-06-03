@@ -161,7 +161,7 @@
 				{/snippet}
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content
-				class="w-[var(--bits-dropdown-menu-anchor-width)] min-w-56 rounded-lg"
+				class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
 				side={sidebar.isMobile ? "bottom" : "right"}
 				align="end"
 				sideOffset={4}
@@ -216,26 +216,24 @@
 
 <AlertDialog.Root open={alertDialogOpen} onOpenChange={(state) => (alertDialogOpen = state)}>
 	<AlertDialog.Content>
-		{#snippet child({ props })}
-			<form {...props} method="POST" action="/signout?/signout" use:enhance>
-				<AlertDialog.Header>
-					<AlertDialog.Description class="flex items-center gap-2">
-						<Avatar.Root class="">
-							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
-							<Avatar.Fallback>{initial ?? "ID"}</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="flex flex-col">
-							<p class="text-base font-medium text-accent-foreground">{user?.fullname}</p>
-							<p class="text-xs">{user?.username}</p>
-						</div>
-					</AlertDialog.Description>
-					<AlertDialog.Title>Sign out from this account?</AlertDialog.Title>
-				</AlertDialog.Header>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel class="grow" type="reset">No</AlertDialog.Cancel>
-					<AlertDialog.Action class="grow" type="submit">Yes</AlertDialog.Action>
-				</AlertDialog.Footer>
-			</form>
-		{/snippet}
+		<form method="POST" action="/signout?/signout" class="contents" use:enhance>
+			<AlertDialog.Header>
+				<AlertDialog.Description class="flex items-center gap-2">
+					<Avatar.Root class="">
+						<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
+						<Avatar.Fallback>{initial ?? "ID"}</Avatar.Fallback>
+					</Avatar.Root>
+					<div class="flex flex-col">
+						<p class="text-base font-medium text-accent-foreground">{user?.fullname}</p>
+						<p class="text-xs">{user?.username}</p>
+					</div>
+				</AlertDialog.Description>
+				<AlertDialog.Title>Sign out from this account?</AlertDialog.Title>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel class="grow" type="reset">No</AlertDialog.Cancel>
+				<AlertDialog.Action class="grow" type="submit">Yes</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</form>
 	</AlertDialog.Content>
 </AlertDialog.Root>

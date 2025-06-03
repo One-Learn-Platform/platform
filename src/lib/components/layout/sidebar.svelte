@@ -27,7 +27,7 @@
 						{#snippet child({ props })}
 							<Sidebar.MenuButton
 								{...props}
-								size="md"
+								size="lg"
 								class="border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div
