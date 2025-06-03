@@ -62,7 +62,7 @@
 		<div class="flex w-full flex-col gap-2">
 			<div
 				class={clsx(
-					errorUsername ? "text-red-500 *:border-red-500 *:!ring-red-500" : "",
+					errorUsername ? "text-red-500 *:border-red-500 *:ring-red-500!" : "",
 					"flex flex-col gap-1",
 				)}
 			>
@@ -72,7 +72,7 @@
 
 			<div
 				class={clsx(
-					errorPassword ? "text-red-500 *:border-red-500 *:!ring-red-500" : "",
+					errorPassword ? "text-red-500 *:border-red-500 *:ring-red-500!" : "",
 					"flex flex-col gap-1",
 				)}
 			>

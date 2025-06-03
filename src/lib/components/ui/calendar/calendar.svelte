@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Calendar as CalendarPrimitive, type WithoutChildrenOrChild } from "bits-ui";
+	import { Calendar as CalendarPrimitive } from "bits-ui";
 	import { DateFormatter, getLocalTimeZone, today } from "@internationalized/date";
 	import * as Calendar from "./index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
-	import { cn } from "$lib/utils.js";
+	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
 
 	let {
 		yearSelect = false,
@@ -73,7 +73,7 @@ get along, so we shut typescript up by casting `value` to `never`.
 	{weekdayFormat}
 	{minValue}
 	{maxValue}
-	class={cn("rounded-md border p-3", className)}
+	class={cn("p-3", className)}
 	{...restProps}
 >
 	{#snippet children({ months, weekdays })}

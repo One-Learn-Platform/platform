@@ -495,7 +495,7 @@
 		</form>
 	</Card.Root>
 
-	<Alert.Root variant="informative" outline>
+	<Alert.Root variant="informative" fill="outline">
 		<Info class="size-4" />
 		<Alert.Title>Information</Alert.Title>
 		<Alert.Description>Password can only be changed by the User.</Alert.Description>
