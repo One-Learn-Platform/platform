@@ -119,7 +119,7 @@ export const formSchemaPassOnly = formSchema
 
 export type FormSchema = z.infer<typeof formSchema>;
 export type FormSchemaUploadImage = z.infer<typeof formSchemaUploadImage>;
-export type FormSchemaCreate = z.infer<typeof formSchemaWithPass>;
-export type FormSchemaEdit = z.infer<typeof formSchemaWithoutPass>;
+export type FormSchemaWithPass = z.infer<typeof formSchemaWithPass>;
+export type FormSchemaWithoutPass = z.infer<typeof formSchemaWithoutPass>;
 export type FormSchemaPassOnly = z.infer<typeof formSchemaPassOnly>;
 export type RoleEnum = z.infer<typeof Role>;

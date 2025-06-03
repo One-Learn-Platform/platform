@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
 
-	import { formSchemaCreate, Role, type RoleEnum } from "$lib/schema/user/schema";
+	import { formSchemaWithPass, Role, type RoleEnum } from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
 		CalendarDate,
@@ -34,7 +34,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaCreate),
+		validators: zodClient(formSchemaWithPass),
 	});
 	const { form: formData, enhance, errors: formErrors, reset } = superform;
 	const proxy = fileProxy(formData, "avatar");
