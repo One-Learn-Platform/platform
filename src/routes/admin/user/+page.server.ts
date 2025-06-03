@@ -4,7 +4,7 @@ import { error } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
 import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
-import { formSchemaCreate } from "$lib/schema/user/schema";
+import { formSchemaWithPass } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async (event) => {
 			userList: userList,
 			schoolList: schoolList,
 			roleList: roleList,
-			form: await superValidate(zod(formSchemaCreate)),
+			form: await superValidate(zod(formSchemaWithPass)),
 		};
 	}
 	return error(404, { message: "Not found" });
@@ -37,7 +37,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaCreate));
+		const form = await superValidate(event, zod(formSchemaWithPass));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
