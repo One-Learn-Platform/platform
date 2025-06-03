@@ -59,8 +59,12 @@
 
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
-					<CircleUser />
-					Profile
+					{#snippet child({ props })}
+						<a {...props} href="/profile">
+							<CircleUser />
+							<span>Profile</span>
+						</a>
+					{/snippet}
 				</DropdownMenu.Item>
 			</DropdownMenu.Group>
 			<DropdownMenu.Separator />

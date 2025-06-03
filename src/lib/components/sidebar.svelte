@@ -195,8 +195,12 @@
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
 					<DropdownMenu.Item>
-						<CircleUser />
-						Profile
+						{#snippet child({ props })}
+							<a {...props} href="/profile">
+								<CircleUser />
+								<span>Profile</span>
+							</a>
+						{/snippet}
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
@@ -225,7 +229,7 @@
 							<p class="text-xs">{user?.username}</p>
 						</div>
 					</AlertDialog.Description>
-					<AlertDialog.Title>Log out from this account?</AlertDialog.Title>
+					<AlertDialog.Title>Sign out from this account?</AlertDialog.Title>
 				</AlertDialog.Header>
 				<AlertDialog.Footer>
 					<AlertDialog.Cancel class="grow" type="reset">No</AlertDialog.Cancel>

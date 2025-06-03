@@ -15,12 +15,15 @@ export const formSchema = z.object({
 		.optional(),
 	dob: z.string().refine((v) => v, { message: "A date of birth is required." }),
 	username: z.string().min(1, "Username is required"),
-	password: z.string().min(1, "Password is required"),
+	password: z
+		.string()
+		.min(6, "Invalid password (min 6, max 255 characters, must contain letters and numbers)")
+		.max(255, "Invalid password (min 6, max 255 characters, must contain letters and numbers)"),
 	role: Role,
 	school: z.string().optional(),
 });
 
-export const formSchemaCreate = formSchema
+export const formSchemaWithPass = formSchema
 	.refine(
 		(data) => {
 			if (
@@ -60,7 +63,7 @@ export const formSchemaUploadImage = formSchema
 	})
 	.required();
 
-export const formSchemaEdit = formSchema
+export const formSchemaWithoutPass = formSchema
 	.omit({ password: true })
 	.refine(
 		(data) => {
@@ -95,8 +98,28 @@ export const formSchemaEdit = formSchema
 		},
 	);
 
+export const formSchemaPassOnly = formSchema
+	.pick({
+		password: true,
+	})
+	.extend({
+		passwordOld: z
+			.string()
+			.min(6, "Invalid password (min 6, max 255 characters, must contain letters and numbers)")
+			.max(255, "Invalid password (min 6, max 255 characters, must contain letters and numbers)"),
+		passwordConfirm: z
+			.string()
+			.min(6, "Invalid password (min 6, max 255 characters, must contain letters and numbers)")
+			.max(255, "Invalid password (min 6, max 255 characters, must contain letters and numbers)"),
+	})
+	.refine((data) => data.password === data.passwordConfirm, {
+		message: "Passwords do not match",
+		path: ["passwordConfirm"],
+	});
+
 export type FormSchema = z.infer<typeof formSchema>;
 export type FormSchemaUploadImage = z.infer<typeof formSchemaUploadImage>;
-export type FormSchemaCreate = z.infer<typeof formSchemaCreate>;
-export type FormSchemaEdit = z.infer<typeof formSchemaEdit>;
+export type FormSchemaCreate = z.infer<typeof formSchemaWithPass>;
+export type FormSchemaEdit = z.infer<typeof formSchemaWithoutPass>;
+export type FormSchemaPassOnly = z.infer<typeof formSchemaPassOnly>;
 export type RoleEnum = z.infer<typeof Role>;

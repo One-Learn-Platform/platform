@@ -1,11 +1,17 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaWithoutPass, formSchemaUploadImage } from "$lib/schema/user/schema";
-import { eq } from "drizzle-orm";
+import {
+	formSchemaPassOnly,
+	formSchemaUploadImage,
+	formSchemaWithoutPass,
+} from "$lib/schema/user/schema";
+import bcryptjs from "bcryptjs";
+import { eq, getTableColumns } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 
+import { validatePassword, validateUsername } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
 import { getR2 } from "$lib/server/r2";
@@ -13,38 +19,35 @@ import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
-	const params = event.params;
-	const { slug } = params;
-	const userId = parseInt(slug, 10);
 
-	if (!event.locals.user || (event.locals.user.role !== 0 && event.locals.user.role !== 1)) {
-		return error(404, { message: "Not Found" });
-	} else if (isNaN(userId)) {
-		return error(400, { message: "Invalid User ID" });
-	} else {
-		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
+	if (event.locals.user) {
+		const { password, ...rest } = getTableColumns(table.user);
+		const user = await db
+			.select({ ...rest })
+			.from(table.user)
+			.where(eq(table.user.id, event.locals.user.id))
+			.get();
 		const schoolList = await db.select().from(table.school);
 		if (user) {
-			user.password = "";
 			return {
 				userData: user,
 				schoolList: schoolList,
 				form: await superValidate(zod(formSchemaWithoutPass)),
 				uploadForm: await superValidate(zod(formSchemaUploadImage)),
+				passForm: await superValidate(zod(formSchemaPassOnly)),
 			};
-		} else {
-			return error(404, { message: "User Not Found" });
 		}
 	}
-	// return error(404, { message: "Not Found" });
+	return redirect(303, "/login");
 };
 
 export const actions: Actions = {
 	edit: async (event) => {
+		if (!event.locals.user) {
+			return redirect(303, "/login");
+		}
+
 		const db = getDb(event);
-		const params = event.params;
-		const { slug } = params;
-		const userId = parseInt(slug, 10);
 		const form = await superValidate(event, zod(formSchemaWithoutPass), {
 			id: "edit",
 		});
@@ -76,9 +79,9 @@ export const actions: Actions = {
 				break;
 		}
 
-		const prevUserData = (await db.select().from(table.user).where(eq(table.user.id, userId))).at(
-			0,
-		);
+		const prevUserData = (
+			await db.select().from(table.user).where(eq(table.user.id, event.locals.user.id))
+		).at(0);
 		if (!prevUserData) return fail(404, { message: "User not found" });
 
 		if (prevUserData.username !== formData.username) {
@@ -122,7 +125,7 @@ export const actions: Actions = {
 					dob: formData.dob,
 					roleId: roleId,
 				})
-				.where(eq(table.user.id, userId));
+				.where(eq(table.user.id, event.locals.user.id));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -153,11 +156,12 @@ export const actions: Actions = {
 		};
 	},
 	upload: async (event) => {
+		if (!event.locals.user) {
+			return redirect(303, "/login");
+		}
+
 		const db = getDb(event);
 		const r2 = getR2(event);
-		const params = event.params;
-		const { slug } = params;
-		const userId = parseInt(slug, 10);
 		const form = await superValidate(event, zod(formSchemaUploadImage));
 
 		if (!form.valid) {
@@ -167,7 +171,11 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
+		const user = await db
+			.select()
+			.from(table.user)
+			.where(eq(table.user.id, event.locals.user.id))
+			.get();
 		if (!user) {
 			return fail(404, { message: "User not found" });
 		}
@@ -195,7 +203,7 @@ export const actions: Actions = {
 				.set({
 					avatar: imageUrl,
 				})
-				.where(eq(table.user.id, userId));
+				.where(eq(table.user.id, event.locals.user.id));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -225,6 +233,123 @@ export const actions: Actions = {
 			},
 			form,
 		});
+	},
+	changePassword: async (event) => {
+		if (!event.locals.user) {
+			return redirect(303, "/login");
+		}
+		const db = getDb(event);
+		const form = await superValidate(event, zod(formSchemaPassOnly));
+
+		if (!form.valid) {
+			setError(form, "", "Content is invalid, please try again");
+			return fail(400, {
+				changePassword: {
+					success: false,
+					data: null,
+					message: "Content is invalid, please try again",
+				},
+				form,
+			});
+		}
+
+		if (!validatePassword(form.data.passwordOld)) {
+			setError(
+				form,
+				"passwordOld",
+				"Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+			);
+		}
+		const user = await db
+			.select()
+			.from(table.user)
+			.where(eq(table.user.id, event.locals.user.id))
+			.get();
+		if (!user) {
+			return fail(404, {
+				changePassword: { success: false, data: null, message: "User not found" },
+				form,
+			});
+		}
+		const validPassword = await bcryptjs.compare(form.data.passwordOld, user.password);
+		if (!validPassword) {
+			setError(form, "passwordOld", "Incorrect password");
+			return fail(400, {
+				changePassword: {
+					success: false,
+					data: null,
+					message: "Incorrect password",
+				},
+				form,
+			});
+		}
+		if (!validatePassword(form.data.password)) {
+			setError(
+				form,
+				"password",
+				"Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+			);
+		}
+		if (!validatePassword(form.data.passwordConfirm)) {
+			setError(
+				form,
+				"passwordConfirm",
+				"Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+			);
+			return fail(400, {
+				changePassword: {
+					success: false,
+					data: null,
+					message: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+				},
+				form,
+			});
+		}
+		if (form.data.password !== form.data.passwordConfirm) {
+			setError(form, "passwordConfirm", "Passwords do not match");
+			return fail(400, {
+				changePassword: {
+					success: false,
+					data: null,
+					message: "Passwords do not match",
+				},
+				form,
+			});
+		}
+
+		try {
+			await db
+				.update(table.user)
+				.set({
+					password: await bcryptjs.hash(form.data.password, 10),
+				})
+				.where(eq(table.user.id, event.locals.user.id));
+		} catch (error) {
+			console.error(error);
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
+			return fail(500, {
+				changePassword: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
+				form,
+			});
+		}
+		return {
+			changePassword: {
+				success: true,
+				data: {
+					name: user.fullname,
+				},
+				message: "Password changed successfully",
+			},
+		};
 	},
 	deleteAvatar: async (event) => {
 		const db = getDb(event);
@@ -294,6 +419,7 @@ export const actions: Actions = {
 			});
 		}
 	},
+
 	delete: async (event) => {
 		const db = getDb(event);
 		const formData = await event.request.formData();

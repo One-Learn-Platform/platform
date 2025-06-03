@@ -6,8 +6,9 @@
 	import type { PageProps } from "./$types";
 
 	import {
-		formSchemaWithoutPass,
+		formSchemaPassOnly,
 		formSchemaUploadImage,
+		formSchemaWithoutPass,
 		Role,
 		type RoleEnum,
 	} from "$lib/schema/user/schema";
@@ -21,14 +22,12 @@
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
-	import Info from "@lucide/svelte/icons/info";
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zodClient } from "sveltekit-superforms/adapters";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
@@ -128,12 +127,22 @@
 		taintedMessage: null,
 		validators: zodClient(formSchemaUploadImage),
 	});
+	const superFormPass = superForm(data.passForm, {
+		taintedMessage: null,
+		validators: zodClient(formSchemaPassOnly),
+	});
 	const avatarProxy = fileProxy(superformUpload, "avatar");
 	let avatarName = $state();
 	const avatarUrl = $derived(URL.createObjectURL($avatarProxy?.[0] ?? new Blob()));
 
 	const { form: formData, enhance, errors, reset } = superform;
 	const { enhance: enhanceUpload, errors: errorsUpload } = superformUpload;
+	const {
+		form: formDataPass,
+		enhance: enhancePass,
+		errors: errorsPass,
+		reset: resetPass,
+	} = superFormPass;
 
 	let value = $state<DateValue | undefined>();
 	// @ts-expect-error - Let the value be undefined so the user locale will be used
@@ -169,12 +178,27 @@
 				changes.role = false;
 				changes.school = false;
 			} else toast.error(form.edit.message ?? "Unknown error");
+		} else if (form?.upload) {
+			if (form.upload.success) {
+				toast.success(`Avatar updated successfully`);
+				invalidateAll();
+			} else toast.error(form.upload.message ?? "Unknown error");
+		} else if (form?.changePassword) {
+			if (form.changePassword.success) {
+				toast.success(`Password changed successfully`);
+				invalidateAll();
+			} else toast.error(form.changePassword.message ?? "Unknown error");
 		}
 	});
 </script>
 
-<div class="space-y-2 pr-2 pb-2">
-	<h1 class="font-display text-3xl font-semibold tracking-tight">User Detail</h1>
+<svelte:head>
+	<title>Profile | One Learn</title>
+	<meta name="description" content="Edit your profile information." />
+</svelte:head>
+
+<div class="space-y-2 px-2 pr-4 pb-2">
+	<h1 class="font-display text-3xl font-semibold tracking-tight">Profile</h1>
 
 	<Card.Root>
 		<Card.Content class="flex items-center justify-between px-6 py-4">
@@ -495,11 +519,83 @@
 		</form>
 	</Card.Root>
 
-	<Alert.Root variant="informative" outline>
-		<Info class="size-4" />
-		<Alert.Title>Information</Alert.Title>
-		<Alert.Description>Password can only be changed by the User.</Alert.Description>
-	</Alert.Root>
+	<Card.Root>
+		<Card.Header>
+			<Card.Title class="font-display">Change Password</Card.Title>
+		</Card.Header>
+		<form
+			method="POST"
+			action="?/changePassword{page.url.searchParams.get('ref')
+				? '&ref=' + page.url.searchParams.get('ref')
+				: ''}"
+			class="space-y-2"
+			use:enhancePass
+		>
+			<Card.Content>
+				<Form.Field form={superFormPass} name="passwordOld">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Old Password</Form.Label>
+							<Input
+								{...props}
+								type="password"
+								bind:value={$formDataPass.passwordOld}
+								placeholder="Enter your old password"
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if !$errorsPass.passwordOld}
+						<Form.Description>Your current Password.</Form.Description>
+					{/if}
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Field form={superFormPass} name="password">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>New Password</Form.Label>
+							<Input
+								{...props}
+								type="password"
+								bind:value={$formDataPass.password}
+								placeholder="Enter your new password"
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if !$errorsPass.password}
+						<Form.Description>Your new Password.</Form.Description>
+					{/if}
+					<Form.FieldErrors />
+				</Form.Field>
+
+				<Form.Field form={superFormPass} name="passwordConfirm">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Confirm New Password</Form.Label>
+							<Input
+								{...props}
+								type="password"
+								bind:value={$formDataPass.passwordConfirm}
+								placeholder="Confirm your new password"
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if !$errorsPass.passwordConfirm}
+						<Form.Description>Confirm your new Password.</Form.Description>
+					{/if}
+					<Form.FieldErrors />
+				</Form.Field>
+			</Card.Content>
+
+			<Card.Footer class="justify-end gap-4">
+				{#if $errorsPass._errors}
+					<FormErrors message={Object.values($errorsPass._errors).join(", ")} />
+				{/if}
+				<Button variant="outline" type="reset" onclick={() => resetPass()}>Cancel</Button>
+				<Form.Button>Save Changes</Form.Button>
+			</Card.Footer>
+		</form>
+	</Card.Root>
 
 	<AlertDialog.Root>
 		<AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
