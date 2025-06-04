@@ -32,7 +32,7 @@
 
 <header
 	class={[
-		"fixed top-0 left-0 flex w-full items-center gap-2 border-b bg-background px-4 py-2",
+		"fixed top-0 left-0 z-1 flex w-full items-center gap-2 border-b bg-background px-4 py-2",
 		sidebar.isMobile ? "justify-between" : "justify-end",
 	]}
 >
