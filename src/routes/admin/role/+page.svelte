@@ -46,7 +46,7 @@
 				<Dialog.Title>Add Role</Dialog.Title>
 				<Dialog.Description>Create a new role by filling out the form below.</Dialog.Description>
 			</Dialog.Header>
-			<form method="POST" action="?/create" use:enhance>
+			<form method="POST" action="?/create" use:enhance class="space-y-2">
 				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
@@ -54,8 +54,9 @@
 							<Input {...props} bind:value={$formData.name} />
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.name}
+					{#if $formErrors.name}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>
 							This is the Role Name that you want to assign to the user.
 						</Form.Description>

@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaEdit } from "$lib/schema/subject/schema";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/schema/db";
@@ -35,7 +35,7 @@ export const load: PageServerLoad = async (event) => {
 			return {
 				subjectData: subject,
 				teacherList: teacherList,
-				form: await superValidate(zod(formSchemaEdit)),
+				form: await superValidate(zod4(formSchemaEdit)),
 			};
 		} else {
 			return error(404, { message: "Subject Not Found" });
@@ -48,7 +48,7 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const params = event.params;
 		const { slug } = params;
-		const form = await superValidate(event, zod(formSchemaEdit));
+		const form = await superValidate(event, zod4(formSchemaEdit));
 		const subjectId = Number(slug);
 		const teacherId = Number(form.data.teacher);
 

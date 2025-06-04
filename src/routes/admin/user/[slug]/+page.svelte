@@ -232,10 +232,11 @@
 											/>
 										{/snippet}
 									</Form.Control>
-									{#if !$errorsUpload.avatar}
+									{#if $errorsUpload.avatar}
+										<Form.FieldErrors />
+									{:else}
 										<Form.Description>Upload a new avatar for the user.</Form.Description>
 									{/if}
-									<Form.FieldErrors />
 								</Form.Field>
 
 								<Form.Button type="submit">Upload</Form.Button>
@@ -310,10 +311,11 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.fullname}
+					{#if $errors.fullname}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>The fullname of the user.</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 
 				<Form.Field form={superform} name="username">
@@ -328,10 +330,11 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.username}
+					{#if $errors.username}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>Username will be used for login</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 
 				<Form.Field form={superform} name="dob">
@@ -372,10 +375,11 @@
 							<input type="hidden" hidden value={$formData.dob} name={props.name} />
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.dob}
+					{#if $errors.dob}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>The date of birth of the user.</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 
 				<Form.Field form={superform} name="roleId">
@@ -420,12 +424,13 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.roleId}
+					{#if $errors.roleId}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>
 							Select a role for the user. This will determine their access level.
 						</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 
 				<Form.Field form={superform} name="schoolId">
@@ -456,12 +461,13 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.schoolId}
+					{#if $errors.schoolId}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>
 							This will determine the school affiliation of the user.
 						</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 			</Card.Content>
 			<Card.Footer class="justify-end gap-4">

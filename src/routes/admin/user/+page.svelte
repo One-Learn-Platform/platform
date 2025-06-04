@@ -92,8 +92,9 @@
 								/>
 							{/snippet}
 						</Form.Control>
-						<Form.FieldErrors />
-						{#if !$formErrors.avatar}
+						{#if $formErrors.avatar}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>This is the Avatar of the User</Form.Description>
 						{/if}
 					</Form.Field>
@@ -105,10 +106,11 @@
 								<Input {...props} bind:value={$formData.fullname} placeholder="John Doe" />
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.fullname}
+						{#if $formErrors.fullname}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>The fullname of the user.</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 
 					<Form.Field form={superform} name="username">
@@ -122,10 +124,11 @@
 								/>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.username}
+						{#if $formErrors.username}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>Username will be used for login</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 
 					<Form.Field form={superform} name="dob" class="col-span-2">
@@ -165,10 +168,11 @@
 								<input type="hidden" hidden value={$formData.dob} name={props.name} />
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.dob}
+						{#if $formErrors.dob}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>date of birth of the user.</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 
 					<Form.Field form={superform} name="password" class="col-span-2">
@@ -182,12 +186,13 @@
 								/>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.password}
+						{#if $formErrors.password}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>
 								This a just a temporary password. Choose an easy one
 							</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 
 					<Form.Field form={superform} name="roleId">
@@ -232,12 +237,13 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.roleId}
+						{#if $formErrors.roleId}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>
 								Select a role for the user. This will determine their access level.
 							</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 
 					<Form.Field form={superform} name="schoolId">
@@ -269,12 +275,13 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.schoolId}
+						{#if $formErrors.schoolId}
+							<Form.FieldErrors />
+						{:else}
 							<Form.Description>
 								This will determine the school affiliation of the user.
 							</Form.Description>
 						{/if}
-						<Form.FieldErrors />
 					</Form.Field>
 				</div>
 

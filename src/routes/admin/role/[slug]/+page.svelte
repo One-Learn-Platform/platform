@@ -76,7 +76,7 @@
 			class="space-y-2"
 			use:enhance
 		>
-			<Card.Content>
+			<Card.Content class="space-y-2">
 				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
@@ -89,10 +89,11 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.name}
+					{#if $errors.name}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>Name of the role to be displayed.</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 			</Card.Content>
 

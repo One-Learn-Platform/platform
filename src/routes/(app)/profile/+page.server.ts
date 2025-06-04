@@ -9,11 +9,11 @@ import {
 import bcryptjs from "bcryptjs";
 import { eq, getTableColumns } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 
+import * as table from "$lib/schema/db";
 import { validatePassword } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
@@ -32,9 +32,9 @@ export const load: PageServerLoad = async (event) => {
 			return {
 				userData: user,
 				schoolList: schoolList,
-				form: await superValidate(zod(formSchemaWithoutPass)),
-				uploadForm: await superValidate(zod(formSchemaUploadImage)),
-				passForm: await superValidate(zod(formSchemaPassOnly)),
+				form: await superValidate(zod4(formSchemaWithoutPass)),
+				uploadForm: await superValidate(zod4(formSchemaUploadImage)),
+				passForm: await superValidate(zod4(formSchemaPassOnly)),
 			};
 		}
 	}
@@ -48,7 +48,7 @@ export const actions: Actions = {
 		}
 
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaWithoutPass), {
+		const form = await superValidate(event, zod4(formSchemaWithoutPass), {
 			id: "edit",
 		});
 		const formData = form.data;
@@ -62,7 +62,7 @@ export const actions: Actions = {
 		}
 
 		let roleId = 0;
-		switch (formData.role) {
+		switch (formData.roleId) {
 			case "super admin":
 				roleId = 1;
 				break;
@@ -120,7 +120,7 @@ export const actions: Actions = {
 			await db
 				.update(table.user)
 				.set({
-					fullname: formData.name,
+					fullname: formData.fullname,
 					username: formData.username,
 					dob: formData.dob,
 					roleId: roleId,
@@ -148,7 +148,7 @@ export const actions: Actions = {
 			edit: {
 				success: true,
 				data: {
-					name: formData.name,
+					fullname: formData.fullname,
 				},
 				message: "User created successfully",
 			},
@@ -162,7 +162,7 @@ export const actions: Actions = {
 
 		const db = getDb(event);
 		const r2 = getR2(event);
-		const form = await superValidate(event, zod(formSchemaUploadImage));
+		const form = await superValidate(event, zod4(formSchemaUploadImage));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -226,7 +226,7 @@ export const actions: Actions = {
 			upload: {
 				success: true,
 				data: {
-					name: user?.fullname,
+					fullname: user?.fullname,
 					avatar: imageUrl,
 				},
 				message: "Avatar updated successfully",
@@ -239,7 +239,7 @@ export const actions: Actions = {
 			return redirect(303, "/login");
 		}
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaPassOnly));
+		const form = await superValidate(event, zod4(formSchemaPassOnly));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -345,7 +345,7 @@ export const actions: Actions = {
 			changePassword: {
 				success: true,
 				data: {
-					name: user.fullname,
+					fullname: user.fullname,
 				},
 				message: "Password changed successfully",
 			},
@@ -419,47 +419,14 @@ export const actions: Actions = {
 				},
 			});
 		}
-	},
-
-	delete: async (event) => {
-		const db = getDb(event);
-		const formData = await event.request.formData();
-		const id = formData.get("id");
-
-		if (!id) {
-			return fail(400, {
-				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
-			});
-		}
-		const numberId = Number(id);
-		if (isNaN(numberId)) {
-			return fail(400, {
-				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
-			});
-		}
-		try {
-			const selectName = await db.select().from(table.user).where(eq(table.user.id, numberId));
-			const name = selectName.at(0);
-			if (!name) {
-				return fail(404, {
-					delete: {
-						success: false,
-						data: null,
-						message: "User not found. Please try again.",
-					},
-				});
-			}
-			await db.delete(table.user).where(eq(table.user.id, numberId));
-			redirect(303, "/admin/user");
-		} catch (error) {
-			console.error(error);
-			return fail(500, {
-				delete: {
-					success: false,
-					data: null,
-					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+		return {
+			delete: {
+				success: true,
+				data: {
+					fullname: user.fullname,
 				},
-			});
-		}
+				message: "Avatar deleted successfully",
+			},
+		};
 	},
 };

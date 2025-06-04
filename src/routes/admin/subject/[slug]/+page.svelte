@@ -8,7 +8,7 @@
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
@@ -31,7 +31,7 @@
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaEdit),
+		validators: zod4Client(formSchemaEdit),
 		id: "edit",
 		onChange(event) {
 			if (event) {
@@ -100,8 +100,9 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.name}
+					{#if $formErrors.name}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description
 							>This is the School Name that will be available to choose.
 						</Form.Description>
@@ -134,8 +135,9 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.teacher}
+					{#if $formErrors.teacher}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>This is the Teacher that will be displayed.</Form.Description>
 					{/if}
 				</Form.Field>

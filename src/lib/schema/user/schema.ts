@@ -59,11 +59,15 @@ export const formSchemaWithPass = formSchema
 		},
 	);
 
-export const formSchemaUploadImage = formSchema
-	.pick({
-		avatar: true,
-	})
-	.required();
+export const formSchemaUploadImage = formSchema.extend({
+	avatar: z
+		.instanceof(File, {
+			message: "Please upload a valid image file",
+		})
+		.refine((file) => file.size > 0 && file.size < 5 * 1024 * 1024, {
+			message: "Logo must be less than 5MB",
+		}),
+});
 
 export const formSchemaWithoutPass = formSchema
 	.omit({ password: true })

@@ -62,8 +62,9 @@
 							<Input {...props} bind:value={$formData.name} />
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.name}
+					{#if $formErrors.name}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>This is the Subject Name that will be displayed.</Form.Description>
 					{/if}
 				</Form.Field>
@@ -75,8 +76,9 @@
 							<Input {...props} bind:value={$formData.code} class="font-mono" />
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.code}
+					{#if $formErrors.code}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>This is the Subject Code that will be displayed.</Form.Description>
 					{/if}
 				</Form.Field>
@@ -107,12 +109,13 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if !$formErrors.teacher}
+					{#if $formErrors.teacher}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>
 							This will determine the teacher assigned to the subject.
 						</Form.Description>
 					{/if}
-					<Form.FieldErrors />
 				</Form.Field>
 
 				<Dialog.Footer class="items-center">

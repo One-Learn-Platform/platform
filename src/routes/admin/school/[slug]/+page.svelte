@@ -96,8 +96,9 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.name}
+					{#if $formErrors.name}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description
 							>This is the School Name that will be available to choose.
 						</Form.Description>
@@ -118,8 +119,9 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					<Form.FieldErrors />
-					{#if !$formErrors.logo}
+					{#if $formErrors.logo}
+						<Form.FieldErrors />
+					{:else}
 						<Form.Description>This is the Logo that will be displayed..</Form.Description>
 					{/if}
 				</Form.Field>
