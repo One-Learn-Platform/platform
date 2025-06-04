@@ -3,12 +3,11 @@ import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaCreate } from "$lib/schema/subject/schema";
 import { fail, setError, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
-import { eq, getTableColumns } from "drizzle-orm";
-import { or } from "drizzle-orm";
+import * as table from "$lib/schema/db";
+import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -20,12 +19,12 @@ export const load: PageServerLoad = async (event) => {
 		})
 		.from(table.subject)
 		.leftJoin(table.user, eq(table.subject.teacher, table.user.id));
-	const teacherList = await db.select().from(table.user).where(eq(table.user.roleId, 1));
+	const teacherList = await db.select().from(table.user).where(eq(table.user.roleId, 3));
 	if (event.locals.user) {
 		return {
 			subjectList: subjectList,
 			teacherList: teacherList,
-			form: await superValidate(zod(formSchemaCreate)),
+			form: await superValidate(zod4(formSchemaCreate)),
 		};
 	}
 	return error(404, { message: "Not Found" });
@@ -34,7 +33,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaCreate));
+		const form = await superValidate(event, zod4(formSchemaCreate));
 		const teacherId = Number(form.data.teacher);
 
 		if (!form.valid) {
@@ -73,6 +72,7 @@ export const actions: Actions = {
 		try {
 			await db.insert(table.subject).values({
 				teacher: teacher.id,
+				code: form.data.code,
 				name: form.data.name,
 			});
 
@@ -80,15 +80,19 @@ export const actions: Actions = {
 				form,
 				create: {
 					success: true,
-					data: { name: form.data.name },
+					data: { name: form.data.name, code: form.data.code },
 					message: null,
 				},
 			};
 		} catch (error) {
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(form, "", error instanceof Error ? error.message : "Unknown error", { status: 500 });
 			return fail(500, {
-				create: { success: false, data: null, message: "Database error, please try again" },
+				create: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error",
+				},
 				form,
 			});
 		}

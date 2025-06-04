@@ -1,8 +1,3 @@
-/**
- * This file is duplicate of the `schema.ts` file inside the `src/lib/server/db` folder.
- * This file allowed importing this schema into client side code without Svelte warning.
- */
-
 import { sql } from "drizzle-orm";
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
@@ -52,6 +47,7 @@ export const subject = sqliteTable(
 	"subject",
 	{
 		id: integer("subject_id").primaryKey({ autoIncrement: true }),
+		code: text("subject_code").notNull(),
 		teacher: integer("teacher_id")
 			.notNull()
 			.references(() => user.id),

@@ -1,4 +1,4 @@
-import type { UserRole } from "$lib/server/db/schema";
+import type { UserRole } from "$lib/schema/db";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 

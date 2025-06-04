@@ -16,7 +16,7 @@ import {
 } from "$lib/server/auth";
 import { validatePassword, validateUsername } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { validateToken } from "$lib/server/turnstile";
 
 const throttler = new Throttler([1, 2, 4, 8, 16, 30, 60, 180, 300]); //in seconds

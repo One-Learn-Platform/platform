@@ -4,7 +4,7 @@ import { superValidate, setError, fail, withFiles } from "sveltekit-superforms";
 import { formSchemaCreate } from "$lib/schema/school/schema";
 import { zod } from "sveltekit-superforms/adapters";
 
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { eq } from "drizzle-orm";

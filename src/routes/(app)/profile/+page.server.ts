@@ -1,4 +1,4 @@
-import { error, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import {
@@ -11,9 +11,9 @@ import { eq, getTableColumns } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 
-import { validatePassword, validateUsername } from "$lib/server/auth-function";
+import { validatePassword } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 

@@ -7,7 +7,7 @@ import { formSchema } from "../schema";
 
 import { eq } from "drizzle-orm";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);

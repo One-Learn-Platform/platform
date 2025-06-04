@@ -1,6 +1,6 @@
 import { PUBLIC_R2_URL } from "$env/static/public";
 
-import type { User } from "$lib/server/db/schema";
+import type { User } from "$lib/schema/db";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 

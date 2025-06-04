@@ -2,7 +2,7 @@ import type { LayoutServerLoad } from "./$types";
 import { error } from "@sveltejs/kit";
 
 import { count } from "drizzle-orm";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 
 import { getDb } from "$lib/server/db";
 

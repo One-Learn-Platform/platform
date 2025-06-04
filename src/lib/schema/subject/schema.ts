@@ -1,9 +1,12 @@
-import { z } from "zod";
+import { z } from "zod/v4";
+import { createInsertSchema } from "drizzle-zod";
+import { subject } from "$lib/schema/db";
 
-const formSchema = z.object({
-	name: z.string().min(3, { message: "Name must be at least 3 characters long" }),
-	teacher: z.string().min(1, { message: "Teacher is required" }),
-});
+const formSchema = createInsertSchema(subject, {
+	code: z.string().min(1, "Subject code is required"),
+	name: z.string().min(1, "Subject name is required"),
+	teacher: z.string().min(1, "Teacher is required"),
+}).omit({ id: true });
 
 export const formSchemaCreate = formSchema;
 

@@ -5,7 +5,7 @@ import { superValidate, setError } from "sveltekit-superforms";
 import { formSchema } from "./schema";
 import { zod } from "sveltekit-superforms/adapters";
 
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq } from "drizzle-orm";
 

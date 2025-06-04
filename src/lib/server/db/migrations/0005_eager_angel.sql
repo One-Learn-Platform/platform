@@ -1,0 +1,1 @@
+ALTER TABLE `subject` ADD `subject_code` text NOT NULL;

@@ -1,4 +1,4 @@
-import type { Subject } from "$lib/server/db/schema";
+import type { Subject } from "$lib/schema/db";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 
@@ -47,6 +47,24 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 				};
 			});
 			return renderSnippet(amountCellSnippet, value);
+		},
+	},
+	{
+		accessorKey: "code",
+		header: ({ column }) =>
+			renderComponent(sortable, {
+				name: "Code",
+				sort: column.getIsSorted(),
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+		cell: ({ row }) => {
+			const value = row.getValue("code");
+			const codeCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="text-left font-mono">${value}</div>`,
+				};
+			});
+			return renderSnippet(codeCellSnippet, value);
 		},
 	},
 	{

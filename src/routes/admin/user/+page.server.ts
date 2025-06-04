@@ -8,7 +8,7 @@ import { formSchemaWithPass } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 import { getFileName, getTimeStamp } from "$lib/utils";
 

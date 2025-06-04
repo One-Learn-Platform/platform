@@ -7,7 +7,7 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/server/db/schema";
+import * as table from "$lib/schema/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
