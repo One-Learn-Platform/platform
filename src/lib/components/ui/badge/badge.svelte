@@ -6,11 +6,21 @@
 		variants: {
 			variant: {
 				default: "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+				outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
 				secondary:
 					"border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
 				destructive:
 					"border-transparent bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
-				outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+				informative:
+					"border-transparent bg-informative text-white focus-visible:ring-informative/20 dark:bg-informative/70 dark:focus-visible:ring-informative/40 [a&]:hover:bg-informative/90",
+				informative_muted:
+					"border-transparent bg-informative-muted text-informative focus-visible:ring-informative-muted/20 dark:bg-informative-muted/70 dark:focus-visible:ring-informative-muted/40 [a&]:hover:bg-informative-muted/90",
+				success:
+					"border-transparent bg-success text-white focus-visible:ring-success/20 dark:bg-success/70 dark:focus-visible:ring-success/40 [a&]:hover:bg-success/90",
+				warning:
+					"border-transparent bg-warning text-white focus-visible:ring-warning/20 dark:bg-warning/70 dark:focus-visible:ring-warning/40 [a&]:hover:bg-warning/90",
+				interactive:
+					"border-transparent bg-interactive text-white focus-visible:ring-interactive/20 dark:bg-interactive/70 dark:focus-visible:ring-interactive/40 [a&]:hover:bg-interactive/90",
 			},
 		},
 		defaultVariants: {
