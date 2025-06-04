@@ -27,18 +27,17 @@
 						{#snippet child({ props })}
 							<Sidebar.MenuButton
 								{...props}
-								size="lg"
-								class="border data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+								size="md"
+								class="border p-1.5 shadow-xs group-data-[collapsible=icon]:border-none data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div
 									class="flex aspect-square size-6 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground duration-150 group-data-[collapsible=icon]:size-8"
 								>
-									<!-- doesnt line up in center -->
-									<div
-										class="flex items-center justify-center font-mono text-base font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-xl"
+									<span
+										class="flex items-center justify-center font-mono text-sm font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-lg"
 									>
 										{selectedGrade.number}
-									</div>
+									</span>
 								</div>
 								<div class="grid flex-1 text-left text-sm leading-tight">
 									<span class="truncate font-medium">{selectedGrade.title}</span>
@@ -57,11 +56,11 @@
 						{#each grade as item (item.title)}
 							<DropdownMenu.Item class="gap-2 p-2" onclick={() => (selectedGrade = item)}>
 								<div class="flex size-6 items-center justify-center rounded-md border">
-									<div
-										class="flex size-3.5 shrink-0 items-center justify-center font-mono text-base font-extrabold tracking-tight"
+									<span
+										class="flex size-3.5 shrink-0 items-center justify-center font-mono text-sm font-extrabold tracking-tight"
 									>
 										{item.number}
-									</div>
+									</span>
 								</div>
 								{item.title}
 							</DropdownMenu.Item>
