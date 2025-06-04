@@ -185,7 +185,7 @@ export const actions: Actions = {
 				});
 			}
 			await db.delete(table.school).where(eq(table.school.id, numberId));
-			redirect(303, "/admin/school");
+			redirect(302, "/admin/school");
 		} catch (error) {
 			console.error(error);
 			return fail(500, {

@@ -38,13 +38,13 @@ export const load: PageServerLoad = async (event) => {
 			};
 		}
 	}
-	return redirect(303, "/login");
+	return redirect(302, "/login");
 };
 
 export const actions: Actions = {
 	edit: async (event) => {
 		if (!event.locals.user) {
-			return redirect(303, "/login");
+			return redirect(302, "/login");
 		}
 
 		const db = getDb(event);
@@ -157,7 +157,7 @@ export const actions: Actions = {
 	},
 	upload: async (event) => {
 		if (!event.locals.user) {
-			return redirect(303, "/login");
+			return redirect(302, "/login");
 		}
 
 		const db = getDb(event);
@@ -236,7 +236,7 @@ export const actions: Actions = {
 	},
 	changePassword: async (event) => {
 		if (!event.locals.user) {
-			return redirect(303, "/login");
+			return redirect(302, "/login");
 		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaPassOnly));

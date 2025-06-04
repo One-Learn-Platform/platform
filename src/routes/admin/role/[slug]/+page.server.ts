@@ -129,7 +129,7 @@ export const actions: Actions = {
 				});
 			}
 			await db.delete(table.userRole).where(eq(table.userRole.id, numberId));
-			redirect(303, "/admin/role");
+			redirect(302, "/admin/role");
 		} catch (error) {
 			console.error(error);
 			return fail(500, {

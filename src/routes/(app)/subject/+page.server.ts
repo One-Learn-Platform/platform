@@ -13,5 +13,5 @@ export const load: PageServerLoad = async (event) => {
 			user: event.locals.user,
 		};
 	}
-	return redirect(303, "/login");
+	return redirect(302, "/login");
 };
