@@ -7,8 +7,8 @@
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
-	import { formSchema } from "../schema";
+	import { zod4Client } from "sveltekit-superforms/adapters";
+	import { formSchema } from "$lib/schema/role/schema";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
@@ -27,13 +27,13 @@
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchema),
+		validators: zod4Client(formSchema),
 		id: "edit",
 
 		onChange(event) {
 			if (event) {
-				if (event.paths.includes("roleName")) {
-					if ($formData.roleName !== roleDetail.name) {
+				if (event.paths.includes("name")) {
+					if ($formData.name !== roleDetail.name) {
 						changes = true;
 					} else {
 						changes = false;
@@ -45,7 +45,7 @@
 	const { form: formData, enhance, errors, reset } = superform;
 
 	$effect(() => {
-		$formData.roleName = roleDetail.name;
+		$formData.name = roleDetail.name;
 	});
 
 	$effect(() => {
@@ -77,19 +77,19 @@
 			use:enhance
 		>
 			<Card.Content>
-				<Form.Field form={superform} name="roleName">
+				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Name</Form.Label>
 							<Input
 								{...props}
-								bind:value={$formData.roleName}
+								bind:value={$formData.name}
 								placeholder="John Doe"
 								class={changes ? changesClass : ""}
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.roleName}
+					{#if !$errors.name}
 						<Form.Description>Name of the role to be displayed.</Form.Description>
 					{/if}
 					<Form.FieldErrors />
@@ -107,7 +107,7 @@
 					onclick={() => {
 						reset({
 							data: {
-								roleName: roleDetail.name,
+								name: roleDetail.name,
 							},
 						});
 						changes = false;

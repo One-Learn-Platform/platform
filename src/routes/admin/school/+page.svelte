@@ -4,7 +4,7 @@
 	import { formSchemaCreate } from "$lib/schema/school/schema";
 	import Plus from "@lucide/svelte/icons/plus";
 	import { fileProxy, superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -19,7 +19,7 @@
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const schoolList = $derived(data.schoolList);
 	const superform = superForm(data.form, {
-		validators: zodClient(formSchemaCreate),
+		validators: zod4Client(formSchemaCreate),
 	});
 
 	const { form: formData, enhance, errors: formErrors, reset } = superform;

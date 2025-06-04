@@ -2,8 +2,8 @@ import type { Actions, PageServerLoad } from "./$types";
 import { fail } from "@sveltejs/kit";
 
 import { superValidate, setError } from "sveltekit-superforms";
-import { formSchema } from "./schema";
-import { zod } from "sveltekit-superforms/adapters";
+import { formSchema } from "$lib/schema/role/schema";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 import * as table from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
@@ -17,13 +17,13 @@ export const load: PageServerLoad = async (event) => {
 			user: event.locals.user,
 			role: event.locals.user?.role,
 			roleList: roleList,
-			form: await superValidate(zod(formSchema)),
+			form: await superValidate(zod4(formSchema)),
 		};
 	}
 	return {
 		user: event.locals.user,
 		roleList: roleList,
-		form: await superValidate(zod(formSchema)),
+		form: await superValidate(zod4(formSchema)),
 	};
 	// return error(404, { message: "Not Found" });
 };
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchema));
+		const form = await superValidate(event, zod4(formSchema));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -43,10 +43,10 @@ export const actions: Actions = {
 
 		try {
 			await db.insert(table.userRole).values({
-				name: form.data.roleName,
+				name: form.data.name,
 			});
 			return {
-				create: { success: true, data: { name: form.data.roleName }, message: null },
+				create: { success: true, data: { name: form.data.name }, message: null },
 				form,
 			};
 		} catch (error) {

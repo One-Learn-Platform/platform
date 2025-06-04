@@ -8,7 +8,7 @@
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { fileProxy, superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
@@ -26,11 +26,11 @@
 		name: false,
 		logo: false,
 	});
-	const isChanged = $derived(changes);
+	const isChanged = $derived.by(() => changes.name || changes.logo);
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaEdit),
+		validators: zod4Client(formSchemaEdit),
 		id: "edit",
 		onChange(event) {
 			if (event) {

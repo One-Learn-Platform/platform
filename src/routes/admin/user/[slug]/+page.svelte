@@ -25,7 +25,7 @@
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { fileProxy, superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import * as Alert from "$lib/components/ui/alert/index.js";
@@ -52,15 +52,15 @@
 	const currentRole = $derived.by(() => {
 		switch (userDetail.roleId) {
 			case 1:
-				return Role.Enum["super admin"];
+				return Role.enum["super admin"];
 			case 2:
-				return Role.Enum["admin"];
+				return Role.enum["admin"];
 			case 3:
-				return Role.Enum["teacher"];
+				return Role.enum["teacher"];
 			case 4:
-				return Role.Enum["student"];
+				return Role.enum["student"];
 			default:
-				return Role.Enum["student"];
+				return Role.enum["student"];
 		}
 	});
 	const currentSchool = $derived(
@@ -68,27 +68,27 @@
 	);
 
 	const changes = $state({
-		name: false,
+		fullname: false,
 		username: false,
 		dob: false,
-		role: false,
-		school: false,
+		roleId: false,
+		schoolId: false,
 	});
 	const isChanged = $derived(Object.values(changes).some((value) => value === true));
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaWithoutPass),
+		validators: zod4Client(formSchemaWithoutPass),
 		id: "edit",
 
 		onChange(event) {
 			if (event) {
-				if (event.paths.includes("name")) {
-					if ($formData.name !== userDetail.fullname) {
-						changes.name = true;
+				if (event.paths.includes("fullname")) {
+					if ($formData.fullname !== userDetail.fullname) {
+						changes.fullname = true;
 					} else {
-						changes.name = false;
+						changes.fullname = false;
 					}
 				} else if (event.paths.includes("username")) {
 					if ($formData.username !== userDetail.username) {
@@ -102,31 +102,31 @@
 					} else {
 						changes.dob = false;
 					}
-				} else if (event.paths.includes("role")) {
-					if ($formData.role !== currentRole) {
-						changes.role = true;
+				} else if (event.paths.includes("roleId")) {
+					if ($formData.roleId !== currentRole) {
+						changes.roleId = true;
 					} else {
-						changes.role = false;
+						changes.roleId = false;
 					}
-				} else if (event.paths.includes("school")) {
-					if ($formData.school !== currentSchool) {
-						changes.school = true;
+				} else if (event.paths.includes("schoolId")) {
+					if ($formData.schoolId !== currentSchool) {
+						changes.schoolId = true;
 					} else {
-						changes.school = false;
+						changes.schoolId = false;
 					}
 				} else {
 					changes.dob = false;
-					changes.name = false;
+					changes.fullname = false;
 					changes.username = false;
-					changes.role = false;
-					changes.school = false;
+					changes.roleId = false;
+					changes.schoolId = false;
 				}
 			}
 		},
 	});
 	const superformUpload = superForm(data.uploadForm, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaUploadImage),
+		validators: zod4Client(formSchemaUploadImage),
 	});
 	const avatarProxy = fileProxy(superformUpload, "avatar");
 	let avatarName = $state();
@@ -145,29 +145,29 @@
 	});
 
 	$effect(() => {
-		$formData.name = userDetail.fullname ?? "";
+		$formData.fullname = userDetail.fullname ?? "";
 		$formData.dob = userDetail.dob ?? "";
 		$formData.username = userDetail?.username ?? "";
-		$formData.role = currentRole;
-		$formData.school = currentSchool;
+		$formData.roleId = currentRole;
+		$formData.schoolId = currentSchool;
 	});
 	const initial = $derived(acronym(userDetail.fullname));
 
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				toast.success(`User ${form.delete.data?.name} deleted`);
+				toast.success(`User ${form.delete.data?.fullname} deleted`);
 				invalidateAll();
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
-				toast.success(`User ${form.edit.data?.name} edited successfully`);
+				toast.success(`User ${form.edit.data?.fullname} edited successfully`);
 				invalidateAll();
-				changes.name = false;
+				changes.fullname = false;
 				changes.username = false;
 				changes.dob = false;
-				changes.role = false;
-				changes.school = false;
+				changes.roleId = false;
+				changes.schoolId = false;
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});
@@ -298,19 +298,19 @@
 			use:enhance
 		>
 			<Card.Content>
-				<Form.Field form={superform} name="name">
+				<Form.Field form={superform} name="fullname">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Name</Form.Label>
 							<Input
 								{...props}
-								bind:value={$formData.name}
+								bind:value={$formData.fullname}
 								placeholder="John Doe"
-								class={changes.name ? changesClass : ""}
+								class={changes.fullname ? changesClass : ""}
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.name}
+					{#if !$errors.fullname}
 						<Form.Description>The fullname of the user.</Form.Description>
 					{/if}
 					<Form.FieldErrors />
@@ -378,28 +378,28 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
-				<Form.Field form={superform} name="role">
+				<Form.Field form={superform} name="roleId">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Role</Form.Label>
 							<Select.Root
 								type="single"
-								value={$formData.role}
+								value={$formData.roleId}
 								onValueChange={(value) => {
 									const roleValue = value as RoleEnum;
-									$formData.role = roleValue;
+									$formData.roleId = roleValue;
 									// set timeout to allow the role value to be registered before changing the school value
 									setTimeout(() => {
 										if (value === Role.enum["super admin"]) {
-											$formData.school = "";
+											$formData.schoolId = "";
 										}
 									}, 10);
 								}}
 								name={props.name}
 							>
-								<Select.Trigger {...props} class={changes.role ? changesClass : ""}>
-									{$formData.role
-										? $formData.role.replace(
+								<Select.Trigger {...props} class={changes.roleId ? changesClass : ""}>
+									{$formData.roleId
+										? $formData.roleId.replace(
 												/\w\S*/g,
 												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
 											)
@@ -407,8 +407,7 @@
 								</Select.Trigger>
 								<Select.Content>
 									<Select.Group>
-										<Select.GroupHeading>Role</Select.GroupHeading>
-
+										<Select.Label>Role</Select.Label>
 										{#each Object.values(Role.options) as role (role)}
 											{@const roleTitleCase = role.replace(
 												/\w\S*/g,
@@ -421,7 +420,7 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.role}
+					{#if !$errors.roleId}
 						<Form.Description>
 							Select a role for the user. This will determine their access level.
 						</Form.Description>
@@ -429,21 +428,21 @@
 					<Form.FieldErrors />
 				</Form.Field>
 
-				<Form.Field form={superform} name="school">
+				<Form.Field form={superform} name="schoolId">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>School</Form.Label>
 							<Select.Root
 								type="single"
-								value={$formData.school}
+								value={$formData.schoolId}
 								name={props.name}
 								allowDeselect
-								disabled={$formData.role === Role.enum["super admin"]}
-								onValueChange={(value) => ($formData.school = value)}
+								disabled={$formData.roleId === Role.enum["super admin"]}
+								onValueChange={(value) => ($formData.schoolId = value)}
 							>
 								<Select.Trigger {...props}>
-									{$formData.school
-										? data.schoolList.find((school) => school.id.toString() === $formData.school)
+									{$formData.schoolId
+										? data.schoolList.find((school) => school.id.toString() === $formData.schoolId)
 												?.name
 										: "Select a school"}
 								</Select.Trigger>
@@ -457,7 +456,7 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if !$errors.school}
+					{#if !$errors.schoolId}
 						<Form.Description>
 							This will determine the school affiliation of the user.
 						</Form.Description>
@@ -476,18 +475,18 @@
 					onclick={() => {
 						reset({
 							data: {
-								name: userDetail.fullname,
+								fullname: userDetail.fullname,
 								dob: userDetail.dob,
 								username: userDetail.username,
-								role: currentRole,
-								school: currentSchool,
+								roleId: currentRole,
+								schoolId: currentSchool,
 							},
 						});
-						changes.name = false;
+						changes.fullname = false;
 						changes.username = false;
 						changes.dob = false;
-						changes.role = false;
-						changes.school = false;
+						changes.roleId = false;
+						changes.schoolId = false;
 					}}>Cancel</Button
 				>
 				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>

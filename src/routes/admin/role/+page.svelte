@@ -3,8 +3,8 @@
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
-	import { formSchema } from "./schema";
+	import { zod4Client } from "sveltekit-superforms/adapters";
+	import { formSchema } from "$lib/schema/role/schema";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -18,7 +18,7 @@
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const superform = superForm(data.form, {
-		validators: zodClient(formSchema),
+		validators: zod4Client(formSchema),
 	});
 
 	const { form: formData, enhance, errors: formErrors } = superform;
@@ -47,15 +47,15 @@
 				<Dialog.Description>Create a new role by filling out the form below.</Dialog.Description>
 			</Dialog.Header>
 			<form method="POST" action="?/create" use:enhance>
-				<Form.Field form={superform} name="roleName">
+				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Role Name</Form.Label>
-							<Input {...props} bind:value={$formData.roleName} />
+							<Input {...props} bind:value={$formData.name} />
 						{/snippet}
 					</Form.Control>
 					<Form.FieldErrors />
-					{#if !$formErrors.roleName}
+					{#if !$formErrors.name}
 						<Form.Description>
 							This is the Role Name that you want to assign to the user.
 						</Form.Description>

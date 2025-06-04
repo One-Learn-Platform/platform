@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from "./$types";
 import { formSchemaWithoutPass, formSchemaUploadImage } from "$lib/schema/user/schema";
 import { eq } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
 import * as table from "$lib/schema/db";
@@ -29,8 +29,8 @@ export const load: PageServerLoad = async (event) => {
 			return {
 				userData: user,
 				schoolList: schoolList,
-				form: await superValidate(zod(formSchemaWithoutPass)),
-				uploadForm: await superValidate(zod(formSchemaUploadImage)),
+				form: await superValidate(zod4(formSchemaWithoutPass)),
+				uploadForm: await superValidate(zod4(formSchemaUploadImage)),
 			};
 		} else {
 			return error(404, { message: "User Not Found" });
@@ -45,7 +45,7 @@ export const actions: Actions = {
 		const params = event.params;
 		const { slug } = params;
 		const userId = parseInt(slug, 10);
-		const form = await superValidate(event, zod(formSchemaWithoutPass), {
+		const form = await superValidate(event, zod4(formSchemaWithoutPass), {
 			id: "edit",
 		});
 		const formData = form.data;
@@ -59,7 +59,7 @@ export const actions: Actions = {
 		}
 
 		let roleId = 0;
-		switch (formData.role) {
+		switch (formData.roleId) {
 			case "super admin":
 				roleId = 1;
 				break;
@@ -117,7 +117,7 @@ export const actions: Actions = {
 			await db
 				.update(table.user)
 				.set({
-					fullname: formData.name,
+					fullname: formData.fullname,
 					username: formData.username,
 					dob: formData.dob,
 					roleId: roleId,
@@ -145,7 +145,7 @@ export const actions: Actions = {
 			edit: {
 				success: true,
 				data: {
-					name: formData.name,
+					fullname: formData.fullname,
 				},
 				message: "User created successfully",
 			},
@@ -158,7 +158,7 @@ export const actions: Actions = {
 		const params = event.params;
 		const { slug } = params;
 		const userId = parseInt(slug, 10);
-		const form = await superValidate(event, zod(formSchemaUploadImage));
+		const form = await superValidate(event, zod4(formSchemaUploadImage));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -218,7 +218,7 @@ export const actions: Actions = {
 			upload: {
 				success: true,
 				data: {
-					name: user?.fullname,
+					fullname: user?.fullname,
 					avatar: imageUrl,
 				},
 				message: "Avatar updated successfully",
@@ -283,6 +283,16 @@ export const actions: Actions = {
 					avatar: null,
 				})
 				.where(eq(table.user.id, numberId));
+			return {
+				delete: {
+					success: true,
+					data: {
+						id: numberId,
+						fullname: user.fullname,
+					},
+					message: "Avatar deleted successfully",
+				},
+			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {

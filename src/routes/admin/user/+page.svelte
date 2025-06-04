@@ -15,7 +15,7 @@
 	import Plus from "@lucide/svelte/icons/plus";
 	import { toast } from "svelte-sonner";
 	import { fileProxy, superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
@@ -33,7 +33,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchemaWithPass),
+		validators: zod4Client(formSchemaWithPass),
 	});
 	const { form: formData, enhance, errors: formErrors, reset } = superform;
 	const proxy = fileProxy(formData, "avatar");
@@ -49,11 +49,11 @@
 	});
 	$effect(() => {
 		if (form?.delete) {
-			if (form.delete.success) toast.success(`User ${form.delete.data?.name} deleted`);
+			if (form.delete.success) toast.success(`User ${form.delete.data?.fullname} deleted`);
 			else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
-				if (form.create.success) toast.success(`User ${form.create.data?.name} created`);
+				if (form.create.success) toast.success(`User ${form.create.data?.fullname} created`);
 				else toast.error(form.create.message ?? "Unknown error");
 			}
 		}
@@ -98,14 +98,14 @@
 						{/if}
 					</Form.Field>
 
-					<Form.Field form={superform} name="name">
+					<Form.Field form={superform} name="fullname">
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>Name</Form.Label>
-								<Input {...props} bind:value={$formData.name} placeholder="John Doe" />
+								<Input {...props} bind:value={$formData.fullname} placeholder="John Doe" />
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.name}
+						{#if !$formErrors.fullname}
 							<Form.Description>The fullname of the user.</Form.Description>
 						{/if}
 						<Form.FieldErrors />
@@ -190,27 +190,27 @@
 						<Form.FieldErrors />
 					</Form.Field>
 
-					<Form.Field form={superform} name="role">
+					<Form.Field form={superform} name="roleId">
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>Role</Form.Label>
 								<Select.Root
 									type="single"
-									value={$formData.role}
+									value={$formData.roleId}
 									onValueChange={(value) => {
 										const roleValue = value as RoleEnum;
 										if (value === Role.enum["super admin"]) {
-											$formData.school = undefined;
+											$formData.schoolId = undefined;
 										} else {
-											$formData.school = $formData.school;
+											$formData.schoolId = $formData.schoolId;
 										}
-										$formData.role = roleValue;
+										$formData.roleId = roleValue;
 									}}
 									name={props.name}
 								>
 									<Select.Trigger {...props}>
-										{$formData.role
-											? $formData.role.replace(
+										{$formData.roleId
+											? $formData.roleId.replace(
 													/\w\S*/g,
 													(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
 												)
@@ -232,7 +232,7 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.role}
+						{#if !$formErrors.roleId}
 							<Form.Description>
 								Select a role for the user. This will determine their access level.
 							</Form.Description>
@@ -240,22 +240,23 @@
 						<Form.FieldErrors />
 					</Form.Field>
 
-					<Form.Field form={superform} name="school">
+					<Form.Field form={superform} name="schoolId">
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>School</Form.Label>
 								<Select.Root
 									type="single"
-									value={$formData.school}
+									value={$formData.schoolId}
 									name={props.name}
 									allowDeselect
-									disabled={$formData.role === Role.enum["super admin"]}
-									onValueChange={(value) => ($formData.school = value)}
+									disabled={$formData.roleId === Role.enum["super admin"]}
+									onValueChange={(value) => ($formData.schoolId = value)}
 								>
 									<Select.Trigger {...props}>
-										{$formData.school
-											? data.schoolList.find((school) => school.id.toString() === $formData.school)
-													?.name
+										{$formData.schoolId
+											? data.schoolList.find(
+													(school) => school.id.toString() === $formData.schoolId,
+												)?.name
 											: "Select a school"}
 									</Select.Trigger>
 									<Select.Content>
@@ -268,7 +269,7 @@
 								</Select.Root>
 							{/snippet}
 						</Form.Control>
-						{#if !$formErrors.school}
+						{#if !$formErrors.schoolId}
 							<Form.Description>
 								This will determine the school affiliation of the user.
 							</Form.Description>

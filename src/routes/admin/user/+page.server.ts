@@ -3,7 +3,7 @@ import { error } from "@sveltejs/kit";
 
 import bcryptjs from "bcryptjs";
 import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchemaWithPass } from "$lib/schema/user/schema";
 
 import { getDb } from "$lib/server/db";
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async (event) => {
 			userList: userList,
 			schoolList: schoolList,
 			roleList: roleList,
-			form: await superValidate(zod(formSchemaWithPass)),
+			form: await superValidate(zod4(formSchemaWithPass)),
 		};
 	}
 	return error(404, { message: "Not found" });
@@ -37,7 +37,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaWithPass));
+		const form = await superValidate(event, zod4(formSchemaWithPass));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -60,7 +60,7 @@ export const actions: Actions = {
 			}
 			const passwordHash = await bcryptjs.hash(form.data.password, 10);
 			let roleId = 0;
-			switch (form.data.role) {
+			switch (form.data.roleId) {
 				case "super admin":
 					roleId = 1;
 					break;
@@ -96,12 +96,12 @@ export const actions: Actions = {
 				}
 			}
 			const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
-			const schoolId = form.data.school ? Number(form.data.school) : null;
-			console.log(form.data.school, schoolId);
+			const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
+			console.log(form.data.schoolId, schoolId);
 			await db.insert(table.user).values({
 				roleId: roleId,
 				avatar: imageUrl,
-				fullname: form.data.name,
+				fullname: form.data.fullname,
 				dob: form.data.dob,
 				username: form.data.username,
 				password: passwordHash,
@@ -120,7 +120,7 @@ export const actions: Actions = {
 			create: {
 				success: true,
 				data: {
-					name: form.data.name,
+					fullname: form.data.fullname,
 				},
 				message: "User created successfully",
 			},
@@ -152,7 +152,7 @@ export const actions: Actions = {
 					success: true,
 					data: {
 						id: numberId,
-						name: name[0].fullname,
+						fullname: name[0].fullname,
 					},
 					message: null,
 				},
@@ -214,7 +214,7 @@ export const actions: Actions = {
 				success: true,
 				data: {
 					id: idArray?.join(","),
-					name: userNameArray.join(", "),
+					fullname: userNameArray.join(", "),
 				},
 				message: null,
 			},

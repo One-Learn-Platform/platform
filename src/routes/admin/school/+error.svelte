@@ -2,4 +2,4 @@
 	import SlugError from "$lib/components/error/slug-error.svelte";
 </script>
 
-<SlugError href="/admin/role" />
+<SlugError href="/admin/school" />

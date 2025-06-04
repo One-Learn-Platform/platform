@@ -2,8 +2,8 @@ import type { PageServerLoad, Actions } from "./$types";
 import { error, fail, redirect } from "@sveltejs/kit";
 
 import { setError, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { formSchema } from "../schema";
+import { zod4 } from "sveltekit-superforms/adapters";
+import { formSchema } from "$lib/schema/role/schema";
 
 import { eq } from "drizzle-orm";
 import { getDb } from "$lib/server/db";
@@ -15,22 +15,26 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const userId = parseInt(slug, 10);
 
-	if (!event.locals.user || (event.locals.user.role !== 0 && event.locals.user.role !== 1)) {
-		return error(404, { message: "Not Found" });
-	} else if (isNaN(userId)) {
-		return error(400, { message: "Invalid User ID" });
-	} else {
-		const role = await db.select().from(table.userRole).where(eq(table.userRole.id, userId)).get();
-		if (role) {
-			return {
-				roleData: role,
-				form: await superValidate(zod(formSchema)),
-			};
+	if (event.locals.user && (event.locals.user.role === 0 || event.locals.user.role === 1)) {
+		if (isNaN(userId)) {
+			return error(400, { message: "Invalid User ID" });
 		} else {
-			return error(404, { message: "Role Not Found" });
+			const role = await db
+				.select()
+				.from(table.userRole)
+				.where(eq(table.userRole.id, userId))
+				.get();
+			if (role) {
+				return {
+					roleData: role,
+					form: await superValidate(zod4(formSchema)),
+				};
+			} else {
+				return error(404, { message: "Role Not Found" });
+			}
 		}
 	}
-	// return error(404, { message: "Not Found" });
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
@@ -39,7 +43,7 @@ export const actions: Actions = {
 		const params = event.params;
 		const { slug } = params;
 		const roleId = parseInt(slug, 10);
-		const form = await superValidate(event, zod(formSchema), {
+		const form = await superValidate(event, zod4(formSchema), {
 			id: "edit",
 		});
 		const formData = form.data;
@@ -62,7 +66,7 @@ export const actions: Actions = {
 			await db
 				.update(table.userRole)
 				.set({
-					name: formData.roleName,
+					name: formData.name,
 				})
 				.where(eq(table.userRole.id, roleId));
 		} catch (error) {
@@ -88,7 +92,7 @@ export const actions: Actions = {
 				edit: {
 					success: true,
 					data: {
-						name: formData.roleName,
+						name: formData.name,
 					},
 					message: "User created successfully",
 				},

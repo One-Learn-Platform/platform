@@ -1,12 +1,14 @@
-import { z } from "zod";
+import { z } from "zod/v4";
+import { createInsertSchema } from "drizzle-zod";
+import { user } from "$lib/schema/db";
 
 // 0,1,2,3
 export const Role = z.enum(["super admin", "admin", "teacher", "student"], {
-	required_error: "Role is required",
+	error: "Role is required",
 });
 
-export const formSchema = z.object({
-	name: z.string().min(1, "Name is required"),
+export const formSchema = createInsertSchema(user, {
+	fullname: z.string().min(1, "Name is required"),
 	avatar: z
 		.instanceof(File, { message: "Logo is required" })
 		.refine((file) => file.size > 0 && file.size < 5 * 1024 * 1024, {
@@ -19,17 +21,17 @@ export const formSchema = z.object({
 		.string()
 		.min(6, "Invalid password (min 6, max 255 characters, must contain letters and numbers)")
 		.max(255, "Invalid password (min 6, max 255 characters, must contain letters and numbers)"),
-	role: Role,
-	school: z.string().optional(),
+	roleId: Role,
+	schoolId: z.string().optional(),
 });
 
 export const formSchemaWithPass = formSchema
 	.refine(
 		(data) => {
 			if (
-				data.role === Role.enum["super admin"] &&
-				data.school !== undefined &&
-				data.school !== ""
+				data.roleId === Role.enum["super admin"] &&
+				data.schoolId !== undefined &&
+				data.schoolId !== ""
 			) {
 				return false;
 			}
@@ -37,15 +39,15 @@ export const formSchemaWithPass = formSchema
 		},
 		{
 			message: "Super Admin is not allowed to have a school",
-			path: ["school"],
+			path: ["schoolId"],
 		},
 	)
 	.refine(
 		(data) => {
 			if (
-				data.role !== Role.enum["super admin"] &&
-				data.school === undefined &&
-				data.school === ""
+				data.roleId !== Role.enum["super admin"] &&
+				data.schoolId === undefined &&
+				data.schoolId === ""
 			) {
 				return false;
 			}
@@ -53,7 +55,7 @@ export const formSchemaWithPass = formSchema
 		},
 		{
 			message: "School is required for non-super admin roles",
-			path: ["school"],
+			path: ["schoolId"],
 		},
 	);
 
@@ -68,9 +70,9 @@ export const formSchemaWithoutPass = formSchema
 	.refine(
 		(data) => {
 			if (
-				data.role === Role.enum["super admin"] &&
-				data.school !== undefined &&
-				data.school !== ""
+				data.roleId === Role.enum["super admin"] &&
+				data.schoolId !== undefined &&
+				data.schoolId !== ""
 			) {
 				return false;
 			}
@@ -84,9 +86,9 @@ export const formSchemaWithoutPass = formSchema
 	.refine(
 		(data) => {
 			if (
-				data.role !== Role.enum["super admin"] &&
-				data.school === undefined &&
-				data.school === ""
+				data.roleId !== Role.enum["super admin"] &&
+				data.schoolId === undefined &&
+				data.schoolId === ""
 			) {
 				return false;
 			}
@@ -94,7 +96,7 @@ export const formSchemaWithoutPass = formSchema
 		},
 		{
 			message: "School is required for non-super admin roles",
-			path: ["school"],
+			path: ["schoolId"],
 		},
 	);
 

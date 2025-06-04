@@ -137,7 +137,7 @@ export const columns: ColumnDef<SafeUser>[] = [
 			const value = row.getValue("gradesId");
 			const amountCellSnippet = createRawSnippet(() => {
 				return {
-					render: () => `<div class="">${value ?? "-"}</div>`,
+					render: () => `<div class="font-mono">${value ?? "-"}</div>`,
 				};
 			});
 			return renderSnippet(amountCellSnippet, value);
@@ -155,7 +155,7 @@ export const columns: ColumnDef<SafeUser>[] = [
 			const value = row.getValue("schoolId");
 			const amountCellSnippet = createRawSnippet(() => {
 				return {
-					render: () => `<div class="">${value ?? "-"}</div>`,
+					render: () => `<div class="font-mono">${value ?? "-"}</div>`,
 				};
 			});
 			return renderSnippet(amountCellSnippet, value);

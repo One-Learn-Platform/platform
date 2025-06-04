@@ -1,8 +1,9 @@
 import type { Actions, PageServerLoad } from "./$types";
+import { error } from "@sveltejs/kit";
 
 import { superValidate, setError, fail, withFiles } from "sveltekit-superforms";
 import { formSchemaCreate } from "$lib/schema/school/schema";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 import * as table from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
@@ -18,22 +19,16 @@ export const load: PageServerLoad = async (event) => {
 			user: event.locals.user,
 			role: event.locals.user?.role,
 			schoolList: schoolList,
-			form: await superValidate(zod(formSchemaCreate)),
+			form: await superValidate(zod4(formSchemaCreate)),
 		};
 	}
-	return {
-		formSchema: formSchemaCreate,
-		user: event.locals.user,
-		schoolList: schoolList,
-		form: await superValidate(zod(formSchemaCreate)),
-	};
-	// return error(404, { message: "Not Found" });
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod(formSchemaCreate));
+		const form = await superValidate(event, zod4(formSchemaCreate));
 		console.log("form", form);
 
 		if (!form.valid) {

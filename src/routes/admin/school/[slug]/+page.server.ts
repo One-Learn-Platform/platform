@@ -2,7 +2,7 @@ import type { PageServerLoad, Actions } from "./$types";
 import { error, redirect } from "@sveltejs/kit";
 
 import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchemaEdit } from "$lib/schema/school/schema";
 
 import { eq } from "drizzle-orm";
@@ -17,22 +17,26 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const schoolId = parseInt(slug, 10);
 
-	if (!event.locals.user || (event.locals.user.role !== 0 && event.locals.user.role !== 1)) {
-		return error(404, { message: "Not Found" });
-	} else if (isNaN(schoolId)) {
-		return error(400, { message: "Invalid School ID" });
-	} else {
-		const school = await db.select().from(table.school).where(eq(table.school.id, schoolId)).get();
-		if (school) {
-			return {
-				schoolData: school,
-				form: await superValidate(zod(formSchemaEdit)),
-			};
+	if (event.locals.user && (event.locals.user.role === 0 || event.locals.user.role === 1)) {
+		if (isNaN(schoolId)) {
+			return error(400, { message: "Invalid School ID" });
 		} else {
-			return error(404, { message: "School Not Found" });
+			const school = await db
+				.select()
+				.from(table.school)
+				.where(eq(table.school.id, schoolId))
+				.get();
+			if (school) {
+				return {
+					schoolData: school,
+					form: await superValidate(zod4(formSchemaEdit)),
+				};
+			} else {
+				return error(404, { message: "School Not Found" });
+			}
 		}
 	}
-	// return error(404, { message: "Not Found" });
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
@@ -41,7 +45,7 @@ export const actions: Actions = {
 		const params = event.params;
 		const { slug } = params;
 		const schoolId = parseInt(slug, 10);
-		const form = await superValidate(event, zod(formSchemaEdit));
+		const form = await superValidate(event, zod4(formSchemaEdit));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -60,13 +64,12 @@ export const actions: Actions = {
 		const uniqueFileName = `school/logo/${getFileName(form.data.name)}-${getTimeStamp()}.png`;
 		const prevFileName = prevSchoolData.logo;
 
-		if (
-			await getDb(event)
-				.select()
-				.from(table.school)
-				.where(eq(table.school.name, form.data.name))
-				.get()
-		) {
+		const schoolExists = await db
+			.select()
+			.from(table.school)
+			.where(eq(table.school.name, form.data.name))
+			.get();
+		if (schoolExists && schoolExists.id !== schoolId) {
 			return fail(400, {
 				edit: {
 					success: false,
