@@ -33,8 +33,9 @@
 								<div
 									class="flex aspect-square size-6 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground duration-150 group-data-[collapsible=icon]:size-8"
 								>
+									<!-- doesnt line up in center -->
 									<div
-										class="flex size-6 items-center justify-center font-mono text-base font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-xl"
+										class="flex items-center justify-center font-mono text-base font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-xl"
 									>
 										{selectedGrade.number}
 									</div>

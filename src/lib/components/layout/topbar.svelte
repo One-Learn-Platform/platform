@@ -41,12 +41,12 @@
 	{/if}
 	<div class="flex items-center gap-2">
 		{#if user?.role === 0 || user?.role === 1}
-			<Button variant="outline" href="/admin"><UserCog />Admin Panel</Button>
+			<Button variant="outline" outline href="/admin"><UserCog />Admin Panel</Button>
 		{/if}
 		<DropdownMenu.Root>
-			<DropdownMenu.Trigger class={buttonVariants({ variant: "default", outline: true })}>
+			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button variant="outline" size="sm" class="py-1" {...props}>
+					<Button variant="outline" outline size="default" class="py-1" {...props}>
 						<Avatar.Root class="h-full w-auto">
 							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
 							<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
@@ -137,26 +137,24 @@
 
 <AlertDialog.Root open={alertDialogOpen} onOpenChange={(state) => (alertDialogOpen = state)}>
 	<AlertDialog.Content>
-		{#snippet child({ props })}
-			<form {...props} method="POST" action="/signout?/signout" use:enhance>
-				<AlertDialog.Header>
-					<AlertDialog.Description class="flex items-center gap-2">
-						<Avatar.Root class="">
-							<Avatar.Image src={user?.avatar ?? undefined} />
-							<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="flex flex-col">
-							<p class="text-base font-medium text-accent-foreground">{user?.fullname}</p>
-							<p class="text-xs">{user?.username}</p>
-						</div>
-					</AlertDialog.Description>
-					<AlertDialog.Title>Log out from this account?</AlertDialog.Title>
-				</AlertDialog.Header>
-				<AlertDialog.Footer>
-					<AlertDialog.Cancel class="grow" type="reset">No</AlertDialog.Cancel>
-					<AlertDialog.Action class="grow" type="submit">Yes</AlertDialog.Action>
-				</AlertDialog.Footer>
-			</form>
-		{/snippet}
+		<form method="POST" action="/signout?/signout" class="contents" use:enhance>
+			<AlertDialog.Header>
+				<AlertDialog.Description class="flex items-center gap-2">
+					<Avatar.Root class="">
+						<Avatar.Image src={user?.avatar ?? undefined} />
+						<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
+					</Avatar.Root>
+					<div class="flex flex-col">
+						<p class="text-base font-medium text-accent-foreground">{user?.fullname}</p>
+						<p class="text-xs">{user?.username}</p>
+					</div>
+				</AlertDialog.Description>
+				<AlertDialog.Title>Log out from this account?</AlertDialog.Title>
+			</AlertDialog.Header>
+			<AlertDialog.Footer>
+				<AlertDialog.Cancel class="grow" type="reset">No</AlertDialog.Cancel>
+				<AlertDialog.Action class="grow" type="submit">Yes</AlertDialog.Action>
+			</AlertDialog.Footer>
+		</form>
 	</AlertDialog.Content>
 </AlertDialog.Root>
