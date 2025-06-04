@@ -1,6 +1,6 @@
 <script lang="ts">
-	import * as Card from "$lib/components/ui/card/index.js";
 	import { Badge } from "$lib/components/ui/badge/index.js";
+	import { Button } from "$lib/components/ui/button/index.js";
 
 	import type { Subject } from "$lib/schema/db";
 
@@ -8,16 +8,17 @@
 	let { subject }: { subject: Subject } = $props();
 </script>
 
-<Card.Root>
-	<Card.Header class="">
-		<div class="flex h-full items-center gap-2">
-			<Dna class="h-full w-auto" />
-			<div>
-				<Card.Description>
-					Card Description <Badge variant="informative_muted">LAB</Badge>
-				</Card.Description>
-				<Card.Title class="text-2xl">Card Title</Card.Title>
-			</div>
+<Button
+	variant="outline"
+	class="flex h-full w-full flex-row items-stretch justify-start gap-4 p-6!"
+	href={`/subject/${subject.id}`}
+>
+	<Dna class="size-12 " />
+	<div>
+		<div>
+			{subject.code}
+			<Badge variant="informative_muted">LAB</Badge>
 		</div>
-	</Card.Header>
-</Card.Root>
+		<div class="text-2xl font-semibold">{subject.name}</div>
+	</div>
+</Button>
