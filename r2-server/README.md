@@ -1,3 +1,7 @@
+Source: https://github.com/emilienbidet/cloudflare-r2-dev-server
+
+---
+
 # Cloudflare R2 Dev Server
 
 This is a workaround solution to serve Cloudlflare R2 images when developping locally. Made with [Bun](https://bun.sh/) and [Hono](https://hono.dev/).
@@ -48,12 +52,9 @@ Test it by uploading a image to the bucket and by trying access it with http://l
 Add `cloudflare-r2-dev-server/` to your `.gitignore` file
 
 Add `cloudflare-r2-dev-server` to your `tsconfig.json` file
+
 ```json
 {
- "exclude": [
-    "node_modules",
-    "dist",
-    "cloudflare-r2-dev-server"
-  ]
+	"exclude": ["node_modules", "dist", "cloudflare-r2-dev-server"]
 }
 ```
