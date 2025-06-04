@@ -3,7 +3,7 @@
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import { toast } from "svelte-sonner";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
@@ -20,7 +20,7 @@
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const subjectList = $derived(data.subjectList);
 	const superform = superForm(data.form, {
-		validators: zodClient(formSchemaCreate),
+		validators: zod4Client(formSchemaCreate),
 	});
 
 	const { form: formData, enhance, errors: formErrors } = superform;
@@ -65,6 +65,19 @@
 					<Form.FieldErrors />
 					{#if !$formErrors.name}
 						<Form.Description>This is the Subject Name that will be displayed.</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="code">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Subject Code</Form.Label>
+							<Input {...props} bind:value={$formData.code} class="font-mono" />
+						{/snippet}
+					</Form.Control>
+					<Form.FieldErrors />
+					{#if !$formErrors.code}
+						<Form.Description>This is the Subject Code that will be displayed.</Form.Description>
 					{/if}
 				</Form.Field>
 

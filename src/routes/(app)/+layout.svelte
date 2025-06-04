@@ -11,8 +11,10 @@
 
 <Sidebar.Provider>
 	<AppSidebar />
-	<main class="w-full nth-[2]:pt-12">
+	<div class="w-full nth-[2]:pt-12">
 		<Topbar user={data.user} />
-		{@render children?.()}
-	</main>
+		<main class="space-y-2 px-2 pt-2 pr-4 pb-2">
+			{@render children?.()}
+		</main>
+	</div>
 </Sidebar.Provider>
