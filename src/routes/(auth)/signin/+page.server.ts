@@ -1,6 +1,11 @@
-import { fail, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
+
+import { redirect } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { fail, setError, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
+import { formSchema } from "./schema";
 
 import { TURNSTILE_SECRET_KEY } from "$env/static/private";
 import {
@@ -14,15 +19,13 @@ import { getDb } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
 import { validateToken } from "$lib/server/turnstile";
 
-import type { Actions, PageServerLoad } from "./$types";
-
 const throttler = new Throttler([1, 2, 4, 8, 16, 30, 60, 180, 300]); //in seconds
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user?.id) {
-		return { user: event.locals.user };
+		return { user: event.locals.user, form: await superValidate(zod(formSchema)) };
 	}
-	return { user: null };
+	return { user: null, form: await superValidate(zod(formSchema)) };
 };
 
 export const actions: Actions = {
@@ -30,22 +33,37 @@ export const actions: Actions = {
 		const db = getDb(event);
 
 		const formData = await event.request.formData();
-		const username = formData.get("username");
-		const password = formData.get("password");
+		const form = await superValidate(formData, zod(formSchema));
+
+		const username = form.data.username;
+		const password = form.data.password;
 		const captcha = formData.get("cf-turnstile-response");
 
 		const { success } = await validateToken(captcha, TURNSTILE_SECRET_KEY);
 		if (!success) {
-			return fail(403, { captcha: "CAPTCHA Failed! Please try again" });
+			setError(form, "", "CAPTCHA Failed! Please refresh the page");
+			return fail(403, { captcha: "CAPTCHA Failed! Please refresh the page" });
+		}
+
+		if (!form.valid) {
+			setError(form, "", "Content is invalid, please try again");
+			return fail(400, {
+				create: { success: false, data: null, message: "Content is invalid, please try again" },
+				form,
+			});
 		}
 
 		if (!validateUsername(username)) {
+			console.error("Invalid username:", username);
+			setError(form, "username", "Invalid username (min 3, max 31 characters, alphanumeric only)");
 			return fail(400, {
 				message: "Invalid username (min 3, max 31 characters, alphanumeric only)",
+				form,
 			});
 		}
 		if (!validatePassword(password)) {
-			return fail(400, { message: "Invalid password (min 6, max 255 characters)" });
+			setError(form, "password", "Invalid password (min 6, max 255 characters)");
+			return fail(400, { message: "Invalid password (min 6, max 255 characters)", form });
 		}
 
 		const results = await db.select().from(table.user).where(eq(table.user.username, username));
@@ -56,23 +74,28 @@ export const actions: Actions = {
 
 		if (!existingUser) {
 			if (!throttler.consume(ip)) {
-				return fail(429, { message: "Too many requests, Please try again later." });
+				setError(form, "", "Too many requests, please try again later.");
+				return fail(429, { message: "Too many requests, Please try again later.", form });
 			}
-			return fail(400, { message: "Incorrect username or password" });
+			setError(form, "", "Incorrect username or password");
+			return fail(400, { message: "Incorrect username or password", form });
 		}
 
 		if (existingUser.password) {
 			if (!throttler.consume(ip)) {
-				return fail(429, { message: "Too many requests, Please try again later." });
+				setError(form, "", "Too many requests, please try again later.");
+				return fail(429, { message: "Too many requests, Please try again later.", form });
 			}
 
 			const validPassword = await bcryptjs.compare(password, existingUser.password);
 			if (!validPassword) {
-				return fail(400, { message: "Incorrect username or password" });
+				setError(form, "", "Incorrect username or password");
+				return fail(400, { message: "Incorrect username or password", form });
 			}
 			throttler.reset(ip);
 		} else {
-			return fail(400, { message: "Unknown Error" });
+			setError(form, "", "Unknown Error, please try again later");
+			return fail(400, { message: "Unknown Error", form });
 		}
 
 		const sessionToken = generateSessionToken();

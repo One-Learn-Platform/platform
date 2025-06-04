@@ -23,7 +23,6 @@
 	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 
 	import FormErrors from "$lib/components/error/form-errors.svelte";
 	import DataTable from "$lib/components/table/data-table.svelte";
@@ -219,7 +218,7 @@
 									</Select.Trigger>
 									<Select.Content>
 										<Select.Group>
-											<Select.GroupHeading>Role</Select.GroupHeading>
+											<Select.Label>Role</Select.Label>
 											{#each Object.values(Role.options) as role (role)}
 												{@const roleTitleCase = role.replace(
 													/\w\S*/g,
