@@ -78,6 +78,7 @@
 					{#each appNav as item (item.title)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton
+								class="h-10"
 								isActive={item.title === "Dashboard"
 									? page.url.pathname === item.href
 									: page.url.pathname.startsWith(item.href)}
