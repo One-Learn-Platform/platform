@@ -1,12 +1,12 @@
 {
-  "name": "cloudflare-r2-dev-server",
-  "scripts": {
-    "start": "bun run src/index.ts"
-  },
-  "dependencies": {
-    "hono": "^4.7.11"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  }
+	"name": "cloudflare-r2-dev-server",
+	"scripts": {
+		"start": "bun run src/index.ts"
+	},
+	"dependencies": {
+		"hono": "^4.7.11"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	}
 }
