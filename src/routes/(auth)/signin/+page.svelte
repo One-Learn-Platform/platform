@@ -97,7 +97,7 @@
 				<Turnstile
 					siteKey={PUBLIC_TURNSTILE_SITE_KEY}
 					size="flexible"
-					appearance="interaction-only"
+					appearance="always"
 				/>
 			</div>
 			{#if $formErrors._errors}
