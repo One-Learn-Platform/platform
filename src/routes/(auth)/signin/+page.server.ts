@@ -32,12 +32,10 @@ export const actions: Actions = {
 	signin: async (event) => {
 		const db = getDb(event);
 
-		const formData = await event.request.formData();
-		const form = await superValidate(formData, zod(formSchema));
-
+		const form = await superValidate(event, zod(formSchema));
 		const username = form.data.username;
 		const password = form.data.password;
-		const captcha = formData.get("cf-turnstile-response");
+		const captcha = form.data["cf-turnstile-response"];
 
 		const { success } = await validateToken(captcha, TURNSTILE_SECRET_KEY);
 		if (!success) {

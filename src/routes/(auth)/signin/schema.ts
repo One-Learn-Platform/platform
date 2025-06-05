@@ -13,6 +13,7 @@ export const formSchema = z.object({
 		.string()
 		.min(6, "Password must be at least 6 characters long")
 		.max(255, "Password can't be more than 255 characters long"),
+	"cf-turnstile-response": z.string(),
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
