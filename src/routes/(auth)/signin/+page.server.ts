@@ -42,7 +42,7 @@ export const actions: Actions = {
 		const { success } = await validateToken(captcha, TURNSTILE_SECRET_KEY);
 		if (!success) {
 			setError(form, "", "CAPTCHA Failed! Please refresh the page");
-			return fail(403, { captcha: "CAPTCHA Failed! Please refresh the page" });
+			return fail(403, { captcha: "CAPTCHA Failed! Please refresh the page", form });
 		}
 
 		if (!form.valid) {
