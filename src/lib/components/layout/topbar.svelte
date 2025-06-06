@@ -40,7 +40,7 @@
 		<Sidebar.Trigger class="z-50 h-10 bg-background" />
 	{/if}
 	<div class="flex items-center gap-2">
-		{#if user?.role === 0 || user?.role === 1}
+		{#if user?.role === 1 || user?.role === 2}
 			<Button variant="outline" outline href="/admin"><UserCog />Admin Panel</Button>
 		{/if}
 		<DropdownMenu.Root>

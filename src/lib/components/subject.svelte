@@ -11,7 +11,7 @@
 <Button
 	variant="outline"
 	class="flex h-full w-full flex-row items-stretch justify-start gap-4 p-6!"
-	href={`/subject/${subject.id}`}
+	href={`/subject/${subject.code}`}
 >
 	<Dna class="size-12 " />
 	<div>

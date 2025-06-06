@@ -8,7 +8,7 @@ import { getDb } from "$lib/server/db";
 
 export const load: LayoutServerLoad = async (event) => {
 	const db = getDb(event);
-	if (event.locals.user && (event.locals.user.role === 0 || event.locals.user.role === 1)) {
+	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
 		return {
 			user: event.locals.user,
 			session: event.locals.session,
