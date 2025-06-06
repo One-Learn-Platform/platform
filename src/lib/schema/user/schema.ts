@@ -46,8 +46,7 @@ export const formSchemaWithPass = formSchema
 		(data) => {
 			if (
 				data.roleId !== Role.enum["super admin"] &&
-				data.schoolId === undefined &&
-				data.schoolId === ""
+				(data.schoolId === undefined || data.schoolId === "")
 			) {
 				return false;
 			}
