@@ -21,7 +21,9 @@ export const grades = sqliteTable(
 	{
 		id: integer("grades_id").primaryKey({ autoIncrement: true }),
 		level: integer("level").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 	},
 	(table) => [index("grades_school_index").on(table.schoolId)],
 );
@@ -60,7 +62,9 @@ export const subject = sqliteTable(
 			.notNull()
 			.references(() => user.id),
 		name: text("name").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 	},
 	(table) => [
 		index("teacher_index").on(table.teacher),
@@ -78,12 +82,18 @@ export const enrollment = sqliteTable(
 			.notNull()
 			.references(() => subject.id),
 		score: integer("score"),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
 		primaryKey({ columns: [table.userId, table.subjectId] }),
 		index("enrollment_user_index").on(table.userId),
 		index("enrollment_subject_index").on(table.subjectId),
+		index("enrollment_school_index").on(table.schoolId),
 	],
 );
 
@@ -92,7 +102,9 @@ export const materialType = sqliteTable(
 	{
 		id: integer("material_type_id").primaryKey({ autoIncrement: true }),
 		name: text("type_name").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 	},
 	(table) => [index("material_type_school_index").on(table.schoolId)],
 );
@@ -111,7 +123,9 @@ export const material = sqliteTable(
 		description: text("description").notNull(),
 		content: text("content").notNull(),
 		attachment: text("attachment").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -136,7 +150,9 @@ export const forum = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -159,7 +175,9 @@ export const comment = sqliteTable(
 			.references(() => user.id)
 			.notNull(),
 		content: text("content").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -184,7 +202,9 @@ export const assignment = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -209,7 +229,9 @@ export const submission = sqliteTable(
 		score: integer("score"),
 		content: text("content").notNull(),
 		attachment: text("attachment").notNull(),
-		schoolId: integer("school_id").references(() => school.id),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -229,6 +251,9 @@ export const session = sqliteTable(
 			.notNull()
 			.references(() => user.id),
 		expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
 	},
 	(table) => [index("session_user_index").on(table.userId)],
 );
