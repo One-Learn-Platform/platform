@@ -97,7 +97,7 @@ export const actions: Actions = {
 		}
 
 		const sessionToken = generateSessionToken();
-		const session = await createSession(event, sessionToken, existingUser.id.toString());
+		const session = await createSession(event, sessionToken, existingUser.id);
 		setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 		if (existingUser.roleId === 0 || existingUser.roleId === 1) return redirect(302, "/admin");

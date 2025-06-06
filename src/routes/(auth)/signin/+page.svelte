@@ -94,11 +94,7 @@
 			</Form.Field>
 
 			<div class="leading-none">
-				<Turnstile
-					siteKey={PUBLIC_TURNSTILE_SITE_KEY}
-					size="flexible"
-					appearance="always"
-				/>
+				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} size="flexible" appearance="always" />
 			</div>
 			{#if $formErrors._errors}
 				<!-- <FormErrors

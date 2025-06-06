@@ -6,7 +6,7 @@ import bcryptjs from "bcryptjs";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school, user, userRole } from "$lib/schema/db";
+import { school, user, userRole, session } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
@@ -146,6 +146,7 @@ export const actions: Actions = {
 		try {
 			const name = await db.select().from(user).where(eq(user.id, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
+			await db.delete(session).where(eq(session.userId, numberId));
 			return {
 				delete: {
 					success: true,
@@ -162,7 +163,8 @@ export const actions: Actions = {
 				delete: {
 					success: false,
 					data: null,
-					message: "Database Connection error, please try again.",
+					message:
+						error instanceof Error ? error.message : "Database Connection error, please try again.",
 				},
 			});
 		}
@@ -196,6 +198,7 @@ export const actions: Actions = {
 			}
 			try {
 				await db.delete(user).where(eq(user.id, id));
+				await db.delete(session).where(eq(session.userId, id));
 			} catch (error) {
 				console.error(error);
 				return fail(500, {
