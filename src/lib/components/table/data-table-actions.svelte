@@ -68,7 +68,7 @@
 			<DropdownMenu.Separator />
 			<DropdownMenu.Group>
 				<DropdownMenu.Item
-					class="data-highlighted:text-destructive-foreground w-full data-highlighted:bg-destructive"
+					class="w-full data-highlighted:bg-destructive data-highlighted:text-white data-highlighted:[&_svg]:text-white!"
 					onclick={() => (openDialog = true)}
 				>
 					<Trash class="mr-2 size-4" />
