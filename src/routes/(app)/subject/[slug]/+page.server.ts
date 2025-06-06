@@ -25,5 +25,5 @@ export const load: PageServerLoad = async (event) => {
 		}
 		return { subject };
 	}
-	return redirect(302, "/login");
+	return redirect(302, "/signin");
 };

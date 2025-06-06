@@ -17,26 +17,30 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const userId = parseInt(slug, 10);
 
-	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
-		if (isNaN(userId)) {
-			return error(400, { message: "Invalid User ID" });
-		} else {
-			const userData = await db.select().from(user).where(eq(user.id, userId)).get();
-			const schoolList = await db.select().from(school);
-			if (userData) {
-				userData.password = "";
-				return {
-					userData: userData,
-					schoolList: schoolList,
-					form: await superValidate(zod4(formSchemaWithoutPass)),
-					uploadForm: await superValidate(zod4(formSchemaUploadImage)),
-				};
+	if (event.locals.user) {
+		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
+			if (isNaN(userId)) {
+				return error(400, { message: "Invalid User ID" });
 			} else {
-				return error(404, { message: "User Not Found" });
+				const userData = await db.select().from(user).where(eq(user.id, userId)).get();
+				const schoolList = await db.select().from(school);
+				if (userData) {
+					userData.password = "";
+					return {
+						userData: userData,
+						schoolList: schoolList,
+						form: await superValidate(zod4(formSchemaWithoutPass)),
+						uploadForm: await superValidate(zod4(formSchemaUploadImage)),
+					};
+				} else {
+					return error(404, { message: "User Not Found" });
+				}
 			}
+		} else {
+			return error(404, { message: "Not Found" });
 		}
 	}
-	return error(404, { message: "Not Found" });
+	return redirect(302, "/signin");
 };
 
 export const actions: Actions = {

@@ -1,4 +1,4 @@
-import { error } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaCreate } from "$lib/schema/subject/schema";
@@ -6,25 +6,31 @@ import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import { subject, user } from "$lib/schema/db";
+import { subject, user, school } from "$lib/schema/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-	const { ...rest } = getTableColumns(subject);
-	const subjectList = await db
-		.select({ ...rest, teacherName: user.fullname })
-		.from(subject)
-		.leftJoin(user, eq(user.id, subject.teacher));
-	const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
-	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
-		return {
-			subjectList: subjectList,
-			teacherList: teacherList,
-			form: await superValidate(zod4(formSchemaCreate)),
-		};
+	if (event.locals.user) {
+		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
+			const db = getDb(event);
+			const { ...rest } = getTableColumns(subject);
+			const subjectList = await db
+				.select({ ...rest, teacherName: user.fullname })
+				.from(subject)
+				.leftJoin(user, eq(user.id, subject.teacher));
+			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
+			const schoolList = await db.select().from(school);
+			return {
+				subjectList: subjectList,
+				teacherList: teacherList,
+				schoolList: schoolList,
+				form: await superValidate(zod4(formSchemaCreate)),
+			};
+		}
+	} else {
+		return error(404, { message: "Not Found" });
 	}
-	return error(404, { message: "Not Found" });
+	return redirect(302, "/sigin");
 };
 
 export const actions: Actions = {
@@ -32,6 +38,18 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaCreate));
 		const teacherId = Number(form.data.teacher);
+		const school = event.locals.user?.school;
+		if (!school) {
+			setError(form, "", "Super Admin cannot create subjects");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "Super Admin cannot create subjects",
+				},
+				form,
+			});
+		}
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -71,6 +89,7 @@ export const actions: Actions = {
 				teacher: teacher.id,
 				code: form.data.code,
 				name: form.data.name,
+				schoolId: school,
 			});
 
 			return {

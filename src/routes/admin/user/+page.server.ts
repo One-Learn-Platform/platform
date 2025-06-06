@@ -1,4 +1,4 @@
-import { error } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaWithPass } from "$lib/schema/user/schema";
@@ -13,24 +13,28 @@ import { getFileName, getTimeStamp } from "$lib/utils";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-	// eslint-disable-next-line
-	const { password, ...rest } = getTableColumns(user);
-	const userList = await db
-		.select({ ...rest, schoolName: school.name })
-		.from(user)
-		.leftJoin(school, eq(user.schoolId, school.id));
-	const schoolList = await db.select().from(school);
-	const roleList = await db.select().from(userRole);
-	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
-		return {
-			userList: userList,
-			schoolList: schoolList,
-			roleList: roleList,
-			form: await superValidate(zod4(formSchemaWithPass)),
-		};
+	if (event.locals.user) {
+		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
+			const db = getDb(event);
+			// eslint-disable-next-line
+			const { password, ...rest } = getTableColumns(user);
+			const userList = await db
+				.select({ ...rest, schoolName: school.name })
+				.from(user)
+				.leftJoin(school, eq(user.schoolId, school.id));
+			const schoolList = await db.select().from(school);
+			const roleList = await db.select().from(userRole);
+			return {
+				userList: userList,
+				schoolList: schoolList,
+				roleList: roleList,
+				form: await superValidate(zod4(formSchemaWithPass)),
+			};
+		} else {
+			return error(404, { message: "Not found" });
+		}
 	}
-	return error(404, { message: "Not found" });
+	return redirect(302, "/signin");
 };
 
 export const actions: Actions = {
