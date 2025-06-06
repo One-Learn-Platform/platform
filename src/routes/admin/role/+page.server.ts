@@ -1,31 +1,24 @@
+import { error } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { fail } from "@sveltejs/kit";
 
-import { superValidate, setError } from "sveltekit-superforms";
 import { formSchema } from "$lib/schema/role/schema";
+import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import * as table from "$lib/schema/db";
+import { userRole } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
-	const roleList = await db.select().from(table.userRole);
-	if (event.locals.user) {
+	const roleList = await db.select().from(userRole);
+	if (event.locals.user && event.locals.user.role === 1) {
 		return {
-			user: event.locals.user,
-			role: event.locals.user?.role,
 			roleList: roleList,
 			form: await superValidate(zod4(formSchema)),
 		};
 	}
-	return {
-		user: event.locals.user,
-		roleList: roleList,
-		form: await superValidate(zod4(formSchema)),
-	};
-	// return error(404, { message: "Not Found" });
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
@@ -42,7 +35,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await db.insert(table.userRole).values({
+			await db.insert(userRole).values({
 				name: form.data.name,
 			});
 			return {
@@ -76,14 +69,14 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(table.userRole).where(eq(table.userRole.id, numberId));
-			await db.delete(table.userRole).where(eq(table.userRole.id, numberId));
+			const name = await db.select().from(userRole).where(eq(userRole.id, numberId)).get();
+			await db.delete(userRole).where(eq(userRole.id, numberId));
 			return {
 				delete: {
 					success: true,
 					data: {
 						id: numberId,
-						name: name[0].name,
+						name: name?.name,
 					},
 					message: null,
 				},
@@ -98,5 +91,57 @@ export const actions: Actions = {
 				},
 			});
 		}
+	},
+	multidelete: async (event) => {
+		const db = getDb(event);
+		const formData = await event.request.formData();
+		const ids = formData.get("ids");
+		const idArray = ids
+			?.toString()
+			.split(",")
+			.map((id) => Number(id));
+
+		if (!idArray) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
+			});
+		}
+
+		const roleArray = await db
+			.select()
+			.from(userRole)
+			.where(or(...idArray.map((id) => eq(userRole.id, id))));
+		const roleNameArray = roleArray.map((role) => role.name);
+
+		idArray.forEach(async (id) => {
+			if (isNaN(id)) {
+				return fail(400, {
+					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+				});
+			}
+			try {
+				await db.delete(userRole).where(eq(userRole.id, id));
+			} catch (error) {
+				console.error(error);
+				return fail(500, {
+					delete: {
+						success: false,
+						data: null,
+						message: error instanceof Error ? error.message : "Unknown error, please try again.",
+					},
+				});
+			}
+		});
+
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: idArray?.join(","),
+					name: roleNameArray.join(", "),
+				},
+				message: null,
+			},
+		};
 	},
 };

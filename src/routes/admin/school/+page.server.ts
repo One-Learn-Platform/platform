@@ -1,20 +1,20 @@
-import type { Actions, PageServerLoad } from "./$types";
 import { error } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
-import { superValidate, setError, fail, withFiles } from "sveltekit-superforms";
 import { formSchemaCreate } from "$lib/schema/school/schema";
+import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import * as table from "$lib/schema/db";
+import { school } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
-import { eq } from "drizzle-orm";
 import { getFileName, getTimeStamp } from "$lib/utils";
+import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
-	const schoolList = await db.select().from(table.school);
-	if (event.locals.user) {
+	const schoolList = await db.select().from(school);
+	if (event.locals.user && event.locals.user.role === 1) {
 		return {
 			user: event.locals.user,
 			role: event.locals.user?.role,
@@ -46,10 +46,14 @@ export const actions: Actions = {
 					contentType: form.data.logo.type,
 				},
 			});
-		} catch (r2Error) {
-			console.error("Failed to upload to R2:", r2Error);
+		} catch (error) {
+			console.error("Failed to upload to R2:", error);
 			return fail(500, {
-				create: { success: false, data: null, message: "Failed to upload file" },
+				create: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error, please try again.",
+				},
 
 				form,
 			});
@@ -57,7 +61,7 @@ export const actions: Actions = {
 		const imageUrl = (await getR2(event).get(uniqueFileName))?.key ?? "";
 
 		try {
-			await db.insert(table.school).values({
+			await db.insert(school).values({
 				name: form.data.name,
 				logo: imageUrl,
 			});
@@ -71,9 +75,18 @@ export const actions: Actions = {
 			});
 		} catch (error) {
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error, please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				create: { success: false, data: null, message: "Database error, please try again" },
+				create: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error, please try again",
+				},
 				form,
 			});
 		}
@@ -96,14 +109,14 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(table.userRole).where(eq(table.userRole.id, numberId));
-			await db.delete(table.userRole).where(eq(table.userRole.id, numberId));
+			const schooltbd = await db.select().from(school).where(eq(school.id, numberId)).get();
+			await db.delete(school).where(eq(school.id, numberId));
 			return {
 				delete: {
 					success: true,
 					data: {
 						id: numberId,
-						name: name[0].name,
+						name: schooltbd?.name,
 					},
 					message: null,
 				},
@@ -118,5 +131,57 @@ export const actions: Actions = {
 				},
 			});
 		}
+	},
+	multidelete: async (event) => {
+		const db = getDb(event);
+		const formData = await event.request.formData();
+		const ids = formData.get("ids");
+		const idArray = ids
+			?.toString()
+			.split(",")
+			.map((id) => Number(id));
+
+		if (!idArray) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
+			});
+		}
+
+		const schoolArray = await db
+			.select()
+			.from(school)
+			.where(or(...idArray.map((id) => eq(school.id, id))));
+		const schoolNameArray = schoolArray.map((school) => school.name);
+
+		idArray.forEach(async (id) => {
+			if (isNaN(id)) {
+				return fail(400, {
+					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+				});
+			}
+			try {
+				await db.delete(school).where(eq(school.id, id));
+			} catch (error) {
+				console.error(error);
+				return fail(500, {
+					delete: {
+						success: false,
+						data: null,
+						message: error instanceof Error ? error.message : "Unknown error, please try again.",
+					},
+				});
+			}
+		});
+
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: idArray?.join(","),
+					name: schoolNameArray.join(", "),
+				},
+				message: null,
+			},
+		};
 	},
 };

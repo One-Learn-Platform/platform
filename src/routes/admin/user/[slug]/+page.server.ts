@@ -1,13 +1,13 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaWithoutPass, formSchemaUploadImage } from "$lib/schema/user/schema";
+import { formSchemaUploadImage, formSchemaWithoutPass } from "$lib/schema/user/schema";
 import { eq } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
+import { school, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
@@ -17,26 +17,26 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const userId = parseInt(slug, 10);
 
-	if (!event.locals.user || (event.locals.user.role !== 0 && event.locals.user.role !== 1)) {
-		return error(404, { message: "Not Found" });
-	} else if (isNaN(userId)) {
-		return error(400, { message: "Invalid User ID" });
-	} else {
-		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
-		const schoolList = await db.select().from(table.school);
-		if (user) {
-			user.password = "";
-			return {
-				userData: user,
-				schoolList: schoolList,
-				form: await superValidate(zod4(formSchemaWithoutPass)),
-				uploadForm: await superValidate(zod4(formSchemaUploadImage)),
-			};
+	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
+		if (isNaN(userId)) {
+			return error(400, { message: "Invalid User ID" });
 		} else {
-			return error(404, { message: "User Not Found" });
+			const userData = await db.select().from(user).where(eq(user.id, userId)).get();
+			const schoolList = await db.select().from(school);
+			if (userData) {
+				userData.password = "";
+				return {
+					userData: userData,
+					schoolList: schoolList,
+					form: await superValidate(zod4(formSchemaWithoutPass)),
+					uploadForm: await superValidate(zod4(formSchemaUploadImage)),
+				};
+			} else {
+				return error(404, { message: "User Not Found" });
+			}
 		}
 	}
-	// return error(404, { message: "Not Found" });
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
@@ -48,7 +48,6 @@ export const actions: Actions = {
 		const form = await superValidate(event, zod4(formSchemaWithoutPass), {
 			id: "edit",
 		});
-		const formData = form.data;
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -59,7 +58,7 @@ export const actions: Actions = {
 		}
 
 		let roleId = 0;
-		switch (formData.roleId) {
+		switch (form.data.roleId) {
 			case "super admin":
 				roleId = 1;
 				break;
@@ -76,17 +75,15 @@ export const actions: Actions = {
 				break;
 		}
 
-		const prevUserData = (await db.select().from(table.user).where(eq(table.user.id, userId))).at(
-			0,
-		);
+		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();
 		if (!prevUserData) return fail(404, { message: "User not found" });
 
-		if (prevUserData.username !== formData.username) {
+		if (prevUserData.username !== form.data.username) {
 			try {
 				const existingUser = await db
 					.select()
-					.from(table.user)
-					.where(eq(table.user.username, formData.username));
+					.from(user)
+					.where(eq(user.username, form.data.username));
 				if (existingUser.at(0)) {
 					setError(form, "username", "Username already exists");
 					return fail(400, {
@@ -115,14 +112,14 @@ export const actions: Actions = {
 
 		try {
 			await db
-				.update(table.user)
+				.update(user)
 				.set({
-					fullname: formData.fullname,
-					username: formData.username,
-					dob: formData.dob,
+					fullname: form.data.fullname,
+					username: form.data.username,
+					dob: form.data.dob,
 					roleId: roleId,
 				})
-				.where(eq(table.user.id, userId));
+				.where(eq(user.id, userId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -145,13 +142,14 @@ export const actions: Actions = {
 			edit: {
 				success: true,
 				data: {
-					fullname: formData.fullname,
+					fullname: form.data.fullname,
 				},
 				message: "User created successfully",
 			},
 			form,
 		};
 	},
+
 	upload: async (event) => {
 		const db = getDb(event);
 		const r2 = getR2(event);
@@ -167,11 +165,11 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const user = await db.select().from(table.user).where(eq(table.user.id, userId)).get();
-		if (!user) {
+		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();
+		if (!prevUserData) {
 			return fail(404, { message: "User not found" });
 		}
-		const uniqueFileName = `user/avatar/${getFileName(user?.username)}-${getTimeStamp()}.png`;
+		const uniqueFileName = `user/avatar/${getFileName(prevUserData?.username)}-${getTimeStamp()}.png`;
 		const fileBuffer = await form.data.avatar.arrayBuffer();
 		try {
 			await r2.put(uniqueFileName, fileBuffer, {
@@ -191,11 +189,11 @@ export const actions: Actions = {
 
 		try {
 			await db
-				.update(table.user)
+				.update(user)
 				.set({
 					avatar: imageUrl,
 				})
-				.where(eq(table.user.id, userId));
+				.where(eq(user.id, userId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -218,7 +216,7 @@ export const actions: Actions = {
 			upload: {
 				success: true,
 				data: {
-					fullname: user?.fullname,
+					fullname: prevUserData?.fullname,
 					avatar: imageUrl,
 				},
 				message: "Avatar updated successfully",
@@ -243,8 +241,8 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
-		const user = await db.select().from(table.user).where(eq(table.user.id, numberId)).get();
-		if (!user) {
+		const prevUserData = await db.select().from(user).where(eq(user.id, numberId)).get();
+		if (!prevUserData) {
 			return fail(404, {
 				delete: {
 					success: false,
@@ -253,7 +251,7 @@ export const actions: Actions = {
 				},
 			});
 		}
-		if (user.avatar === null || user.avatar === "") {
+		if (prevUserData.avatar === null || prevUserData.avatar === "") {
 			return fail(400, {
 				delete: {
 					success: false,
@@ -264,7 +262,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await r2.delete(user.avatar);
+			await r2.delete(prevUserData.avatar);
 		} catch (error) {
 			console.error("Failed to delete avatar from R2:", error);
 			return fail(500, {
@@ -278,17 +276,17 @@ export const actions: Actions = {
 
 		try {
 			await db
-				.update(table.user)
+				.update(user)
 				.set({
 					avatar: null,
 				})
-				.where(eq(table.user.id, numberId));
+				.where(eq(user.id, numberId));
 			return {
 				delete: {
 					success: true,
 					data: {
 						id: numberId,
-						fullname: user.fullname,
+						fullname: prevUserData.fullname,
 					},
 					message: "Avatar deleted successfully",
 				},
@@ -321,7 +319,7 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const selectName = await db.select().from(table.user).where(eq(table.user.id, numberId));
+			const selectName = await db.select().from(user).where(eq(user.id, numberId));
 			const name = selectName.at(0);
 			if (!name) {
 				return fail(404, {
@@ -332,7 +330,7 @@ export const actions: Actions = {
 					},
 				});
 			}
-			await db.delete(table.user).where(eq(table.user.id, numberId));
+			await db.delete(user).where(eq(user.id, numberId));
 			redirect(303, "/admin/user");
 		} catch (error) {
 			console.error(error);

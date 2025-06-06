@@ -1,15 +1,15 @@
-import type { PageServerLoad, Actions } from "./$types";
 import { error, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
-import { setError, superValidate, fail, withFiles } from "sveltekit-superforms";
-import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchemaEdit } from "$lib/schema/school/schema";
+import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
 
-import { eq } from "drizzle-orm";
+import { school } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
-import * as table from "$lib/schema/db";
+import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -17,18 +17,14 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const schoolId = parseInt(slug, 10);
 
-	if (event.locals.user && (event.locals.user.role === 0 || event.locals.user.role === 1)) {
+	if (event.locals.user && event.locals.user.role === 1) {
 		if (isNaN(schoolId)) {
 			return error(400, { message: "Invalid School ID" });
 		} else {
-			const school = await db
-				.select()
-				.from(table.school)
-				.where(eq(table.school.id, schoolId))
-				.get();
-			if (school) {
+			const schoolData = await db.select().from(school).where(eq(school.id, schoolId)).get();
+			if (schoolData) {
 				return {
-					schoolData: school,
+					schoolData: schoolData,
 					form: await superValidate(zod4(formSchemaEdit)),
 				};
 			} else {
@@ -55,9 +51,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const prevSchoolData = (
-			await db.select().from(table.school).where(eq(table.school.id, schoolId))
-		).at(0);
+		const prevSchoolData = await db.select().from(school).where(eq(school.id, schoolId)).get();
 		if (!prevSchoolData)
 			return fail(404, { edit: { success: false, data: null, message: "School not found" } });
 
@@ -66,8 +60,8 @@ export const actions: Actions = {
 
 		const schoolExists = await db
 			.select()
-			.from(table.school)
-			.where(eq(table.school.name, form.data.name))
+			.from(school)
+			.where(eq(school.name, form.data.name))
 			.get();
 		if (schoolExists && schoolExists.id !== schoolId) {
 			return fail(400, {
@@ -88,7 +82,6 @@ export const actions: Actions = {
 
 		const oldFile = await getR2(event).get(prevFileName);
 		let fileBuffer: ArrayBuffer;
-
 		if (form.data.logo) {
 			fileBuffer = await form.data.logo.arrayBuffer();
 		} else if (oldFile?.arrayBuffer) {
@@ -107,10 +100,14 @@ export const actions: Actions = {
 				},
 			});
 			await getR2(event).delete(prevFileName);
-		} catch (r2Error) {
-			console.error("Failed to upload to R2:", r2Error);
+		} catch (error) {
+			console.error("Failed to upload to R2:", error);
 			return fail(500, {
-				edit: { success: false, data: null, message: "Failed to upload file" },
+				edit: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Failed to upload file",
+				},
 				form,
 			});
 		}
@@ -118,12 +115,12 @@ export const actions: Actions = {
 
 		try {
 			await db
-				.update(table.school)
+				.update(school)
 				.set({
 					name: form.data.name,
 					logo: imageUrl,
 				})
-				.where(eq(table.school.id, schoolId));
+				.where(eq(school.id, schoolId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -173,9 +170,8 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const selectName = await db.select().from(table.school).where(eq(table.school.id, numberId));
-			const name = selectName.at(0);
-			if (!name) {
+			const schooltbd = await db.select().from(school).where(eq(school.id, numberId)).get();
+			if (!schooltbd) {
 				return fail(404, {
 					delete: {
 						success: false,
@@ -184,7 +180,7 @@ export const actions: Actions = {
 					},
 				});
 			}
-			await db.delete(table.school).where(eq(table.school.id, numberId));
+			await db.delete(school).where(eq(school.id, numberId));
 			redirect(302, "/admin/school");
 		} catch (error) {
 			console.error(error);

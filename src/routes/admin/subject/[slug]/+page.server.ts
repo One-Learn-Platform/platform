@@ -6,7 +6,7 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
+import { subject, user } from "$lib/schema/db";
 import { eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -15,32 +15,30 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const schoolId = parseInt(slug, 10);
 
-	if (!event.locals.user || (event.locals.user.role !== 0 && event.locals.user.role !== 1)) {
-		return error(404, { message: "Not Found" });
-	} else if (isNaN(schoolId)) {
-		return error(400, { message: "Invalid School ID" });
-	} else {
-		const { ...rest } = getTableColumns(table.subject);
-		const teacherList = await db.select().from(table.user).where(eq(table.user.roleId, 1));
-		const subject = await db
-			.select({
-				...rest,
-				teacherName: table.user.fullname,
-			})
-			.from(table.subject)
-			.where(eq(table.subject.id, schoolId))
-			.leftJoin(table.user, eq(table.user.id, table.subject.teacher))
-			.get();
-		if (subject) {
-			return {
-				subjectData: subject,
-				teacherList: teacherList,
-				form: await superValidate(zod4(formSchemaEdit)),
-			};
+	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
+		if (isNaN(schoolId)) {
+			return error(400, { message: "Invalid School ID" });
 		} else {
-			return error(404, { message: "Subject Not Found" });
+			const { ...rest } = getTableColumns(subject);
+			const teacherList = await db.select().from(user).where(eq(user.roleId, 1));
+			const subjectData = await db
+				.select({ ...rest, teacherName: user.fullname })
+				.from(subject)
+				.where(eq(subject.id, schoolId))
+				.leftJoin(user, eq(user.id, subject.teacher))
+				.get();
+			if (subjectData) {
+				return {
+					subjectData: subjectData,
+					teacherList: teacherList,
+					form: await superValidate(zod4(formSchemaEdit)),
+				};
+			} else {
+				return error(404, { message: "Subject Not Found" });
+			}
 		}
 	}
+	return error(404, { message: "Not Found" });
 };
 
 export const actions: Actions = {
@@ -79,7 +77,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const teacher = await db.select().from(table.user).where(eq(table.user.id, teacherId)).get();
+		const teacher = await db.select().from(user).where(eq(user.id, teacherId)).get();
 		if (!teacher) {
 			setError(form, "teacher", "Teacher not found, please select a valid teacher");
 			return fail(404, {
@@ -94,12 +92,12 @@ export const actions: Actions = {
 
 		try {
 			await db
-				.update(table.subject)
+				.update(subject)
 				.set({
 					name: form.data.name,
 					teacher: teacherId,
 				})
-				.where(eq(table.subject.id, subjectId));
+				.where(eq(subject.id, subjectId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -149,10 +147,7 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const selectName = await db
-				.select()
-				.from(table.subject)
-				.where(eq(table.subject.id, numberId));
+			const selectName = await db.select().from(subject).where(eq(subject.id, numberId));
 			const name = selectName.at(0);
 			if (!name) {
 				return fail(404, {
@@ -163,7 +158,7 @@ export const actions: Actions = {
 					},
 				});
 			}
-			await db.delete(table.subject).where(eq(table.subject.id, numberId));
+			await db.delete(subject).where(eq(subject.id, numberId));
 			redirect(303, "/admin/subject");
 		} catch (error) {
 			console.error(error);

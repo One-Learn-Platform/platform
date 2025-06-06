@@ -1,13 +1,13 @@
-import type { PageServerLoad, Actions } from "./$types";
 import { error, fail, redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 
+import { formSchema } from "$lib/schema/role/schema";
 import { setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { formSchema } from "$lib/schema/role/schema";
 
-import { eq } from "drizzle-orm";
+import { userRole } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
+import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -15,15 +15,11 @@ export const load: PageServerLoad = async (event) => {
 	const { slug } = params;
 	const userId = parseInt(slug, 10);
 
-	if (event.locals.user && (event.locals.user.role === 0 || event.locals.user.role === 1)) {
+	if (event.locals.user && event.locals.user.role === 1) {
 		if (isNaN(userId)) {
 			return error(400, { message: "Invalid User ID" });
 		} else {
-			const role = await db
-				.select()
-				.from(table.userRole)
-				.where(eq(table.userRole.id, userId))
-				.get();
+			const role = await db.select().from(userRole).where(eq(userRole.id, userId)).get();
 			if (role) {
 				return {
 					roleData: role,
@@ -56,19 +52,17 @@ export const actions: Actions = {
 			});
 		}
 
-		const prevRoleData = (
-			await db.select().from(table.userRole).where(eq(table.userRole.id, roleId))
-		).at(0);
+		const prevRoleData = (await db.select().from(userRole).where(eq(userRole.id, roleId))).at(0);
 		if (!prevRoleData)
 			return fail(404, { edit: { success: false, data: null, message: "Role not found" }, form });
 
 		try {
 			await db
-				.update(table.userRole)
+				.update(userRole)
 				.set({
 					name: formData.name,
 				})
-				.where(eq(table.userRole.id, roleId));
+				.where(eq(userRole.id, roleId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -117,18 +111,17 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const selectName = await db.select().from(table.user).where(eq(table.user.id, numberId));
-			const name = selectName.at(0);
+			const name = await db.select().from(userRole).where(eq(userRole.id, numberId)).get();
 			if (!name) {
 				return fail(404, {
 					delete: {
 						success: false,
 						data: null,
-						message: "User not found. Please try again.",
+						message: "Role not found. Please try again.",
 					},
 				});
 			}
-			await db.delete(table.userRole).where(eq(table.userRole.id, numberId));
+			await db.delete(userRole).where(eq(userRole.id, numberId));
 			redirect(302, "/admin/role");
 		} catch (error) {
 			console.error(error);

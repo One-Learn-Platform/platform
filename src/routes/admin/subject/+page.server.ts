@@ -6,21 +6,18 @@ import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
+import { subject, user } from "$lib/schema/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
-	const { ...rest } = getTableColumns(table.subject);
+	const { ...rest } = getTableColumns(subject);
 	const subjectList = await db
-		.select({
-			...rest,
-			teacherName: table.user.fullname,
-		})
-		.from(table.subject)
-		.leftJoin(table.user, eq(table.subject.teacher, table.user.id));
-	const teacherList = await db.select().from(table.user).where(eq(table.user.roleId, 3));
-	if (event.locals.user) {
+		.select({ ...rest, teacherName: user.fullname })
+		.from(subject)
+		.leftJoin(user, eq(user.id, subject.teacher));
+	const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
+	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
 		return {
 			subjectList: subjectList,
 			teacherList: teacherList,
@@ -56,7 +53,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const teacher = await db.select().from(table.user).where(eq(table.user.id, teacherId)).get();
+		const teacher = await db.select().from(user).where(eq(user.id, teacherId)).get();
 		if (!teacher) {
 			setError(form, "teacher", "Teacher not found, please select a valid teacher");
 			return fail(404, {
@@ -70,19 +67,19 @@ export const actions: Actions = {
 		}
 
 		try {
-			await db.insert(table.subject).values({
+			await db.insert(subject).values({
 				teacher: teacher.id,
 				code: form.data.code,
 				name: form.data.name,
 			});
 
 			return {
-				form,
 				create: {
 					success: true,
 					data: { name: form.data.name, code: form.data.code },
 					message: null,
 				},
+				form,
 			};
 		} catch (error) {
 			console.error(error);
@@ -115,14 +112,14 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(table.subject).where(eq(table.subject.id, numberId));
-			await db.delete(table.subject).where(eq(table.subject.id, numberId));
+			const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
+			await db.delete(subject).where(eq(subject.id, numberId));
 			return {
 				delete: {
 					success: true,
 					data: {
 						id: numberId,
-						name: name[0].name,
+						name: name?.name,
 					},
 					message: null,
 				},
@@ -155,8 +152,8 @@ export const actions: Actions = {
 
 		const subjectArray = await db
 			.select()
-			.from(table.subject)
-			.where(or(...idArray.map((id) => eq(table.subject.id, id))));
+			.from(subject)
+			.where(or(...idArray.map((id) => eq(subject.id, id))));
 		const SubjectNameArray = subjectArray.map((subject) => subject.name);
 
 		idArray.forEach(async (id) => {
@@ -166,14 +163,14 @@ export const actions: Actions = {
 				});
 			}
 			try {
-				await db.delete(table.user).where(eq(table.user.id, id));
+				await db.delete(subject).where(eq(subject.id, id));
 			} catch (error) {
 				console.error(error);
 				return fail(500, {
 					delete: {
 						success: false,
 						data: null,
-						message: "Database Connection error, please try again.",
+						message: error instanceof Error ? error.message : "Unknown error, please try again.",
 					},
 				});
 			}
