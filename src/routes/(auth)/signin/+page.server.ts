@@ -4,7 +4,7 @@ import { redirect } from "@sveltejs/kit";
 import bcryptjs from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchema } from "./schema";
 
 import { TURNSTILE_SECRET_KEY } from "$env/static/private";
@@ -16,23 +16,23 @@ import {
 } from "$lib/server/auth";
 import { validatePassword, validateUsername } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
-import * as table from "$lib/schema/db";
+import { user } from "$lib/schema/db";
 import { validateToken } from "$lib/server/turnstile";
 
 const throttler = new Throttler([1, 2, 4, 8, 16, 30, 60, 180, 300]); //in seconds
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user?.id) {
-		return { user: event.locals.user, form: await superValidate(zod(formSchema)) };
+		return { user: event.locals.user, form: await superValidate(zod4(formSchema)) };
 	}
-	return { user: null, form: await superValidate(zod(formSchema)) };
+	return { form: await superValidate(zod4(formSchema)) };
 };
 
 export const actions: Actions = {
 	signin: async (event) => {
 		const db = getDb(event);
 
-		const form = await superValidate(event, zod(formSchema));
+		const form = await superValidate(event, zod4(formSchema));
 		const username = form.data.username;
 		const password = form.data.password;
 		const captcha = form.data["cf-turnstile-response"];
@@ -64,9 +64,8 @@ export const actions: Actions = {
 			return fail(400, { message: "Invalid password (min 6, max 255 characters)", form });
 		}
 
-		const results = await db.select().from(table.user).where(eq(table.user.username, username));
+		const existingUser = await db.select().from(user).where(eq(user.username, username)).get();
 
-		const existingUser = results.at(0);
 		// const ip = event.getClientAddress();
 		const ip = "192.168.0"; //for testing
 
