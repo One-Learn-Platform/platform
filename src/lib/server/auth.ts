@@ -23,7 +23,11 @@ export async function createSession(event: RequestEvent, token: string, userId: 
 		userId,
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
 	};
-	await db.insert(table.session).values(session);
+	await db.insert(table.session).values({
+		id: sessionId,
+		userId: userId,
+		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
+	});
 	return session;
 }
 

@@ -2,7 +2,7 @@
 	import { PUBLIC_R2_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
 	import { Turnstile } from "svelte-turnstile";
 	import { superForm } from "sveltekit-superforms";
-	import { zodClient } from "sveltekit-superforms/adapters";
+	import { zod4Client } from "sveltekit-superforms/adapters";
 	import type { ActionData, PageServerData } from "./$types";
 	import { formSchema } from "./schema";
 
@@ -23,7 +23,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zodClient(formSchema),
+		validators: zod4Client(formSchema),
 	});
 	const { form: formData, enhance, errors: formErrors } = superform;
 </script>
@@ -56,7 +56,7 @@
 					</Avatar.Root>
 					<p class="grow truncate font-medium">{data.user?.username}</p>
 					<Button
-						href="/"
+						href={data.user.role === 1 || data.user.role === 2 ? "/admin" : "/"}
 						size="sm"
 						variant="outline"
 						class="h-auto w-auto self-stretch justify-self-end text-sm"
