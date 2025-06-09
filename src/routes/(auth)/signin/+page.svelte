@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { PUBLIC_R2_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
+	import type { ActionData, PageServerData } from "./$types";
+
 	import { Turnstile } from "svelte-turnstile";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import type { ActionData, PageServerData } from "./$types";
 	import { formSchema } from "./schema";
 
 	import { acronym } from "$lib/utils";
@@ -28,17 +29,17 @@
 	const { form: formData, enhance, errors: formErrors } = superform;
 </script>
 
-<main class="flex h-screen flex-col items-center justify-center gap-8 md:flex-row md:gap-0">
-	<div class="h-1/4 min-h-1/4 w-full md:h-full md:w-1/2 md:min-w-1/2">
+<main class="flex h-dvh flex-col items-center justify-center gap-8 md:flex-row md:gap-0">
+	<div class="min-h-0 w-full grow md:h-full md:min-h-fit md:w-1/2 md:min-w-1/2 md:grow-0">
 		<enhanced:img src={backdrop} class="h-full w-full object-cover" alt="" />
 	</div>
 	<form
 		method="POST"
 		action="?/signin"
-		class="flex h-full w-full grow flex-col items-center justify-start gap-4 px-8 sm:px-10 md:w-auto md:justify-center md:px-12 lg:px-20"
+		class="flex h-full w-full flex-col items-center justify-start gap-3 px-8 sm:gap-4 sm:px-10 md:w-auto md:grow md:justify-center md:px-12 xl:px-20"
 		use:enhance
 	>
-		<img src={logo} alt="Logo" class="w-1/3" />
+		<img src={logo} alt="Logo" class="w-1/2 min-w-10 sm:w-1/3" />
 		<h1
 			class="self-start font-display text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl"
 		>
