@@ -23,7 +23,9 @@
 	import Settings from "@lucide/svelte/icons/settings";
 	import User from "@lucide/svelte/icons/user";
 	import BookMarked from "@lucide/svelte/icons/book-marked";
+	import BookCopy from "@lucide/svelte/icons/book-copy";
 	import UserCog from "@lucide/svelte/icons/user-cog";
+	import Shapes from "@lucide/svelte/icons/shapes";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -73,6 +75,18 @@
 			href: `${prefix}/subject`,
 			icon: BookMarked,
 			superadmin: false,
+		},
+		{
+			title: "Subject Type",
+			href: `${prefix}/subject-type`,
+			icon: BookCopy,
+			superadmin: true,
+		},
+		{
+			title: "Material Type",
+			href: `${prefix}/material-type`,
+			icon: Shapes,
+			superadmin: true,
 		},
 	];
 

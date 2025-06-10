@@ -1,23 +1,24 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-	const sidebar = useSidebar();
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { buttonVariants, Button } from "$lib/components/ui/button/index.js";
+	import * as Avatar from "$lib/components/ui/avatar/index.js";
+	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
+	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { resetMode, setMode, userPrefersMode } from "mode-watcher";
 
-	import SunIcon from "@lucide/svelte/icons/sun";
-	import MoonIcon from "@lucide/svelte/icons/moon";
 	import ChevronDown from "@lucide/svelte/icons/chevron-down";
 	import CircleUser from "@lucide/svelte/icons/circle-user";
-	import LogOut from "@lucide/svelte/icons/log-out";
-	import UserCog from "@lucide/svelte/icons/user-cog";
 	import Contrast from "@lucide/svelte/icons/contrast";
+	import LogOut from "@lucide/svelte/icons/log-out";
+	import MoonIcon from "@lucide/svelte/icons/moon";
+	import SunIcon from "@lucide/svelte/icons/sun";
+	import UserCog from "@lucide/svelte/icons/user-cog";
 
 	import { nav } from "$lib/assets/nav/main";
 
@@ -28,17 +29,51 @@
 	const initials = acronym(user?.fullname ?? "", 2);
 
 	let alertDialogOpen = $state(false);
+	const url = $derived.by(() => {
+		const pathname = page.url.pathname;
+		if (pathname === "/") {
+			return [{ url: "/", name: "Home" }];
+		}
+
+		const segments = pathname.split("/").filter(Boolean);
+		const breadcrumbs = [{ url: "/", name: "Home" }];
+		segments.forEach((segment, index) => {
+			const urlPath = "/" + segments.slice(0, index + 1).join("/");
+
+			const formattedName = segment
+				.split("-")
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+				.join("-");
+
+			breadcrumbs.push({
+				url: urlPath,
+				name: formattedName,
+			});
+		});
+		return breadcrumbs;
+	});
 </script>
 
 <header
 	class={[
-		"fixed top-0 left-0 z-1 flex w-full items-center gap-2 border-b bg-background px-4 py-2",
-		sidebar.isMobile ? "justify-between" : "justify-end",
+		"fixed top-0 left-0 z-1 flex h-(--header-height) w-full items-center  gap-2 border-b bg-background px-2",
 	]}
 >
-	{#if sidebar.isMobile}
-		<Sidebar.Trigger class="z-50 h-10 bg-background" />
-	{/if}
+	<Sidebar.Trigger class="z-50 size-8 h-10 bg-background" />
+	<Separator orientation="vertical" class="mr-2 -ml-px h-4" />
+	<Breadcrumb.Root class="hidden grow sm:block">
+		<Breadcrumb.List>
+			{#each url as segment, index (segment)}
+				<Breadcrumb.Item>
+					<Breadcrumb.Link href={segment.url}>{segment.name}</Breadcrumb.Link>
+				</Breadcrumb.Item>
+				{#if index < url.length - 1}
+					<Breadcrumb.Separator />
+				{/if}
+			{/each}
+		</Breadcrumb.List>
+	</Breadcrumb.Root>
+
 	<div class="flex items-center gap-2">
 		{#if user?.role === 1 || user?.role === 2}
 			<Button variant="outline" outline href="/admin"><UserCog />Admin Panel</Button>

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/state";
 
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
 	const sidebar = useSidebar();
 
@@ -18,7 +18,10 @@
 	let selectedGrade = $state(grade[0]);
 </script>
 
-<Sidebar.Root collapsible="icon">
+<Sidebar.Root
+	collapsible="icon"
+	class="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+>
 	<Sidebar.Header class="bg-background">
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
@@ -96,5 +99,4 @@
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
 	</Sidebar.Content>
-	<Sidebar.Trigger class="z-50 h-10 w-full bg-background" />
 </Sidebar.Root>
