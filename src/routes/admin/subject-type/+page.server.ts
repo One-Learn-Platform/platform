@@ -1,67 +1,33 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaCreate } from "$lib/schema/subject/schema";
+import { formSchema } from "$lib/schema/subject-type/schema";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
+import { subjectType } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { subject, user, school } from "$lib/schema/db";
-import { eq, getTableColumns, or } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
+		if (event.locals.user.role === 1) {
 			const db = getDb(event);
-			const { ...rest } = getTableColumns(subject);
-			const subjectList = await db
-				.select({ ...rest, teacherName: user.fullname })
-				.from(subject)
-				.leftJoin(user, eq(user.id, subject.teacher));
-			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
-			const schoolList = await db.select().from(school);
+			const subjectList = await db.select().from(subjectType);
 			return {
 				subjectList: subjectList,
-				teacherList: teacherList,
-				schoolList: schoolList,
-				form: await superValidate(zod4(formSchemaCreate)),
+				form: await superValidate(zod4(formSchema)),
 			};
 		}
-	} else {
 		return error(404, { message: "Not Found" });
 	}
-	return redirect(302, "/sigin");
+	return redirect(302, "/signin");
 };
 
 export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
-		const form = await superValidate(event, zod4(formSchemaCreate));
-		const teacherId = Number(form.data.teacher);
-		const school = event.locals.user?.school;
-
-		if (event.locals.user?.role === 1) {
-			setError(form, "", "Super Admin cannot create subjects");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "Super Admin cannot create subjects",
-				},
-				form,
-			});
-		}
-		if (!school) {
-			setError(form, "", "No school found for the user");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "No school found for the user",
-				},
-				form,
-			});
-		}
+		const form = await superValidate(event, zod4(formSchema));
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -71,45 +37,12 @@ export const actions: Actions = {
 			});
 		}
 
-		if (isNaN(teacherId) || teacherId <= 0) {
-			setError(form, "teacher", "Invalid teacher ID, please select a valid teacher");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "Invalid teacher ID, please select a valid teacher",
-				},
-				form,
-			});
-		}
-
-		const teacher = await db.select().from(user).where(eq(user.id, teacherId)).get();
-		if (!teacher) {
-			setError(form, "teacher", "Teacher not found, please select a valid teacher");
-			return fail(404, {
-				create: {
-					success: false,
-					data: null,
-					message: "Teacher not found, please select a valid teacher",
-				},
-				form,
-			});
-		}
-
 		try {
-			await db.insert(subject).values({
-				teacher: teacher.id,
-				code: form.data.code,
+			await db.insert(subjectType).values({
 				name: form.data.name,
-				schoolId: school,
 			});
-
 			return {
-				create: {
-					success: true,
-					data: { name: form.data.name, code: form.data.code },
-					message: null,
-				},
+				create: { success: true, data: { name: form.data.name }, message: null },
 				form,
 			};
 		} catch (error) {
@@ -143,8 +76,8 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
-			await db.delete(subject).where(eq(subject.id, numberId));
+			const name = await db.select().from(subjectType).where(eq(subjectType.id, numberId)).get();
+			await db.delete(subjectType).where(eq(subjectType.id, numberId));
 			return {
 				delete: {
 					success: true,
@@ -183,9 +116,9 @@ export const actions: Actions = {
 
 		const subjectArray = await db
 			.select()
-			.from(subject)
-			.where(or(...idArray.map((id) => eq(subject.id, id))));
-		const SubjectNameArray = subjectArray.map((subject) => subject.name);
+			.from(subjectType)
+			.where(or(...idArray.map((id) => eq(subjectType.id, id))));
+		const subjectNameArray = subjectArray.map((subject) => subject.name);
 
 		idArray.forEach(async (id) => {
 			if (isNaN(id)) {
@@ -194,7 +127,7 @@ export const actions: Actions = {
 				});
 			}
 			try {
-				await db.delete(subject).where(eq(subject.id, id));
+				await db.delete(subjectType).where(eq(subjectType.id, id));
 			} catch (error) {
 				console.error(error);
 				return fail(500, {
@@ -212,7 +145,7 @@ export const actions: Actions = {
 				success: true,
 				data: {
 					id: idArray?.join(","),
-					name: SubjectNameArray.join(", "),
+					name: subjectNameArray.join(", "),
 				},
 				message: null,
 			},

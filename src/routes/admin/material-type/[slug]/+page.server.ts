@@ -1,11 +1,11 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/role/schema";
+import { formSchema } from "$lib/schema/material-type/schema";
 import { setError, superValidate, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { userRole } from "$lib/schema/db";
+import { materialType } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq } from "drizzle-orm";
 
@@ -14,25 +14,27 @@ export const load: PageServerLoad = async (event) => {
 	const params = event.params;
 	const { slug } = params;
 	const userId = parseInt(slug, 10);
-
 	if (event.locals.user) {
 		if (event.locals.user.role === 1) {
 			if (isNaN(userId)) {
 				return error(400, { message: "Invalid User ID" });
 			} else {
-				const role = await db.select().from(userRole).where(eq(userRole.id, userId)).get();
-				if (role) {
+				const material = await db
+					.select()
+					.from(materialType)
+					.where(eq(materialType.id, userId))
+					.get();
+				if (material) {
 					return {
-						roleData: role,
+						materialType: material,
 						form: await superValidate(zod4(formSchema)),
 					};
 				} else {
 					return error(404, { message: "Role Not Found" });
 				}
 			}
-		} else {
-			return error(404, { message: "Not Found" });
 		}
+		return error(404, { message: "Not Found" });
 	}
 	return redirect(302, "/signin");
 };
@@ -56,17 +58,24 @@ export const actions: Actions = {
 			});
 		}
 
-		const prevRoleData = (await db.select().from(userRole).where(eq(userRole.id, roleId))).at(0);
-		if (!prevRoleData)
-			return fail(404, { edit: { success: false, data: null, message: "Role not found" }, form });
+		const prevMaterialData = await db
+			.select()
+			.from(materialType)
+			.where(eq(materialType.id, roleId))
+			.get();
+		if (!prevMaterialData)
+			return fail(404, {
+				edit: { success: false, data: null, message: "Material not found" },
+				form,
+			});
 
 		try {
 			await db
-				.update(userRole)
+				.update(materialType)
 				.set({
 					name: formData.name,
 				})
-				.where(eq(userRole.id, roleId));
+				.where(eq(materialType.id, roleId));
 		} catch (error) {
 			console.error(error);
 			setError(
@@ -84,7 +93,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (event.url.searchParams.has("ref")) redirect(303, "/admin/user");
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/material-type");
 		else {
 			return {
 				edit: {
@@ -92,7 +101,7 @@ export const actions: Actions = {
 					data: {
 						name: formData.name,
 					},
-					message: "User created successfully",
+					message: "Material type updated successfully",
 				},
 				form,
 			};
@@ -115,18 +124,18 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(userRole).where(eq(userRole.id, numberId)).get();
+			const name = await db.select().from(materialType).where(eq(materialType.id, numberId)).get();
 			if (!name) {
 				return fail(404, {
 					delete: {
 						success: false,
 						data: null,
-						message: "Role not found. Please try again.",
+						message: "Material not found. Please try again.",
 					},
 				});
 			}
-			await db.delete(userRole).where(eq(userRole.id, numberId));
-			redirect(302, "/admin/role");
+			await db.delete(materialType).where(eq(materialType.id, numberId));
+			redirect(302, "/admin/material-type");
 		} catch (error) {
 			console.error(error);
 			return fail(500, {

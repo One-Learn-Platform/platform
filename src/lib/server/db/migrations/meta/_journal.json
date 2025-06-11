@@ -71,6 +71,20 @@
 			"when": 1749203710578,
 			"tag": "0009_messy_junta",
 			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "6",
+			"when": 1749446020928,
+			"tag": "0010_chemical_fallen_one",
+			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "6",
+			"when": 1749469370679,
+			"tag": "0011_hot_peter_quill",
+			"breakpoints": true
 		}
 	]
 }

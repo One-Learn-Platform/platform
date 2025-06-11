@@ -1,21 +1,21 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/role/schema";
+import { formSchema } from "$lib/schema/material-type/schema";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { userRole } from "$lib/schema/db";
+import { materialType } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-	const roleList = await db.select().from(userRole);
 	if (event.locals.user) {
-		if (eevent.locals.user.role === 1) {
+		if (event.locals.user.role === 1) {
+			const db = getDb(event);
+			const materialList = await db.select().from(materialType);
 			return {
-				roleList: roleList,
+				materialList: materialList,
 				form: await superValidate(zod4(formSchema)),
 			};
 		}
@@ -38,7 +38,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await db.insert(userRole).values({
+			await db.insert(materialType).values({
 				name: form.data.name,
 			});
 			return {
@@ -47,9 +47,18 @@ export const actions: Actions = {
 			};
 		} catch (error) {
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				create: { success: false, data: null, message: "Database error, please try again" },
+				create: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
 				form,
 			});
 		}
@@ -72,8 +81,8 @@ export const actions: Actions = {
 			});
 		}
 		try {
-			const name = await db.select().from(userRole).where(eq(userRole.id, numberId)).get();
-			await db.delete(userRole).where(eq(userRole.id, numberId));
+			const name = await db.select().from(materialType).where(eq(materialType.id, numberId)).get();
+			await db.delete(materialType).where(eq(materialType.id, numberId));
 			return {
 				delete: {
 					success: true,
@@ -110,11 +119,11 @@ export const actions: Actions = {
 			});
 		}
 
-		const roleArray = await db
+		const materialArray = await db
 			.select()
-			.from(userRole)
-			.where(or(...idArray.map((id) => eq(userRole.id, id))));
-		const roleNameArray = roleArray.map((role) => role.name);
+			.from(materialType)
+			.where(or(...idArray.map((id) => eq(materialType.id, id))));
+		const materialNameArray = materialArray.map((material) => material.name);
 
 		idArray.forEach(async (id) => {
 			if (isNaN(id)) {
@@ -123,7 +132,7 @@ export const actions: Actions = {
 				});
 			}
 			try {
-				await db.delete(userRole).where(eq(userRole.id, id));
+				await db.delete(materialType).where(eq(materialType.id, id));
 			} catch (error) {
 				console.error(error);
 				return fail(500, {
@@ -141,7 +150,7 @@ export const actions: Actions = {
 				success: true,
 				data: {
 					id: idArray?.join(","),
-					name: roleNameArray.join(", "),
+					name: materialNameArray.join(", "),
 				},
 				message: null,
 			},

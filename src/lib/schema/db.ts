@@ -53,6 +53,11 @@ export const user = sqliteTable(
 	],
 );
 
+export const subjectType = sqliteTable("subject_type", {
+	id: integer("subject_type_id").primaryKey({ autoIncrement: true }),
+	name: text("type_name").notNull(),
+});
+
 export const subject = sqliteTable(
 	"subject",
 	{
@@ -62,6 +67,9 @@ export const subject = sqliteTable(
 			.notNull()
 			.references(() => user.id),
 		name: text("name").notNull(),
+		subjectType: integer("subject_type_id")
+			.references(() => subjectType.id)
+			.notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -97,17 +105,10 @@ export const enrollment = sqliteTable(
 	],
 );
 
-export const materialType = sqliteTable(
-	"material_type",
-	{
-		id: integer("material_type_id").primaryKey({ autoIncrement: true }),
-		name: text("type_name").notNull(),
-		schoolId: integer("school_id")
-			.references(() => school.id)
-			.notNull(),
-	},
-	(table) => [index("material_type_school_index").on(table.schoolId)],
-);
+export const materialType = sqliteTable("material_type", {
+	id: integer("material_type_id").primaryKey({ autoIncrement: true }),
+	name: text("type_name").notNull(),
+});
 
 export const material = sqliteTable(
 	"material",
@@ -264,6 +265,7 @@ export type UserRole = typeof userRole.$inferSelect;
 export type School = typeof school.$inferSelect;
 export type Grades = typeof grades.$inferSelect;
 export type Subject = typeof subject.$inferSelect;
+export type SubjectType = typeof subjectType.$inferSelect;
 export type MaterialType = typeof materialType.$inferSelect;
 export type Material = typeof material.$inferSelect;
 export type Forum = typeof forum.$inferSelect;
