@@ -197,7 +197,7 @@
 					}}
 				>
 					<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>Upload</Dialog.Trigger>
-					<Dialog.Content>
+					<Dialog.Content class="max-h-11/12 overflow-y-scroll">
 						<Dialog.Header>
 							<Dialog.Title>Upload Image</Dialog.Title>
 							<Dialog.Description>
