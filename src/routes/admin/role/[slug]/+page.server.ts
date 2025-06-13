@@ -84,7 +84,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (event.url.searchParams.has("ref")) redirect(303, "/admin/user");
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/role");
 		else {
 			return {
 				edit: {
