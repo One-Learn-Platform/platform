@@ -109,7 +109,6 @@ export const actions: Actions = {
 		}
 		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
 		const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
-		console.log(form.data.schoolId, schoolId);
 		try {
 			await db.insert(user).values({
 				roleId: roleId,
