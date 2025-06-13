@@ -10,7 +10,7 @@
 <Alert.Root
 	variant="destructive"
 	fill="muted"
-	class={cn("flex w-fit items-center justify-end gap-2 [&>svg]:static [&>svg~*]:pl-0", className)}
+	class={cn("flex w-fit items-center wrap-anywhere justify-end gap-2 [&>svg]:static [&>svg~*]:pl-0", className)}
 >
 	<TriangleAlert class="size-4 min-w-fit" />
 	<Alert.Description>{message}</Alert.Description>
