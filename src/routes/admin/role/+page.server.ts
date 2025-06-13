@@ -13,7 +13,7 @@ export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
 	const roleList = await db.select().from(userRole);
 	if (event.locals.user) {
-		if (eevent.locals.user.role === 1) {
+		if (event.locals.user.role === 1) {
 			return {
 				roleList: roleList,
 				form: await superValidate(zod4(formSchema)),
