@@ -144,24 +144,6 @@ export const columns: ColumnDef<SafeUser>[] = [
 		},
 	},
 	{
-		accessorKey: "schoolId",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "School Id",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-		cell: ({ row }) => {
-			const value = row.getValue("schoolId");
-			const amountCellSnippet = createRawSnippet(() => {
-				return {
-					render: () => `<div class="font-mono">${value ?? "-"}</div>`,
-				};
-			});
-			return renderSnippet(amountCellSnippet, value);
-		},
-	},
-	{
 		accessorKey: "schoolName",
 		header: ({ column }) =>
 			renderComponent(sortable, {
