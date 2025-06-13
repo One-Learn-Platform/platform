@@ -6,7 +6,7 @@ import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import { subject, user, school } from "$lib/schema/db";
+import { subject, user, school, subjectType } from "$lib/schema/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -14,16 +14,29 @@ export const load: PageServerLoad = async (event) => {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			const db = getDb(event);
 			const { ...rest } = getTableColumns(subject);
-			const subjectList = await db
-				.select({ ...rest, teacherName: user.fullname })
-				.from(subject)
-				.leftJoin(user, eq(user.id, subject.teacher));
 			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
 			const schoolList = await db.select().from(school);
+			const subjectTypeList = await db.select().from(subjectType);
+			let subjectList;
+			if (event.locals.user.school) {
+				subjectList = await db
+					.select({ ...rest, teacherName: user.fullname, subjectTypeName: subjectType.name })
+					.from(subject)
+					.where(eq(subject.schoolId, event.locals.user.school))
+					.leftJoin(user, eq(user.id, subject.teacher))
+					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id));
+			} else {
+				subjectList = await db
+					.select({ ...rest, teacherName: user.fullname, subjectTypeName: subjectType.name })
+					.from(subject)
+					.leftJoin(user, eq(user.id, subject.teacher))
+					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id));
+			}
 			return {
 				subjectList: subjectList,
 				teacherList: teacherList,
 				schoolList: schoolList,
+				subjectTypeList: subjectTypeList,
 				form: await superValidate(zod4(formSchemaCreate)),
 			};
 		}
@@ -102,6 +115,7 @@ export const actions: Actions = {
 				code: form.data.code,
 				name: form.data.name,
 				schoolId: school,
+				subjectType: Number(form.data.subjectType),
 			});
 
 			return {

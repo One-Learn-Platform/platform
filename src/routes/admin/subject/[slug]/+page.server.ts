@@ -6,7 +6,7 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import { getDb } from "$lib/server/db";
-import { subject, user } from "$lib/schema/db";
+import { subject, user, subjectType } from "$lib/schema/db";
 import { eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -20,17 +20,19 @@ export const load: PageServerLoad = async (event) => {
 			return error(400, { message: "Invalid School ID" });
 		} else {
 			const { ...rest } = getTableColumns(subject);
-			const teacherList = await db.select().from(user).where(eq(user.roleId, 1));
+			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
 			const subjectData = await db
 				.select({ ...rest, teacherName: user.fullname })
 				.from(subject)
 				.where(eq(subject.id, schoolId))
 				.leftJoin(user, eq(user.id, subject.teacher))
 				.get();
+			const subjectTypeList = await db.select().from(subjectType);
 			if (subjectData) {
 				return {
 					subjectData: subjectData,
 					teacherList: teacherList,
+					subjectTypeList: subjectTypeList,
 					form: await superValidate(zod4(formSchemaEdit)),
 				};
 			} else {
@@ -96,6 +98,7 @@ export const actions: Actions = {
 				.set({
 					name: form.data.name,
 					teacher: teacherId,
+					subjectType: Number(form.data.subjectType),
 				})
 				.where(eq(subject.id, subjectId));
 		} catch (error) {
@@ -116,7 +119,7 @@ export const actions: Actions = {
 			});
 		}
 
-		if (event.url.searchParams.has("ref")) redirect(303, "/admin/user");
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/subject");
 		else {
 			return withFiles({
 				edit: {

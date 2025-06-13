@@ -55,8 +55,10 @@
 	const { form: formData, enhance, errors: formErrors, reset } = superform;
 
 	$effect(() => {
+    $inspect(data);
 		$formData.name = subjectDetail.name;
 		$formData.teacher = subjectDetail.teacher?.toString() ?? "";
+		$formData.subjectType = subjectDetail.subjectType?.toString() ?? "";
 	});
 
 	$effect(() => {
@@ -106,6 +108,40 @@
 						<Form.Description
 							>This is the School Name that will be available to choose.
 						</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="subjectType">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Subject Type</Form.Label>
+							<Select.Root
+								type="single"
+								value={$formData.subjectType}
+								name={props.name}
+								allowDeselect
+								onValueChange={(value) => ($formData.subjectType = value)}
+							>
+								<Select.Trigger {...props}>
+									{$formData.subjectType
+										? data.subjectTypeList.find((t) => t.id.toString() === $formData.subjectType)
+												?.name
+										: "Select a subject type"}
+								</Select.Trigger>
+								<Select.Content>
+									{#each data.subjectTypeList as subjectType (subjectType.id)}
+										<Select.Item value={subjectType.id.toString()} label={subjectType.name}>
+											{subjectType.name}
+										</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.subjectType}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>Type of subject, laboratory or lesson</Form.Description>
 					{/if}
 				</Form.Field>
 

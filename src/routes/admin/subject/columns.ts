@@ -10,6 +10,7 @@ import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type SubjectWithTeacher = Subject & {
 	teacherName: string | null;
+	subjectTypeName: string | null;
 };
 export const columns: ColumnDef<SubjectWithTeacher>[] = [
 	{
@@ -77,13 +78,22 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 			}),
 	},
 	{
-		accessorKey: "teacher",
+		accessorKey: "subjectTypeName",
 		header: ({ column }) =>
 			renderComponent(sortable, {
-				name: "Teacher",
+				name: "Subject Type",
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
+		cell: ({ row }) => {
+			const value = row.getValue("subjectTypeName");
+			const typeCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="">${value}</div>`,
+				};
+			});
+			return renderSnippet(typeCellSnippet, value);
+		},
 	},
 	{
 		accessorKey: "teacherName",
