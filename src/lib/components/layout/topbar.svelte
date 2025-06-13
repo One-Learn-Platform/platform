@@ -42,7 +42,12 @@
 
 			const formattedName = segment
 				.split("-")
-				.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+				.map((word) => {
+					if (urlPath.startsWith("/subject/")) {
+						return word.toLocaleUpperCase();
+					}
+					return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+				})
 				.join("-");
 
 			breadcrumbs.push({

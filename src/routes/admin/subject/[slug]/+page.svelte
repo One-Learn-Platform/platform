@@ -55,7 +55,7 @@
 	const { form: formData, enhance, errors: formErrors, reset } = superform;
 
 	$effect(() => {
-    $inspect(data);
+		$inspect(data);
 		$formData.name = subjectDetail.name;
 		$formData.teacher = subjectDetail.teacher?.toString() ?? "";
 		$formData.subjectType = subjectDetail.subjectType?.toString() ?? "";

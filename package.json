@@ -26,11 +26,11 @@
 		"@fontsource-variable/jetbrains-mono": "^5.2.6",
 		"@fontsource-variable/outfit": "^5.2.6",
 		"@internationalized/date": "^3.8.2",
-		"@lucide/svelte": "^0.514.0",
+		"@lucide/svelte": "^0.515.0",
 		"@playwright/test": "^1.53.0",
 		"@sveltejs/adapter-cloudflare": "^7.0.4",
 		"@sveltejs/enhanced-img": "^0.6.0",
-		"@sveltejs/kit": "^2.21.4",
+		"@sveltejs/kit": "^2.21.5",
 		"@sveltejs/vite-plugin-svelte": "^5.1.0",
 		"@tailwindcss/vite": "^4.1.10",
 		"@tanstack/table-core": "^8.21.3",
@@ -70,7 +70,7 @@
 		"vite": "^6.3.5",
 		"vitest": "^3.2.3",
 		"wrangler": "^4.20.0",
-		"zod": "^3.25.63"
+		"zod": "^3.25.64"
 	},
 	"dependencies": {
 		"@inlang/paraglide-sveltekit": "^0.16.1",

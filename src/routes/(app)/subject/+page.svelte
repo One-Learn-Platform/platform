@@ -8,7 +8,11 @@
 
 <h1 class="font-display text-3xl font-semibold">Subjects</h1>
 <div class="flex flex-col gap-2">
-	{#each data.subjectList as subject (subject.id)}
-		<Subject {subject} />
-	{/each}
+	{#if data.subjectList}
+		{#each data.subjectList as subject (subject.id)}
+			<Subject {subject} />
+		{/each}
+	{:else}
+		<p>No subjects found.</p>
+	{/if}
 </div>

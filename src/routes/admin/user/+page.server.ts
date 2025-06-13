@@ -58,7 +58,11 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const existingUser = await db.select().from(user).where(eq(user.username, form.data.username)).get();
+		const existingUser = await db
+			.select()
+			.from(user)
+			.where(eq(user.username, form.data.username))
+			.get();
 		if (existingUser) {
 			setError(form, "username", "Username already exists");
 			return fail(400, {

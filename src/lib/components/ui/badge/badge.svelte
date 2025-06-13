@@ -17,10 +17,17 @@
 					"border-transparent bg-informative-muted text-informative focus-visible:ring-informative-muted/20 dark:bg-informative-muted/70 dark:focus-visible:ring-informative-muted/40 [a&]:hover:bg-informative-muted/90",
 				success:
 					"border-transparent bg-success text-white focus-visible:ring-success/20 dark:bg-success/70 dark:focus-visible:ring-success/40 [a&]:hover:bg-success/90",
+				success_muted:
+					"border-transparent bg-success-muted text-success focus-visible:ring-success-muted/20 dark:bg-success-muted/70 dark:focus-visible:ring-success-muted/40 [a&]:hover:bg-success-muted/90",
 				warning:
 					"border-transparent bg-warning text-white focus-visible:ring-warning/20 dark:bg-warning/70 dark:focus-visible:ring-warning/40 [a&]:hover:bg-warning/90",
 				interactive:
 					"border-transparent bg-interactive text-white focus-visible:ring-interactive/20 dark:bg-interactive/70 dark:focus-visible:ring-interactive/40 [a&]:hover:bg-interactive/90",
+
+				laboratory:
+					"border-transparent bg-informative text-white focus-visible:ring-informative/20 dark:bg-informative/70 dark:focus-visible:ring-informative/40 [a&]:hover:bg-informative/90",
+				lesson:
+					"border-transparent bg-success text-white focus-visible:ring-success/20 dark:bg-success/70 dark:focus-visible:ring-success/40 [a&]:hover:bg-success/90",
 			},
 		},
 		defaultVariants: {

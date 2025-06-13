@@ -1,9 +1,9 @@
+import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { redirect, error } from "@sveltejs/kit";
 
+import { subject, subjectType } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, and } from "drizzle-orm";
-import * as table from "$lib/schema/db";
+import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const { slug } = event.params;
@@ -13,17 +13,17 @@ export const load: PageServerLoad = async (event) => {
 			return error(403, "Forbidden");
 		}
 		const db = getDb(event);
-		const subject = await db
-			.select()
-			.from(table.subject)
-			.where(
-				and(eq(table.subject.code, params), eq(table.subject.schoolId, event.locals.user.school)),
-			)
+		const columns = getTableColumns(subject);
+		const subjectData = await db
+			.select({ ...columns, subjectTypeName: subjectType.name })
+			.from(subject)
+			.where(and(eq(subject.code, params), eq(subject.schoolId, event.locals.user.school)))
+			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 			.get();
-		if (!subject) {
+		if (!subjectData) {
 			return error(404, "Subject not found");
 		}
-		return { subject };
+		return { subject: subjectData };
 	}
 	return redirect(302, "/signin");
 };

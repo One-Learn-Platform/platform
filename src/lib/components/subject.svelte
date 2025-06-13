@@ -3,9 +3,11 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 
 	import type { Subject } from "$lib/schema/db";
+	import { subjectColor, subjectAbbreviation } from "$lib/functions/subject";
 
 	import Dna from "@lucide/svelte/icons/dna";
-	let { subject }: { subject: Subject } = $props();
+	type SubjectWithName = Subject & { subjectTypeName: string };
+	let { subject }: { subject: SubjectWithName } = $props();
 </script>
 
 <Button
@@ -15,9 +17,11 @@
 >
 	<Dna class="size-12 " />
 	<div>
-		<div>
+		<div class="flex items-center gap-2">
 			{subject.code}
-			<Badge variant="informative_muted">LAB</Badge>
+			<Badge variant={subjectColor(subject.subjectTypeName)}>
+				{subjectAbbreviation(subject.subjectTypeName)}
+			</Badge>
 		</div>
 		<div class="text-2xl font-semibold">{subject.name}</div>
 	</div>
