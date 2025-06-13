@@ -4,6 +4,8 @@
 	import Plus from "@lucide/svelte/icons/plus";
 
 	import { Button } from "$lib/components/ui/button/index.js";
+	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+
 	import { toast } from "svelte-sonner";
 
 	import DataTable from "$lib/components/table/data-table.svelte";
@@ -22,6 +24,24 @@
 </script>
 
 <div class="flex flex-col gap-2 bg-background">
-	<Button disabled variant="outline"><Plus />Add</Button>
+	<Tooltip.Provider delayDuration={300}>
+		<Tooltip.Root>
+			<Tooltip.Trigger>
+				{#snippet child({ props })}
+					<Button
+						{...props}
+						disabled
+						variant="outline"
+						class="hover:bg-background disabled:pointer-events-auto!"
+					>
+						<Plus />Add
+					</Button>
+				{/snippet}
+			</Tooltip.Trigger>
+			<Tooltip.Content class="bg-destructive" arrowClasses="bg-destructive">
+				<p>You can't create a forum here.</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
+	</Tooltip.Provider>
 	<DataTable data={forumList} {columns} />
 </div>
