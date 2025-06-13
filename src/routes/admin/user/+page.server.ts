@@ -58,58 +58,59 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		try {
-			const existingUser = await db
-				.select()
-				.from(user)
-				.where(eq(user.username, form.data.username));
-			if (existingUser.at(0)) {
-				setError(form, "username", "Username already exists");
-				return fail(400, {
-					create: { success: false, data: null, message: "Username already exists" },
+		const existingUser = await db.select().from(user).where(eq(user.username, form.data.username)).get();
+		if (existingUser) {
+			setError(form, "username", "Username already exists");
+			return fail(400, {
+				create: { success: false, data: null, message: "Username already exists" },
+				form,
+			});
+		}
+		const passwordHash = await bcryptjs.hash(form.data.password, 10);
+		let roleId = 0;
+		switch (form.data.roleId) {
+			case "super admin":
+				roleId = 1;
+				break;
+			case "admin":
+				roleId = 2;
+				break;
+			case "teacher":
+				roleId = 3;
+				break;
+			case "student":
+				roleId = 4;
+				break;
+			default:
+				break;
+		}
+
+		const uniqueFileName = `user/avatar/${getFileName(form.data.username)}-${getTimeStamp()}.png`;
+		if (form.data.avatar) {
+			const fileBuffer = await form.data.avatar.arrayBuffer();
+			try {
+				await getR2(event).put(uniqueFileName, fileBuffer, {
+					httpMetadata: {
+						contentType: form.data.avatar.type,
+					},
+				});
+			} catch (r2Error) {
+				console.error("Failed to upload to R2:", r2Error);
+				setError(form, "avatar", r2Error instanceof Error ? r2Error.message : "R2 upload error");
+				return fail(500, {
+					create: {
+						success: false,
+						data: null,
+						message: r2Error instanceof Error ? r2Error.message : "R2 upload error",
+					},
 					form,
 				});
 			}
-			const passwordHash = await bcryptjs.hash(form.data.password, 10);
-			let roleId = 0;
-			switch (form.data.roleId) {
-				case "super admin":
-					roleId = 1;
-					break;
-				case "admin":
-					roleId = 2;
-					break;
-				case "teacher":
-					roleId = 3;
-					break;
-				case "student":
-					roleId = 4;
-					break;
-				default:
-					break;
-			}
-
-			const uniqueFileName = `user/avatar/${getFileName(form.data.username)}-${getTimeStamp()}.png`;
-			if (form.data.avatar) {
-				const fileBuffer = await form.data.avatar.arrayBuffer();
-				try {
-					await getR2(event).put(uniqueFileName, fileBuffer, {
-						httpMetadata: {
-							contentType: form.data.avatar.type,
-						},
-					});
-				} catch (r2Error) {
-					console.error("Failed to upload to R2:", r2Error);
-					return fail(500, {
-						create: { success: false, data: null, message: "Failed to upload file" },
-
-						form,
-					});
-				}
-			}
-			const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
-			const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
-			console.log(form.data.schoolId, schoolId);
+		}
+		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
+		const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
+		console.log(form.data.schoolId, schoolId);
+		try {
 			await db.insert(user).values({
 				roleId: roleId,
 				avatar: imageUrl,
@@ -120,10 +121,21 @@ export const actions: Actions = {
 				schoolId: schoolId,
 			});
 		} catch (error) {
+			await getR2(event).delete(uniqueFileName);
 			console.error(error);
-			setError(form, "", "Database error, please try again", { status: 500 });
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Database Connection error, please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				create: { success: false, data: null, message: "Database error, please try again" },
+				create: {
+					success: false,
+					data: null,
+					message:
+						error instanceof Error ? error.message : "Database Connection error, please try again.",
+				},
 				form,
 			});
 		}
@@ -218,7 +230,7 @@ export const actions: Actions = {
 					delete: {
 						success: false,
 						data: null,
-						message: "Database Connection error, please try again.",
+						message: error instanceof Error ? error.message : "Unknown error, please try again.",
 					},
 				});
 			}
