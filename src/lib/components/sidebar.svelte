@@ -26,6 +26,7 @@
 	import BookCopy from "@lucide/svelte/icons/book-copy";
 	import UserCog from "@lucide/svelte/icons/user-cog";
 	import Shapes from "@lucide/svelte/icons/shapes";
+	import MessagesSquare from "@lucide/svelte/icons/messages-square";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -87,6 +88,12 @@
 			href: `${prefix}/material-type`,
 			icon: Shapes,
 			superadmin: true,
+		},
+		{
+			title: "Forum",
+			href: `${prefix}/forum`,
+			icon: MessagesSquare,
+			superadmin: false,
 		},
 	];
 
