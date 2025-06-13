@@ -58,7 +58,7 @@ export const formSchemaWithPass = formSchema
 		},
 	);
 
-export const formSchemaUploadImage = formSchema.extend({
+export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 	avatar: z
 		.instanceof(File, {
 			message: "Please upload a valid image file",

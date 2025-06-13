@@ -18,12 +18,21 @@ export const load: PageServerLoad = async (event) => {
 			const db = getDb(event);
 			// eslint-disable-next-line
 			const { password, ...rest } = getTableColumns(user);
-			const userList = await db
-				.select({ ...rest, schoolName: school.name })
-				.from(user)
-				.leftJoin(school, eq(user.schoolId, school.id));
 			const schoolList = await db.select().from(school);
 			const roleList = await db.select().from(userRole);
+			let userList;
+			if (event.locals.user.school) {
+				userList = await db
+					.select({ ...rest, schoolName: school.name })
+					.from(user)
+					.where(eq(user.schoolId, event.locals.user.school))
+					.leftJoin(school, eq(user.schoolId, school.id));
+			} else {
+				userList = await db
+					.select({ ...rest, schoolName: school.name })
+					.from(user)
+					.leftJoin(school, eq(user.schoolId, school.id));
+			}
 			return {
 				userList: userList,
 				schoolList: schoolList,

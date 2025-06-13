@@ -120,6 +120,7 @@ export const actions: Actions = {
 				.set({
 					fullname: form.data.fullname,
 					username: form.data.username,
+					schoolId: form.data.schoolId ? Number(form.data.schoolId) : null,
 					dob: form.data.dob,
 					roleId: roleId,
 				})
@@ -171,7 +172,8 @@ export const actions: Actions = {
 		}
 		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();
 		if (!prevUserData) {
-			return fail(404, { message: "User not found" });
+			setError(form, "", "User not found");
+			return fail(404, { upload: { success: false, data: null, message: "User not found" }, form });
 		}
 		const uniqueFileName = `user/avatar/${getFileName(prevUserData?.username)}-${getTimeStamp()}.png`;
 		const fileBuffer = await form.data.avatar.arrayBuffer();
@@ -183,9 +185,18 @@ export const actions: Actions = {
 			});
 		} catch (r2Error) {
 			console.error("Failed to upload to R2:", r2Error);
+			setError(
+				form,
+				"",
+				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				{ status: 500 },
+			);
 			return fail(500, {
-				create: { success: false, data: null, message: "Failed to upload file" },
-
+				upload: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
 				form,
 			});
 		}

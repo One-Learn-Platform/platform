@@ -80,7 +80,6 @@
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zod4Client(formSchemaWithoutPass),
-		id: "edit",
 
 		onChange(event) {
 			if (event) {
@@ -169,6 +168,11 @@
 				changes.roleId = false;
 				changes.schoolId = false;
 			} else toast.error(form.edit.message ?? "Unknown error");
+		} else if (form?.upload) {
+			if (form.upload.success) {
+				toast.success(`Avatar for ${userDetail.fullname} updated successfully`);
+				dialogOpen = false;
+			} else toast.error(form.upload.message ?? "Unknown error");
 		}
 	});
 </script>
@@ -238,8 +242,7 @@
 										<Form.Description>Upload a new avatar for the user.</Form.Description>
 									{/if}
 								</Form.Field>
-
-								<Form.Button type="submit">Upload</Form.Button>
+								<Form.Button>Upload</Form.Button>
 							</div>
 							{#if $errorsUpload._errors}
 								<FormErrors
