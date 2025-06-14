@@ -16,7 +16,7 @@
 			<AppSidebar />
 			<Sidebar.Inset>
 				<div class="w-full nth-[2]:pt-12">
-					<main class="space-y-2 px-2 pt-[calc(var(--header-height)+0.5rem)] pr-4 pb-2">
+					<main class="space-y-2 px-2 pt-[calc(var(--header-height)+0.5rem)] pb-2">
 						{@render children?.()}
 					</main>
 				</div>
