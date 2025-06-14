@@ -17,10 +17,10 @@ const roleMap: Record<
 	number,
 	keyof Pick<GroupedUser, "teacher" | "student" | "admin" | "super_admin">
 > = {
-	0: "super_admin",
-	1: "admin",
-	2: "teacher",
-	3: "student",
+	1: "super_admin",
+	2: "admin",
+	3: "teacher",
+	4: "student",
 };
 
 export function groupUsers(users: UserWithoutPassword[], period: Period): GroupedUser[] {
