@@ -15,10 +15,10 @@
 		<div class="flex flex-1">
 			<AppSidebar />
 			<Sidebar.Inset>
-				<div class="w-full nth-[2]:pt-12">
-					<main class="space-y-2 px-2 pt-[calc(var(--header-height)+0.5rem)] pb-2">
-						{@render children?.()}
-					</main>
+				<div
+					class="w-full space-y-2 px-2 pt-[calc(var(--header-height)+0.5rem)] pb-2 nth-[2]:pt-12"
+				>
+					{@render children?.()}
 				</div>
 			</Sidebar.Inset>
 		</div>
