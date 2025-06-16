@@ -39,6 +39,8 @@
 		"bits-ui": "^2.8.0",
 		"clsx": "^2.1.1",
 		"d3-scale": "^4.0.2",
+		"dayjs": "^1.11.13",
+		"dompurify": "^3.2.6",
 		"drizzle-kit": "^0.31.1",
 		"drizzle-zod": "^0.8.2",
 		"embla-carousel-svelte": "^8.6.0",
@@ -79,7 +81,9 @@
 		"@oslojs/encoding": "^1.1.0",
 		"arctic": "^3.7.0",
 		"bcryptjs": "^3.0.2",
-		"drizzle-orm": "^0.44.2"
+		"drizzle-orm": "^0.44.2",
+		"katex": "^0.16.22",
+		"quill": "^2.0.3"
 	},
 	"packageManager": "pnpm@10.11.1+sha512.e519b9f7639869dc8d5c3c5dfef73b3f091094b0a006d7317353c72b124e80e1afd429732e28705ad6bfa1ee879c1fce46c128ccebd3192101f43dd67c667912"
 }

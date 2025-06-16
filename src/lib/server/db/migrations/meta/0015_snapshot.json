@@ -1,8 +1,8 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "86e6f011-5ca8-4e1d-9b69-d1cee1bfed1a",
-	"prevId": "5a53bcd6-34fb-4929-a38c-a670d048eb43",
+	"id": "60ad73b2-d645-49d3-9968-b1d06edadfe1",
+	"prevId": "dc99c978-455e-4ad3-9600-b0a69c8b0a90",
 	"tables": {
 		"assignment": {
 			"name": "assignment",
@@ -14,8 +14,8 @@
 					"notNull": true,
 					"autoincrement": true
 				},
-				"material_id": {
-					"name": "material_id",
+				"chapter": {
+					"name": "chapter",
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": true,
@@ -66,11 +66,6 @@
 				}
 			},
 			"indexes": {
-				"assignment_material_index": {
-					"name": "assignment_material_index",
-					"columns": ["material_id"],
-					"isUnique": false
-				},
 				"assignment_subject_index": {
 					"name": "assignment_subject_index",
 					"columns": ["subject_id"],
@@ -83,15 +78,6 @@
 				}
 			},
 			"foreignKeys": {
-				"assignment_material_id_material_material_id_fk": {
-					"name": "assignment_material_id_material_material_id_fk",
-					"tableFrom": "assignment",
-					"tableTo": "material",
-					"columnsFrom": ["material_id"],
-					"columnsTo": ["material_id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
 				"assignment_subject_id_subject_subject_id_fk": {
 					"name": "assignment_subject_id_subject_subject_id_fk",
 					"tableFrom": "assignment",
@@ -324,8 +310,8 @@
 					"notNull": true,
 					"autoincrement": false
 				},
-				"material_id": {
-					"name": "material_id",
+				"chapter": {
+					"name": "chapter",
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": true,
@@ -356,7 +342,7 @@
 					"name": "attachment",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": true,
+					"notNull": false,
 					"autoincrement": false
 				},
 				"school_id": {
@@ -376,11 +362,6 @@
 				}
 			},
 			"indexes": {
-				"forum_material_index": {
-					"name": "forum_material_index",
-					"columns": ["material_id"],
-					"isUnique": false
-				},
 				"forum_user_index": {
 					"name": "forum_user_index",
 					"columns": ["user_id"],
@@ -404,15 +385,6 @@
 					"tableTo": "subject",
 					"columnsFrom": ["subject_id"],
 					"columnsTo": ["subject_id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				},
-				"forum_material_id_material_material_id_fk": {
-					"name": "forum_material_id_material_material_id_fk",
-					"tableFrom": "forum",
-					"tableTo": "material",
-					"columnsFrom": ["material_id"],
-					"columnsTo": ["material_id"],
 					"onDelete": "no action",
 					"onUpdate": "no action"
 				},

@@ -25,6 +25,11 @@ export default ts.config(
 		},
 	},
 	{
+		rules: {
+			"eslint svelte/no-at-html-tags": "off",
+		},
+	},
+	{
 		files: ["**/*.svelte"],
 
 		languageOptions: {

@@ -147,15 +147,13 @@ export const forum = sqliteTable(
 		subjectId: integer("subject_id")
 			.references(() => subject.id)
 			.notNull(),
-		materialId: integer("material_id")
-			.references(() => material.id)
-			.notNull(),
+		chapter: integer("chapter").notNull(),
 		userId: integer("user_id")
 			.references(() => user.id)
 			.notNull(),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
-		attachment: text("attachment").notNull(),
+		attachment: text("attachment"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -164,7 +162,6 @@ export const forum = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		index("forum_material_index").on(table.materialId),
 		index("forum_user_index").on(table.userId),
 		index("forum_school_index").on(table.schoolId),
 		index("forum_subject_index").on(table.subjectId),
@@ -200,9 +197,7 @@ export const assignment = sqliteTable(
 	"assignment",
 	{
 		id: integer("assignment_id").primaryKey({ autoIncrement: true }),
-		materialId: integer("material_id")
-			.references(() => material.id)
-			.notNull(),
+		chapter: integer("chapter").notNull(),
 		subjectId: integer("subject_id")
 			.references(() => subject.id)
 			.notNull(),
@@ -217,7 +212,6 @@ export const assignment = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		index("assignment_material_index").on(table.materialId),
 		index("assignment_subject_index").on(table.subjectId),
 		index("assignment_school_index").on(table.schoolId),
 	],
