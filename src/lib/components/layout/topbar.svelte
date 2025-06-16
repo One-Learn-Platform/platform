@@ -43,7 +43,7 @@
 			const formattedName = segment
 				.split("-")
 				.map((word) => {
-					if (urlPath.startsWith("/subject/")) {
+					if (/^\/subject\/[^/]+$/.test(urlPath)) {
 						return word.toLocaleUpperCase();
 					}
 					return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
