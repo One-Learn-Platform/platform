@@ -133,8 +133,8 @@ importers:
         specifier: ^0.6.12
         version: 0.6.12(prettier-plugin-svelte@3.4.0(prettier@3.5.3)(svelte@5.34.3))(prettier@3.5.3)
       simple-icons:
-        specifier: ^15.1.0
-        version: 15.1.0
+        specifier: ^15.2.0
+        version: 15.2.0
       svelte:
         specifier: ^5.34.3
         version: 5.34.3
@@ -3299,8 +3299,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  simple-icons@15.1.0:
-    resolution: {integrity: sha512-7wj0OeOJvGSgNEIrMm1MGhoX7CEV5R+T0Q5HmXzfakrue84qCZNV9l9eG092c14BbiuGgljdwFkLy3rQQaDJyg==}
+  simple-icons@15.2.0:
+    resolution: {integrity: sha512-g36ByZgkbd1VIP7RTGhBXVLqrPFtwfcKISA1r+sx3rEhrNJBAaEMrAVo/gOJm6DqlCd8YyKWl85g5z4nXngObA==}
     engines: {node: '>=0.12.18'}
 
   simple-swizzle@0.2.2:
@@ -6716,7 +6716,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  simple-icons@15.1.0: {}
+  simple-icons@15.2.0: {}
 
   simple-swizzle@0.2.2:
     dependencies:
