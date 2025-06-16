@@ -5,8 +5,8 @@ import { formSchemaCreate } from "$lib/schema/subject/schema";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
+import { school, subject, subjectType, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { subject, user, school, subjectType } from "$lib/schema/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -115,6 +115,7 @@ export const actions: Actions = {
 				code: form.data.code,
 				name: form.data.name,
 				schoolId: school,
+				chapterCount: Number(form.data.chapterCount),
 				subjectType: Number(form.data.subjectType),
 			});
 

@@ -7,6 +7,11 @@ const formSchema = createInsertSchema(subject, {
 	name: z.string().min(1, "Subject name is required"),
 	teacher: z.string().min(1, "Teacher is required"),
 	subjectType: z.string().min(1, "Subject type is required"),
+	chapterCount: z
+		.number()
+		.int()
+		.min(0, "Chapter count must be a non-negative integer")
+		.max(100, "Chapter count must not exceed 100"),
 }).omit({ id: true });
 
 export const formSchemaCreate = formSchema;

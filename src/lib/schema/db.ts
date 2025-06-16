@@ -70,6 +70,7 @@ export const subject = sqliteTable(
 		subjectType: integer("subject_type_id")
 			.references(() => subjectType.id)
 			.notNull(),
+		chapterCount: integer("chapter_count").notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -120,6 +121,7 @@ export const material = sqliteTable(
 		materialTypeId: integer("material_type_id")
 			.references(() => materialType.id)
 			.notNull(),
+		chapter: integer("chapter").notNull(),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		content: text("content").notNull(),
@@ -142,6 +144,9 @@ export const forum = sqliteTable(
 	"forum",
 	{
 		id: integer("forum_id").primaryKey({ autoIncrement: true }),
+		subjectId: integer("subject_id")
+			.references(() => subject.id)
+			.notNull(),
 		materialId: integer("material_id")
 			.references(() => material.id)
 			.notNull(),
@@ -162,6 +167,7 @@ export const forum = sqliteTable(
 		index("forum_material_index").on(table.materialId),
 		index("forum_user_index").on(table.userId),
 		index("forum_school_index").on(table.schoolId),
+		index("forum_subject_index").on(table.subjectId),
 	],
 );
 

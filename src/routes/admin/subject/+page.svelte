@@ -1,21 +1,21 @@
 <script lang="ts">
-	import type { PageServerData, ActionData } from "./$types";
+	import type { ActionData, PageServerData } from "./$types";
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { toast } from "svelte-sonner";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
+	import { toast } from "svelte-sonner";
 
-	import DataTable from "$lib/components/table/data-table.svelte";
-	import { columns } from "./columns";
-	import { formSchemaCreate } from "$lib/schema/subject/schema";
 	import FormErrors from "$lib/components/error/form-errors.svelte";
+	import DataTable from "$lib/components/table/data-table.svelte";
+	import { formSchemaCreate } from "$lib/schema/subject/schema";
+	import { columns } from "./columns";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const subjectList = $derived(data.subjectList);
@@ -80,6 +80,26 @@
 						<Form.FieldErrors />
 					{:else}
 						<Form.Description>This is the Subject Code that will be displayed.</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="chapterCount">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Chapter Count</Form.Label>
+							<Input
+								{...props}
+								type="number"
+								min="1"
+								max="100"
+								bind:value={$formData.chapterCount}
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.chapterCount}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>This is the Chapter Count that will be displayed.</Form.Description>
 					{/if}
 				</Form.Field>
 
