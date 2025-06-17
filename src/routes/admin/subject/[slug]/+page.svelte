@@ -25,6 +25,7 @@
 
 	let changes = $state({
 		name: false,
+		code: false,
 		teacher: false,
 		chapterCount: false,
 		subjectType: false,
@@ -58,8 +59,9 @@
 
 	$effect(() => {
 		$formData.name = subjectDetail.name;
-		$formData.teacher = subjectDetail.teacher?.toString() ?? "";
-		$formData.subjectType = subjectDetail.subjectType?.toString() ?? "";
+		$formData.code = subjectDetail.code;
+		$formData.teacher = subjectDetail.teacher?.toString();
+		$formData.subjectType = subjectDetail.subjectType?.toString();
 		$formData.chapterCount = subjectDetail.chapterCount;
 	});
 
@@ -77,6 +79,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Edit Subject | OneLearn</title>
+</svelte:head>
+
 <div class="space-y-2 pr-2 pb-2">
 	<h1 class="font-display text-3xl font-semibold tracking-tight">Subject Detail</h1>
 	<Card.Root id="edit">
@@ -89,14 +95,13 @@
 				? '&ref=' + page.url.searchParams.get('ref')
 				: ''}"
 			class="space-y-2"
-			enctype="multipart/form-data"
 			use:enhance
 		>
 			<Card.Content class="space-y-2">
 				<Form.Field form={superform} name="name">
 					<Form.Control>
 						{#snippet children({ props })}
-							<Form.Label>School Name</Form.Label>
+							<Form.Label>Subject Name</Form.Label>
 							<Input
 								{...props}
 								bind:value={$formData.name}
@@ -107,8 +112,26 @@
 					{#if $formErrors.name}
 						<Form.FieldErrors />
 					{:else}
-						<Form.Description
-							>This is the School Name that will be available to choose.
+						<Form.Description>This is the Subject Name that will be displayed.</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="code">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>School Name</Form.Label>
+							<Input
+								{...props}
+								bind:value={$formData.code}
+								class={changes.code ? changesClass : ""}
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.code}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>
+							This is the Subject code used to differentiate subject.
 						</Form.Description>
 					{/if}
 				</Form.Field>

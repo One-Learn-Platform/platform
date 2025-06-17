@@ -97,6 +97,8 @@ export const actions: Actions = {
 				.update(subject)
 				.set({
 					name: form.data.name,
+					code: form.data.code.toLocaleLowerCase(),
+					chapterCount: Number(form.data.chapterCount),
 					teacher: teacherId,
 					subjectType: Number(form.data.subjectType),
 				})

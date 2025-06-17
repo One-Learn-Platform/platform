@@ -112,7 +112,7 @@ export const actions: Actions = {
 		try {
 			await db.insert(subject).values({
 				teacher: teacher.id,
-				code: form.data.code,
+				code: form.data.code.toLocaleLowerCase(),
 				name: form.data.name,
 				schoolId: school,
 				chapterCount: Number(form.data.chapterCount),

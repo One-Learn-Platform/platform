@@ -10,12 +10,15 @@
 	import UsersRound from "@lucide/svelte/icons/users-round";
 	import Microscope from "@lucide/svelte/icons/microscope";
 	import Shapes from "@lucide/svelte/icons/shapes";
+	import Users from "@lucide/svelte/icons/users";
 
-	const icons = $derived.by(() => {
-		if (subject.subjectTypeName.includes("Biology")) return Dna;
-		if (subject.subjectTypeName.includes("Mathematics")) return Calculator;
-		if (subject.subjectTypeName.includes("Science")) return Microscope;
-		if (subject.subjectTypeName.includes("History")) return UsersRound;
+	const Icons = $derived.by(() => {
+		if (subject.name.toLocaleLowerCase().includes("bio")) return Dna;
+		if (subject.name.toLocaleLowerCase().includes("math")) return Calculator;
+		if (subject.name.toLocaleLowerCase().includes("science")) return Microscope;
+		if (subject.name.toLocaleLowerCase().includes("history")) return UsersRound;
+		if (subject.name.toLocaleLowerCase().includes("social")) return Users;
+
 		return Shapes;
 	});
 
@@ -28,10 +31,10 @@
 	class="flex h-fit w-full flex-row items-stretch justify-start gap-4 p-6!"
 	href={`/subject/${subject.code}`}
 >
-	<Dna class="size-12 " />
+	<Icons class="size-12" />
 	<div>
 		<div class="flex items-center gap-2">
-			{icons}
+			{subject.code}
 			<Badge variant={subjectColor(subject.subjectTypeName)}>
 				{subjectAbbreviation(subject.subjectTypeName)}
 			</Badge>
