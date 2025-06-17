@@ -26,6 +26,8 @@
 	let changes = $state({
 		name: false,
 		teacher: false,
+		chapterCount: false,
+		subjectType: false,
 	});
 	const isChanged = $derived(changes);
 	const changesClass = clsx("border-blue-500 bg-blue-50");
@@ -55,10 +57,10 @@
 	const { form: formData, enhance, errors: formErrors, reset } = superform;
 
 	$effect(() => {
-		$inspect(data);
 		$formData.name = subjectDetail.name;
 		$formData.teacher = subjectDetail.teacher?.toString() ?? "";
 		$formData.subjectType = subjectDetail.subjectType?.toString() ?? "";
+		$formData.chapterCount = subjectDetail.chapterCount;
 	});
 
 	$effect(() => {
@@ -108,6 +110,28 @@
 						<Form.Description
 							>This is the School Name that will be available to choose.
 						</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="chapterCount">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Chapter Count</Form.Label>
+							<Input
+								{...props}
+								type="number"
+								min="0"
+								max="100"
+								placeholder="12"
+								bind:value={$formData.chapterCount}
+								class={changes.chapterCount ? changesClass : ""}
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.chapterCount}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>The amount of chapter.</Form.Description>
 					{/if}
 				</Form.Field>
 
