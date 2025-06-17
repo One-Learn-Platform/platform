@@ -2,10 +2,12 @@
 	import { enhance as svelteEnhance } from "$app/forms";
 	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/state";
+	import { onMount } from "svelte";
 	import type { PageProps } from "./$types";
 
-	import { formSchemaEdit } from "$lib/schema/subject/schema";
+	import { formSchemaEdit } from "$lib/schema/forum/schema";
 	import { clsx } from "clsx";
+	import type { default as Quill } from "quill";
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
@@ -15,7 +17,6 @@
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
 
 	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 
@@ -71,6 +72,48 @@
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});
+
+	let quillInstance: Quill | null = null;
+	let editorElement: HTMLElement | undefined = $state();
+	onMount(() => {
+		const initQuill = async () => {
+			try {
+				const { default: QuillConstructor } = await import("quill");
+				await import("quill/dist/quill.snow.css");
+				if (!editorElement) {
+					console.error("Editor element is not defined.");
+					return;
+				}
+				quillInstance = new QuillConstructor(editorElement, {
+					theme: "snow",
+					placeholder: "Write your content here...",
+					modules: {
+						toolbar: [
+							[{ header: [1, 2, 3, 4, false] }],
+							["bold", "italic", "underline"],
+							["code-block", "link", "blockquote"],
+						],
+					},
+				});
+				quillInstance.setContents(quillInstance.clipboard.convert({ html: $formData.description }));
+				quillInstance.on("text-change", () => {
+					if (quillInstance) {
+						$formData.description = quillInstance.getSemanticHTML();
+					}
+				});
+			} catch (error) {
+				console.error("Failed to initialize Quill:", error);
+			}
+		};
+
+		initQuill();
+
+		return () => {
+			if (quillInstance) {
+				quillInstance = null;
+			}
+		};
+	});
 </script>
 
 <div class="space-y-2 pr-2 pb-2">
@@ -85,7 +128,6 @@
 				? '&ref=' + page.url.searchParams.get('ref')
 				: ''}"
 			class="space-y-2"
-			enctype="multipart/form-data"
 			use:enhance
 		>
 			<Card.Content class="space-y-2">
@@ -113,12 +155,8 @@
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>Forum Description</Form.Label>
-							<Textarea
-								{...props}
-								bind:value={$formData.description}
-								placeholder="Enter forum description here"
-								class={changes.description ? changesClass : ""}
-							/>
+							<div bind:this={editorElement}></div>
+							<Input {...props} type="hidden" bind:value={$formData.description} />
 						{/snippet}
 					</Form.Control>
 					{#if $formErrors.description}
