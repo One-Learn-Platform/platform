@@ -119,11 +119,11 @@
 				<Form.Field form={superform} name="code">
 					<Form.Control>
 						{#snippet children({ props })}
-							<Form.Label>School Name</Form.Label>
+							<Form.Label>Subject Code</Form.Label>
 							<Input
 								{...props}
 								bind:value={$formData.code}
-								class={changes.code ? changesClass : ""}
+								class={[changes.code ? changesClass : "", "font-mono"]}
 							/>
 						{/snippet}
 					</Form.Control>

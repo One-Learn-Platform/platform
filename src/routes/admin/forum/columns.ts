@@ -10,7 +10,7 @@ import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type ForumWithUser = Forum & {
 	user: string | null;
-	material: string | null;
+	subject: string | null;
 };
 export const columns: ColumnDef<ForumWithUser>[] = [
 	{
