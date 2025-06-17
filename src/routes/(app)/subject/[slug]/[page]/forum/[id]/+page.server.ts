@@ -15,10 +15,6 @@ export const load: PageServerLoad = async (event) => {
 		const page = Number(event.params.page);
 		const id = Number(event.params.id);
 
-		const pageParams = parseInt(event.url.searchParams.get("page") || "1");
-		const limit = 1;
-		const offset = (pageParams - 1) * limit;
-
 		if (isNaN(page) || page < 1) {
 			return error(400, "Invalid chapter");
 		}
@@ -30,8 +26,8 @@ export const load: PageServerLoad = async (event) => {
 				avatar: user.avatar,
 			})
 			.from(forum)
-			.where(and(eq(forum.chapter, page), eq(forum.id, id)))
 			.leftJoin(user, eq(forum.userId, user.id))
+			.where(and(eq(forum.chapter, page), eq(forum.id, id)))
 			.get();
 		if (!selectedForum) {
 			return error(404, "Forum not found");
@@ -43,9 +39,6 @@ export const load: PageServerLoad = async (event) => {
 			.where(eq(comment.forumId, selectedForum.id))
 			.get();
 
-		const totalComments = commentsCount?.count || 0;
-		const totalPages = Math.ceil(totalComments / limit);
-
 		const allComments = await db
 			.select({
 				...commentColumns,
@@ -55,21 +48,11 @@ export const load: PageServerLoad = async (event) => {
 			.from(comment)
 			.leftJoin(user, eq(comment.userId, user.id))
 			.where(eq(comment.forumId, selectedForum.id))
-			.orderBy(desc(comment.createdAt))
-			.limit(limit)
-			.offset(offset);
+			.orderBy(desc(comment.createdAt));
 		return {
 			forum: selectedForum,
 			comments: allComments,
 			commentsCount: commentsCount?.count ?? 0,
-			pagination: {
-				limit,
-				currentPage: page,
-				totalPages,
-				totalComments,
-				hasNextPage: page < totalPages,
-				hasPrevPage: page > 1,
-			},
 			form: await superValidate(zod4(formSchema)),
 		};
 	}

@@ -2,8 +2,9 @@
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { onMount } from "svelte";
 	import type { PageServerData, ActionData } from "./$types";
-	import { page } from "$app/state";
-	import { goto } from "$app/navigation";
+	import { browser } from "$app/environment";
+	import { flip } from "svelte/animate";
+	import { cubicOut } from "svelte/easing";
 
 	import Dompurify from "dompurify";
 	import type { default as Quill } from "quill";
@@ -22,9 +23,15 @@
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Pagination from "$lib/components/ui/pagination/index.js";
+	import * as Select from "$lib/components/ui/select/index.js";
+	import { Button } from "$lib/components/ui/button/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
 
 	import { acronym } from "$lib/utils";
 	import { invalidateAll } from "$app/navigation";
+
+	import ArrowDown from "@lucide/svelte/icons/arrow-down";
+	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -40,6 +47,7 @@
 		timeStyle: "medium",
 	});
 	const localeDate = $derived(new Date(data.forum.createdAt + "Z"));
+	const sanitizedDescription = $derived(Dompurify.sanitize(data.forum.description));
 
 	let quillInstance: Quill | null = null;
 	let editorElement: HTMLElement | undefined = $state();
@@ -95,23 +103,46 @@
 		}
 	});
 
-	function goToPage(pageNum: number) {
-		const url = new URL(page.url);
-		url.searchParams.set("page", pageNum.toString());
-		goto(url.toString());
-	}
+	const sortChoice = [
+		{ value: "date", label: "Date" },
+		{ value: "user", label: "User" },
+	];
+	let sortOpt = $state("asc");
+	let sortBy = $state("date");
+	const sortContent = $derived(
+		sortChoice.find((f) => f.value === sortBy)?.label ?? "Select a sort option",
+	);
+	const sortedComments = $derived.by(() =>
+		data.comments.toSorted((a, b) => {
+			if (sortBy === "date") {
+				if (sortOpt === "asc") {
+					return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+				}
+				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			} else if (sortBy === "name") {
+				if (sortOpt === "asc") {
+					return a.fullname?.localeCompare(b.fullname ?? "") || 0;
+				}
+				return b.fullname?.localeCompare(a.fullname ?? "") || 0;
+			}
+			return 0;
+		}),
+	);
 
-	function nextPage() {
-		if (data.pagination.hasNextPage) {
-			goToPage(data.pagination.currentPage + 1);
-		}
-	}
+	let perPage = $state(Number(browser ? (sessionStorage.getItem("forum_perPage") ?? "10") : "10"));
+	let currentPage = $state(
+		Number(browser ? (sessionStorage.getItem("forum_selectedPage") ?? "1") : "1"),
+	);
+	const commentGrouped = $derived.by(() => {
+		const comments = sortedComments;
+		const group = [];
 
-	function prevPage() {
-		if (data.pagination.hasPrevPage) {
-			goToPage(data.pagination.currentPage - 1);
+		for (let i = 0; i < comments.length; i += perPage) {
+			group.push(comments.slice(i, i + perPage));
 		}
-	}
+
+		return group;
+	});
 </script>
 
 <svelte:head>
@@ -128,7 +159,7 @@
 	</Card.Header>
 	<Card.Content>
 		<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
-			{@html Dompurify.sanitize(data.forum.description)}
+			{@html sanitizedDescription}
 		</div>
 	</Card.Content>
 	<Separator />
@@ -168,94 +199,112 @@
 </form>
 <Separator />
 
-{#if data.pagination.totalPages > 1}
-	<div class="pagination mt-6 flex items-center justify-center gap-2">
-		<button
-			onclick={prevPage}
-			disabled={!data.pagination.hasPrevPage}
-			class="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			Previous
-		</button>
-
-		{#each Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1) as page (page)}
-			<button
-				onclick={() => goToPage(page)}
-				class="rounded border px-3 py-1"
-				class:bg-blue-500={data.pagination.currentPage === page}
-				class:text-white={data.pagination.currentPage === page}
-			>
-				{page}
-			</button>
-		{/each}
-
-		<button
-			onclick={nextPage}
-			disabled={!data.pagination.hasNextPage}
-			class="rounded border px-3 py-1 disabled:cursor-not-allowed disabled:opacity-50"
-		>
-			Next
-		</button>
+<div class="flex flex-row justify-between gap-2">
+	<div class="flex flex-row gap-2">
+		<Button variant="secondary" onclick={() => (sortOpt = sortOpt === "asc" ? "desc" : "asc")}>
+			{#if sortOpt === "asc"}
+				<ArrowDown />Descending
+			{:else}
+				<ArrowUp />Ascending
+			{/if}
+		</Button>
+		<Select.Root value={sortBy} type="single" onValueChange={(value) => (sortBy = value)}>
+			<Select.Trigger class="">{sortContent}</Select.Trigger>
+			<Select.Content>
+				<Select.Group>
+					<Select.Label>Sort By</Select.Label>
+					{#each sortChoice as option (option.value)}
+						<Select.Item value={option.value}>{option.label}</Select.Item>
+					{/each}
+				</Select.Group>
+			</Select.Content>
+		</Select.Root>
 	</div>
-
-	<p class="mt-2 text-center text-sm text-gray-500">
-		Page {data.pagination.currentPage} of {data.pagination.totalPages}
-		({data.pagination.totalComments} total comments)
-	</p>
-{/if}
-
-<Pagination.Root count={data.pagination.totalPages} perPage={data.pagination.limit}>
-	{#snippet children({ pages, currentPage })}
-		<Pagination.Content>
-			<Pagination.Item>
-				<Pagination.PrevButton />
-			</Pagination.Item>
-			{#each pages as page (page.key)}
-				{#if page.type === "ellipsis"}
+	<div class="flex flex-row items-center gap-2">
+		<div class="flex flex-row gap-2">
+			<Label for="perPage">Comments per page:</Label>
+			<Input
+				name="perPage"
+				id="perPage"
+				type="number"
+				min="1"
+				max={data.commentsCount < 10 ? 10 : data.commentsCount}
+				bind:value={perPage}
+				class="w-16"
+				oninput={() => sessionStorage.setItem("forum_perPage", perPage.toString())}
+			/>
+		</div>
+		<Pagination.Root
+			count={data.commentsCount}
+			{perPage}
+			bind:page={currentPage}
+			class="mx-0 w-fit"
+			onPageChange={(page) => {
+				sessionStorage.setItem("forum_selectedPage", page.toString());
+			}}
+		>
+			{#snippet children({ pages, currentPage })}
+				<Pagination.Content>
 					<Pagination.Item>
-						<Pagination.Ellipsis />
+						<Pagination.PrevButton />
 					</Pagination.Item>
-				{:else}
+					{#each pages as page (page.key)}
+						{#if page.type === "ellipsis"}
+							<Pagination.Item>
+								<Pagination.Ellipsis />
+							</Pagination.Item>
+						{:else}
+							<Pagination.Item>
+								<Pagination.Link {page} isActive={currentPage === page.value}>
+									{page.value}
+								</Pagination.Link>
+							</Pagination.Item>
+						{/if}
+					{/each}
 					<Pagination.Item>
-						<Pagination.Link {page} isActive={currentPage === data.pagination.currentPage}>
-							{page.value}
-						</Pagination.Link>
+						<Pagination.NextButton />
 					</Pagination.Item>
-				{/if}
-			{/each}
-			<Pagination.Item>
-				<Pagination.NextButton />
-			</Pagination.Item>
-		</Pagination.Content>
-	{/snippet}
-</Pagination.Root>
+				</Pagination.Content>
+			{/snippet}
+		</Pagination.Root>
+	</div>
+</div>
 
-{#each data.comments as comment (comment.id)}
-	<Card.Root class="">
-		<Card.Content>
-			<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
-				{@html Dompurify.sanitize(comment.content)}
-			</div>
-		</Card.Content>
-		<Separator />
-		<Card.Footer class="flex items-center gap-2">
-			<Avatar.Root>
-				<Avatar.Image src="{PUBLIC_R2_URL}/{comment.avatar}" alt={comment.fullname} />
-				<Avatar.Fallback>{acronym(comment.fullname ?? "ID")}</Avatar.Fallback>
-			</Avatar.Root>
-			<div class="flex w-full flex-row items-center justify-between gap-2">
-				<span class="truncate font-medium">
-					{comment.fullname}
-				</span>
-				<span class="text-sm text-muted-foreground">
-					{dateFormatter.format(new Date(comment.createdAt + "Z"))} | {dayjs(
-						comment.createdAt + "Z",
-					).fromNow()}
-				</span>
-			</div>
-		</Card.Footer>
-	</Card.Root>
-{/each}
+<div class="flex flex-col gap-4">
+	{#each commentGrouped[currentPage - 1] as comment (comment.id)}
+		{@const sanitizedDescription = browser ? Dompurify.sanitize(comment.content) : comment.content}
+		<div animate:flip={{ duration: 200, easing: cubicOut }}>
+			<Card.Root class="">
+				<Card.Content>
+					<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
+						{@html sanitizedDescription}
+					</div>
+				</Card.Content>
+				<Separator />
+				<Card.Footer class="flex items-center gap-2">
+					<Avatar.Root>
+						<Avatar.Image src="{PUBLIC_R2_URL}/{comment.avatar}" alt={comment.fullname} />
+						<Avatar.Fallback>{acronym(comment.fullname ?? "ID")}</Avatar.Fallback>
+					</Avatar.Root>
+					<div class="flex w-full flex-row items-center justify-between gap-2">
+						<span class="truncate font-medium">
+							{comment.fullname}
+						</span>
+						<span class="text-sm text-muted-foreground">
+							{dateFormatter.format(new Date(comment.createdAt + "Z"))} | {dayjs(
+								comment.createdAt + "Z",
+							).fromNow()}
+						</span>
+					</div>
+				</Card.Footer>
+			</Card.Root>
+		</div>
+	{/each}
+</div>
+
+<p class="text-sm text-muted-foreground">
+	{currentPage} of {Math.ceil(data.commentsCount / perPage)} from {data.commentsCount} data
+</p>
 
 <style>
 	@reference "tailwindcss";
