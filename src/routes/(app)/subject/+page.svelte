@@ -6,6 +6,10 @@
 	let { data }: { data: PageServerData } = $props();
 </script>
 
+<svelte:head>
+	<title>Subjects | OneLearn</title>
+</svelte:head>
+
 <h1 class="font-display text-3xl font-semibold">Subjects</h1>
 <div class="flex flex-col gap-2">
 	{#if data.subjectList}

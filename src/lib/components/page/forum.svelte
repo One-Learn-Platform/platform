@@ -38,7 +38,7 @@
 
 <h1 class="font-display text-2xl font-medium">Forum</h1>
 <div class="flex justify-between">
-	<Button variant="secondary" href={`${page.url.pathname}/create`}><Plus />New Post</Button>
+	<Button variant="secondary" href={`${page.url.pathname}/forum/create`}><Plus />New Post</Button>
 	<div class="flex flex-row gap-2">
 		<Button variant="secondary" onclick={() => (sortOpt = sortOpt === "asc" ? "desc" : "asc")}>
 			{#if sortOpt === "asc"}

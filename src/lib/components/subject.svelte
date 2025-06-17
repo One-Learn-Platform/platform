@@ -11,6 +11,7 @@
 	import Microscope from "@lucide/svelte/icons/microscope";
 	import Shapes from "@lucide/svelte/icons/shapes";
 	import Users from "@lucide/svelte/icons/users";
+	import Atom from "@lucide/svelte/icons/atom";
 
 	const Icons = $derived.by(() => {
 		if (subject.name.toLocaleLowerCase().includes("bio")) return Dna;
@@ -18,6 +19,7 @@
 		if (subject.name.toLocaleLowerCase().includes("science")) return Microscope;
 		if (subject.name.toLocaleLowerCase().includes("history")) return UsersRound;
 		if (subject.name.toLocaleLowerCase().includes("social")) return Users;
+		if (subject.name.toLocaleLowerCase().includes("physics")) return Atom;
 
 		return Shapes;
 	});

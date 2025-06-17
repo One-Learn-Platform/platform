@@ -21,7 +21,7 @@
 <div class="flex items-center gap-2 border px-3 py-2">
 	<Button variant="ghost" size="icon" onclick={() => window.history.back()}><ChevronLeft /></Button>
 	<div class="flex flex-row items-center gap-2">
-		<h1 class="font-display text-5xl font-bold">
+		<h1 class="font-display text-6xl font-bold">
 			{data.subject.name}
 		</h1>
 		<Badge class="mt-0.5" variant={subjectColor(data.subject.subjectTypeName, true)}>
