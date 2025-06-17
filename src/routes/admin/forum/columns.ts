@@ -51,33 +51,15 @@ export const columns: ColumnDef<ForumWithUser>[] = [
 		},
 	},
 	{
-		accessorKey: "material",
+		accessorKey: "subjectId",
 		header: ({ column }) =>
 			renderComponent(sortable, {
-				name: "Material",
+				name: "Subject",
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
 		cell: ({ row }) => {
-			const value = row.getValue("material");
-			const codeCellSnippet = createRawSnippet(() => {
-				return {
-					render: () => `<div class="text-left font-mono">${value}</div>`,
-				};
-			});
-			return renderSnippet(codeCellSnippet, value);
-		},
-	},
-	{
-		accessorKey: "userId",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "User ID",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-		cell: ({ row }) => {
-			const value = row.getValue("userId");
+			const value = row.getValue("subjectId");
 			const codeCellSnippet = createRawSnippet(() => {
 				return {
 					render: () => `<div class="text-left font-mono">${value}</div>`,
@@ -112,24 +94,6 @@ export const columns: ColumnDef<ForumWithUser>[] = [
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
-	},
-	{
-		accessorKey: "description",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Description",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-		cell: ({ row }) => {
-			const value = row.getValue("description");
-			const descriptionCellSnippet = createRawSnippet(() => {
-				return {
-					render: () => `<div class="text-left font-mono">${value || "N/A"}</div>`,
-				};
-			});
-			return renderSnippet(descriptionCellSnippet, value);
-		},
 	},
 	{
 		accessorKey: "createdAt",

@@ -1,7 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { forum, material, user } from "$lib/schema/db";
+import { forum, material, user, subject } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 
@@ -13,17 +13,17 @@ export const load: PageServerLoad = async (event) => {
 			let forumList;
 			if (event.locals.user.school) {
 				forumList = await db
-					.select({ ...rest, user: user.fullname, material: material.title })
+					.select({ ...rest, user: user.fullname, subject: subject.name })
 					.from(forum)
 					.where(eq(forum.schoolId, event.locals.user.school))
-					.leftJoin(user, eq(user.id, forum.userId))
-					.leftJoin(material, eq(material.id, forum.materialId));
+					.leftJoin(user, eq(forum.userId, user.id))
+					.leftJoin(subject, eq(forum.subjectId, subject.id));
 			} else {
 				forumList = await db
-					.select({ ...rest, user: user.fullname, material: material.title })
+					.select({ ...rest, user: user.fullname, subject: subject.name })
 					.from(forum)
 					.leftJoin(user, eq(user.id, forum.userId))
-					.leftJoin(material, eq(material.id, forum.materialId));
+					.leftJoin(subject, eq(subject.id, forum.subjectId));
 			}
 			return {
 				forumList: forumList,

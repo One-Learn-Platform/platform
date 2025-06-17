@@ -85,7 +85,6 @@ export const actions: Actions = {
 		const existingUser = await db.select().from(user).where(eq(user.username, username)).get();
 
 		const ip = event.getClientAddress();
-		console.log("IP Address:", ip);
 		// const ip = "192.168.0"; //for testing
 
 		if (!existingUser) {
