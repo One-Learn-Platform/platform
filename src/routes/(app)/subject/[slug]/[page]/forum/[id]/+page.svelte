@@ -75,7 +75,9 @@
 
 				quillInstance.on("text-change", () => {
 					if (quillInstance) {
-						$formData.content = quillInstance.getSemanticHTML();
+						$formData.content = quillInstance
+							.getSemanticHTML()
+							.replaceAll(/((?:&nbsp;)*)&nbsp;/g, "$1 ");
 					}
 				});
 			} catch (error) {

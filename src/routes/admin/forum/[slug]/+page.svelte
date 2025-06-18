@@ -98,7 +98,9 @@
 				quillInstance.setContents(quillInstance.clipboard.convert({ html: $formData.description }));
 				quillInstance.on("text-change", () => {
 					if (quillInstance) {
-						$formData.description = quillInstance.getSemanticHTML();
+						$formData.description = quillInstance
+							.getSemanticHTML()
+							.replaceAll(/((?:&nbsp;)*)&nbsp;/g, "$1 ");
 					}
 				});
 			} catch (error) {
