@@ -32,7 +32,7 @@
 <div class="flex w-full flex-row gap-2 overflow-x-auto">
 	{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 		<Button
-			variant={page.url.pathname === `/subject/${data.params}/${i}` ? "default" : "outline"}
+			variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`) ? "default" : "outline"}
 			size="sm"
 			href="/subject/{data.params}/{i}"
 			class="w-10 font-display tracking-tight"
