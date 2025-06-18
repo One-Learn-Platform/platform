@@ -3,15 +3,15 @@ import { createInsertSchema } from "drizzle-zod";
 import { subject } from "$lib/schema/db";
 
 const formSchema = createInsertSchema(subject, {
-	code: z.string().min(1, "Subject code is required"),
-	name: z.string().min(1, "Subject name is required"),
-	teacher: z.string().min(1, "Teacher is required"),
-	subjectType: z.string().min(1, "Subject type is required"),
+	code: z.string().min(1, { error: "Subject code is required" }),
+	name: z.string().min(1, { error: "Subject name is required" }),
+	teacher: z.string().min(1, { error: "Teacher is required" }),
+	subjectType: z.string().min(1, { error: "Subject type is required" }),
 	chapterCount: z
 		.number()
 		.int()
-		.min(0, "Chapter count must be a non-negative integer")
-		.max(100, "Chapter count must not exceed 100"),
+		.min(0, { error: "Chapter count must be a non-negative integer" })
+		.max(100, { error: "Chapter count must not exceed 100" }),
 }).omit({ id: true });
 
 export const formSchemaCreate = formSchema;

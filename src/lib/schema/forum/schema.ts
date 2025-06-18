@@ -3,10 +3,17 @@ import { createInsertSchema } from "drizzle-zod";
 import { forum } from "$lib/schema/db";
 
 const formSchema = createInsertSchema(forum, {
-	title: z.string().min(1, "Forum title is required"),
-	description: z.string().min(1, "Forum description is required"),
+	title: z.string().min(1, { error: "Forum title is required" }),
+	description: z.string().min(1, { error: "Forum description is required" }),
 	attachment: z.string().optional(),
-}).omit({ id: true });
+}).omit({
+	id: true,
+	createdAt: true,
+	schoolId: true,
+	subjectId: true,
+	chapter: true,
+	userId: true,
+});
 
 export const formSchemaCreate = formSchema;
 
