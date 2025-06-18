@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from "$app/state";
 	import { enhance } from "$app/forms";
+	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 
 	import type { SessionValidationResult } from "$lib/server/auth";
 
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
@@ -14,19 +14,18 @@
 	import { nav } from "$lib/assets/nav/main";
 	import { acronym } from "$lib/utils";
 
+	import BookCopy from "@lucide/svelte/icons/book-copy";
+	import BookMarked from "@lucide/svelte/icons/book-marked";
 	import ChartArea from "@lucide/svelte/icons/chart-area";
 	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
 	import CircleUser from "@lucide/svelte/icons/circle-user";
 	import LogOut from "@lucide/svelte/icons/log-out";
+	import MessagesSquare from "@lucide/svelte/icons/messages-square";
 	import School from "@lucide/svelte/icons/school";
 	import Search from "@lucide/svelte/icons/search";
 	import Settings from "@lucide/svelte/icons/settings";
 	import User from "@lucide/svelte/icons/user";
-	import BookMarked from "@lucide/svelte/icons/book-marked";
-	import BookCopy from "@lucide/svelte/icons/book-copy";
 	import UserCog from "@lucide/svelte/icons/user-cog";
-	import Shapes from "@lucide/svelte/icons/shapes";
-	import MessagesSquare from "@lucide/svelte/icons/messages-square";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -81,12 +80,6 @@
 			title: "Subject Type",
 			href: `${prefix}/subject-type`,
 			icon: BookCopy,
-			superadmin: true,
-		},
-		{
-			title: "Material Type",
-			href: `${prefix}/material-type`,
-			icon: Shapes,
 			superadmin: true,
 		},
 		{
