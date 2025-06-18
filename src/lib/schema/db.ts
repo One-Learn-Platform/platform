@@ -276,12 +276,12 @@ export type School = typeof school.$inferSelect;
 export type Grades = typeof grades.$inferSelect;
 export type Subject = typeof subject.$inferSelect;
 export type SubjectType = typeof subjectType.$inferSelect;
-export type MaterialType = typeof materialType.$inferSelect;
 export type Material = typeof material.$inferSelect;
 export type Forum = typeof forum.$inferSelect;
 export type Comment = typeof comment.$inferSelect;
 export type Assignment = typeof assignment.$inferSelect;
 export type Submission = typeof submission.$inferSelect;
 export type Enrollment = typeof enrollment.$inferSelect;
+export type Announcement = typeof announcement.$inferSelect;
 
 export const userInsertSchema = createInsertSchema(user);
