@@ -10,6 +10,7 @@
 
 	import * as Select from "$lib/components/ui/select/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
+	import { Separator } from "$lib/components/ui/separator/index.js";
 
 	import ForumChild from "$lib/components/cards/forum.svelte";
 
@@ -19,7 +20,7 @@
 	let sortOpt = $state("asc");
 
 	const sortedData = $derived.by(() =>
-		forumList.toSorted((a, b) => {
+		forumList?.toSorted((a, b) => {
 			if (sortBy === "date") {
 				if (sortOpt === "asc") {
 					return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -36,7 +37,10 @@
 	);
 </script>
 
-<h1 class="font-display text-2xl font-medium">Forum</h1>
+<div>
+	<h1 class="font-display text-2xl font-semibold">Forum</h1>
+	<Separator />
+</div>
 <div class="flex justify-between">
 	<Button variant="secondary" href={`${page.url.pathname}/forum/create`}><Plus />New Post</Button>
 	<div class="flex flex-row gap-2">

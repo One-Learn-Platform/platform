@@ -25,6 +25,7 @@ export function subjectAbbreviation(subject: string) {
  * @returns The badge variant corresponding to the subject type:
  *   - "informative" or "informative_muted" for "laboratory"
  *   - "success" or "success_muted" for "lesson"
+ *   - "interactive" or "interactive_muted" for "practicum"
  *   - "outline" for any other subject
  */
 export function subjectColor(subject: string, muted: boolean = false): BadgeVariant {
@@ -34,7 +35,23 @@ export function subjectColor(subject: string, muted: boolean = false): BadgeVari
 			return muted ? "informative_muted" : "informative";
 		case "lesson":
 			return muted ? "success_muted" : "success";
+		case "practicum":
+			return muted ? "interactive_muted" : "interactive";
 		default:
 			return "outline";
+	}
+}
+
+export function subjectBgColor(subject: string, muted: boolean = false): string {
+	const subjectLower = subject.toLowerCase();
+	switch (subjectLower) {
+		case "laboratory":
+			return muted ? "bg-informative-muted" : "bg-informative";
+		case "lesson":
+			return muted ? "bg-success-muted" : "bg-success";
+		case "practicum":
+			return muted ? "bg-interactive-muted" : "bg-interactive";
+		default:
+			return "bg-outline";
 	}
 }

@@ -6,7 +6,6 @@
 
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
 
 	import { subjectColor } from "$lib/functions/subject";
 
@@ -18,7 +17,7 @@
 	<meta name="description" content={`Subject page for ${data.subject.name}.`} />
 </svelte:head>
 
-<div class="flex items-center gap-2 border px-3 py-2">
+<div class="mb-2 flex items-center gap-2 border px-3 py-2">
 	<Button variant="ghost" size="icon" onclick={() => window.history.back()}><ChevronLeft /></Button>
 	<div class="flex flex-row items-center gap-2">
 		<h1 class="font-display text-6xl font-bold">
@@ -29,7 +28,6 @@
 		</Badge>
 	</div>
 </div>
-<Separator />
 <div class="flex w-full flex-row gap-2 overflow-x-auto">
 	{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 		<Button
@@ -42,5 +40,4 @@
 		</Button>
 	{/each}
 </div>
-
 {@render children()}
