@@ -106,11 +106,6 @@ export const enrollment = sqliteTable(
 	],
 );
 
-export const materialType = sqliteTable("material_type", {
-	id: integer("material_type_id").primaryKey({ autoIncrement: true }),
-	name: text("type_name").notNull(),
-});
-
 export const material = sqliteTable(
 	"material",
 	{
@@ -118,14 +113,14 @@ export const material = sqliteTable(
 		subjectId: integer("subject_id")
 			.notNull()
 			.references(() => subject.id),
-		materialTypeId: integer("material_type_id")
-			.references(() => materialType.id)
-			.notNull(),
 		chapter: integer("chapter").notNull(),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		content: text("content").notNull(),
-		attachment: text("attachment").notNull(),
+		attachment: text("attachment")
+			.notNull()
+			.$type<string[]>()
+			.default(sql`'[]'`),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -135,7 +130,6 @@ export const material = sqliteTable(
 	},
 	(table) => [
 		index("material_subject_index").on(table.subjectId),
-		index("material_type_index").on(table.materialTypeId),
 		index("material_school_index").on(table.schoolId),
 	],
 );
@@ -242,6 +236,22 @@ export const submission = sqliteTable(
 		index("submission_assignment_index").on(table.assignmentId),
 		index("submission_school_index").on(table.schoolId),
 	],
+);
+
+export const announcement = sqliteTable(
+	"announcement",
+	{
+		id: integer("announcement_id").primaryKey({ autoIncrement: true }),
+		title: text("title").notNull(),
+		content: text("content").notNull(),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(current_timestamp)`),
+	},
+	(table) => [index("announcement_school_index").on(table.schoolId)],
 );
 
 export const session = sqliteTable(

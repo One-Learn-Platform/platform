@@ -113,6 +113,13 @@
 			"when": 1750067294300,
 			"tag": "0015_exotic_black_tarantula",
 			"breakpoints": true
+		},
+		{
+			"idx": 16,
+			"version": "6",
+			"when": 1750224773049,
+			"tag": "0016_salty_secret_warriors",
+			"breakpoints": true
 		}
 	]
 }
