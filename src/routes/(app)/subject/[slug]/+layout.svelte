@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import type { LayoutServerData } from "./$types.js";
+	import { page } from "$app/state";
 
 	import ChevronLeft from "@lucide/svelte/icons/chevron-left";
 
@@ -31,7 +32,7 @@
 <div class="flex w-full flex-row gap-2 overflow-x-auto">
 	{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 		<Button
-			variant="outline"
+			variant={page.url.pathname === `/subject/${data.params}/${i}` ? "default" : "outline"}
 			size="sm"
 			href="/subject/{data.params}/{i}"
 			class="w-10 font-display tracking-tight"
