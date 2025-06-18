@@ -22,12 +22,23 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
 		}
+
 		const db = getDb(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
 		const subjectCode = event.params.slug;
 		const chapter = event.params.page;
 		const form = await superValidate(event, zod4(formSchemaCreate));
+		if (event.locals.user.role === 2 || event.locals.user.role === 1) {
+			setError(form, "", "You are not allowed to create a forum post.");
+			return fail(403, {
+				create: {
+					success: false,
+					message: "You are not allowed to create a forum post.",
+				},
+				form,
+			});
+		}
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");
 			return fail(400, {
