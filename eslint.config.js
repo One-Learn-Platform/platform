@@ -25,17 +25,16 @@ export default ts.config(
 		},
 	},
 	{
-		rules: {
-			"eslint svelte/no-at-html-tags": "off",
-		},
-	},
-	{
 		files: ["**/*.svelte"],
-
 		languageOptions: {
 			parserOptions: {
 				parser: ts.parser,
 			},
+		},
+	},
+	{
+		rules: {
+			"svelte/no-at-html-tags": "off",
 		},
 	},
 );
