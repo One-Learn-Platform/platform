@@ -243,7 +243,7 @@ export const announcement = sqliteTable(
 		title: text("title").notNull(),
 		content: text("content").notNull(),
 		startDate: text("start_date").notNull(),
-		endDate: text("end_date").notNull(),
+		endDate: text("end_date"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),

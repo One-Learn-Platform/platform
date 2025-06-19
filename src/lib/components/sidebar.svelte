@@ -26,6 +26,7 @@
 	import Settings from "@lucide/svelte/icons/settings";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
+	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -86,6 +87,12 @@
 			title: "Forum",
 			href: `${prefix}/forum`,
 			icon: MessagesSquare,
+			superadmin: false,
+		},
+		{
+			title: "Announcement",
+			href: `${prefix}/announcement`,
+			icon: BadgeInfo,
 			superadmin: false,
 		},
 	];

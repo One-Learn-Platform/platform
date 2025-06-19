@@ -1,8 +1,8 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "cb3a3d0f-2f47-41bd-be26-b5f7f6a6da76",
-	"prevId": "4031335f-1a6d-449a-a280-eaa0db189d0b",
+	"id": "ddb896ef-3b72-4707-976e-c80d75370c96",
+	"prevId": "cb3a3d0f-2f47-41bd-be26-b5f7f6a6da76",
 	"tables": {
 		"announcement": {
 			"name": "announcement",
@@ -39,7 +39,7 @@
 					"name": "end_date",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": true,
+					"notNull": false,
 					"autoincrement": false
 				},
 				"school_id": {
