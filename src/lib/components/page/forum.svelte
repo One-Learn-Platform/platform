@@ -14,7 +14,9 @@
 
 	import ForumChild from "$lib/components/cards/forum.svelte";
 
-	let { forumList }: { forumList: (Forum & { fullname: string | null; avatar: string | null })[] } =
+	let {
+		forumList,
+	}: { forumList: (Forum & { fullname: string; avatar: string | null; subjectCode: string })[] } =
 		$props();
 	let sortBy = $state("date");
 	let sortOpt = $state("asc");

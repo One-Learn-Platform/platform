@@ -1,12 +1,11 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import type { Forum } from "$lib/schema/db";
-	import { browser } from "$app/environment";
-	import { page } from "$app/state";
 
-	import Dompurify from "dompurify";
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
+	import Dompurify from "dompurify";
 	dayjs.extend(relativeTime);
 
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
@@ -14,11 +13,13 @@
 
 	import { acronym } from "$lib/utils";
 
-	let { forum }: { forum: Forum & { fullname: string | null; avatar: string | null } } = $props();
+	let {
+		forum,
+	}: { forum: Forum & { fullname: string; avatar: string | null; subjectCode: string } } = $props();
 	let sanitizedDescription = $state(
 		browser ? Dompurify.sanitize(forum.description) : forum.description,
 	);
-	const initial = $derived(acronym(forum.fullname ?? "ID"));
+	const initial = $derived(acronym(forum.fullname));
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
 		dateStyle: "long",
 		timeStyle: "medium",
@@ -27,7 +28,7 @@
 </script>
 
 <a
-	href="{page.url.pathname}/forum/{forum.id}"
+	href="/subject/{forum.subjectCode}/{forum.chapter}/forum/{forum.id}"
 	class="flex h-fit flex-col gap-2 rounded-sm border bg-background p-4 duration-150 hover:bg-muted hover:shadow-xs"
 >
 	<div class="">

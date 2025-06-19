@@ -28,7 +28,12 @@ export const load: PageServerLoad = async (event) => {
 		}
 		const forumColumns = getTableColumns(forum);
 		const forumList = await db
-			.select({ ...forumColumns, fullname: user.fullname, avatar: user.avatar })
+			.select({
+				...forumColumns,
+				fullname: user.fullname,
+				avatar: user.avatar,
+				subjectCode: subject.code,
+			})
 			.from(forum)
 			.where(
 				and(
@@ -37,7 +42,8 @@ export const load: PageServerLoad = async (event) => {
 					eq(forum.chapter, page),
 				),
 			)
-			.leftJoin(user, eq(forum.userId, user.id));
+			.innerJoin(user, eq(forum.userId, user.id))
+			.innerJoin(subject, eq(forum.subjectId, subject.id));
 		const materialColumns = getTableColumns(material);
 		const materialList = await db
 			.select({ ...materialColumns })
