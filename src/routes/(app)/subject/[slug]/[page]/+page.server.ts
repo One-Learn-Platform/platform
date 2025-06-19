@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { subject, subjectType, forum, user } from "$lib/schema/db";
+import { subject, subjectType, forum, user, material } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
@@ -16,9 +16,9 @@ export const load: PageServerLoad = async (event) => {
 			return error(400, "Invalid chapter");
 		}
 		const db = getDb(event);
-		const columns = getTableColumns(subject);
+		const subjectColumns = getTableColumns(subject);
 		const subjectData = await db
-			.select({ ...columns, subjectTypeName: subjectType.name })
+			.select({ ...subjectColumns, subjectTypeName: subjectType.name })
 			.from(subject)
 			.where(and(eq(subject.code, slug), eq(subject.schoolId, event.locals.user.school)))
 			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
@@ -38,7 +38,18 @@ export const load: PageServerLoad = async (event) => {
 				),
 			)
 			.leftJoin(user, eq(forum.userId, user.id));
-		return { forum: forumList };
+		const materialColumns = getTableColumns(material);
+		const materialList = await db
+			.select({ ...materialColumns })
+			.from(material)
+			.where(
+				and(
+					eq(material.schoolId, event.locals.user.school),
+					eq(material.subjectId, subjectData.id),
+					eq(material.chapter, page),
+				),
+			);
+		return { forum: forumList, material: materialList };
 	}
 	return redirect(302, "/signin");
 };

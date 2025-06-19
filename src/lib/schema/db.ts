@@ -117,10 +117,8 @@ export const material = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		content: text("content").notNull(),
-		attachment: text("attachment")
-			.notNull()
-			.$type<string[]>()
-			.default(sql`'[]'`),
+		attachment: text("attachment").notNull(),
+		thumbnail: text("thumbnail").notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),

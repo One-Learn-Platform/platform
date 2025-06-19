@@ -120,6 +120,13 @@
 			"when": 1750224773049,
 			"tag": "0016_salty_secret_warriors",
 			"breakpoints": true
+		},
+		{
+			"idx": 17,
+			"version": "6",
+			"when": 1750319837825,
+			"tag": "0017_moaning_shaman",
+			"breakpoints": true
 		}
 	]
 }
