@@ -42,3 +42,22 @@
 	{/each}
 </div>
 {@render children()}
+
+<style>
+	@reference "tailwindcss";
+	:global(.raw h1) {
+		@apply text-3xl font-semibold tracking-tight;
+	}
+	:global(.raw h2) {
+		@apply text-2xl font-semibold tracking-tight;
+	}
+	:global(.raw h3) {
+		@apply text-xl font-semibold tracking-tight;
+	}
+	:global(.raw h4) {
+		@apply text-lg font-semibold tracking-tight;
+	}
+	:global(.raw p) {
+		@apply text-base break-all;
+	}
+</style>

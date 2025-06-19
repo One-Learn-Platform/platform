@@ -10,9 +10,11 @@ export const load: PageServerLoad = async (event) => {
 		const db = getDb(event);
 		const page = Number(event.params.page);
 		const id = Number(event.params.id);
-
 		if (isNaN(page) || page < 1) {
 			return error(400, "Invalid chapter");
+		}
+		if (isNaN(id) || id < 1) {
+			return error(400, "Invalid material ID");
 		}
 		const selectedMaterial = await db
 			.select()
