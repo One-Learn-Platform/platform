@@ -22,6 +22,15 @@
 	const otherMaterials = $derived(data.material.slice(1));
 </script>
 
+{#if data.assignment}
+	{#each data.assignment as assignment (assignment.id)}
+		<div class="flex flex-col space-y-2">
+			<p class="text-2xl font-medium tracking-tight">{assignment.title}</p>
+			<Separator />
+			<p class="text-sm text-muted-foreground">{assignment.description}</p>
+		</div>
+	{/each}
+{/if}
 <section class="flex h-fit flex-col space-y-2">
 	{#if firstMaterial}
 		{@const sanitizedContent = browser
@@ -79,18 +88,18 @@
 				<p>No attachments available.</p>
 			{/if}
 		</div>
-	{/if}
-	{#if data.user.role === 3}
-		<Button
-			variant="outline"
-			class="w-fit"
-			href="{page.url.pathname}/material/{firstMaterial.id}/edit"
-		>
-			<Edit class="" /> Edit
-		</Button>
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/material/create">
-			<Plus class="" /> Add Material
-		</Button>
+		{#if data.user.role === 3}
+			<Button
+				variant="outline"
+				class="w-fit"
+				href="{page.url.pathname}/material/{firstMaterial.id}/edit"
+			>
+				<Edit class="" /> Edit
+			</Button>
+			<Button variant="outline" class="w-fit" href="{page.url.pathname}/material/create">
+				<Plus class="" /> Add Material
+			</Button>
+		{/if}
 	{/if}
 	{#if otherMaterials.length !== 0}
 		<p>Other material:</p>
