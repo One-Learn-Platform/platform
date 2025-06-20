@@ -89,8 +89,12 @@
 			{/if}
 		</div>
 		{#if data.user.role === 3}
-			<Button variant="outline" class="w-fit" href="{page.url.pathname}/material/create">
-				<Plus class="" /> Add Material
+			<Button
+				variant="outline"
+				class="w-fit"
+				href="{page.url.pathname}/material/{firstMaterial.id}/edit"
+			>
+				<Edit class="" /> Edit
 			</Button>
 		{/if}
 	{/if}
