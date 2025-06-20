@@ -156,7 +156,7 @@ export const actions: Actions = {
 				.set({
 					title: form.data.title,
 					description: form.data.description,
-					thumbnail: uniqueThumbnailName,
+					thumbnail: form.data.thumbnail ? uniqueThumbnailName : undefined,
 					content: form.data.content,
 					attachment: JSON.stringify(attachmentArray.concat(existingAttachments)),
 				})

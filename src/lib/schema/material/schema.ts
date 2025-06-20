@@ -28,4 +28,6 @@ export const formSchema = createInsertSchema(material, {
 	subjectId: true,
 });
 
+export const formSchemaEdit = formSchema.partial();
+
 export type CreateMaterialSchema = typeof formSchema;
