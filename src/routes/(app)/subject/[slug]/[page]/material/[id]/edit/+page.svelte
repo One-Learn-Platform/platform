@@ -3,7 +3,7 @@
 	import type { PageServerData, ActionData } from "./$types.js";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 
-	import { formSchema } from "$lib/schema/material/schema";
+	import { formSchemaEdit } from "$lib/schema/material/schema";
 	import { superForm, filesProxy, fileProxy } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
@@ -26,7 +26,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zod4Client(formSchema),
+		validators: zod4Client(formSchemaEdit),
 	});
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
