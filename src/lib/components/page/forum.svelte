@@ -40,7 +40,7 @@
 </script>
 
 <div>
-	<h1 class="font-display text-2xl font-semibold">Forum</h1>
+	<h2 class="font-display text-2xl font-semibold">Forum</h2>
 	<Separator />
 </div>
 <div class="flex justify-between">
