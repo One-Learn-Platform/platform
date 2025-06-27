@@ -18,7 +18,7 @@
 	<meta name="description" content={`Subject page for ${data.subject.name}.`} />
 </svelte:head>
 
-<div class="mb-2 flex items-center gap-2 border px-3 py-2">
+<div class="-mb-px flex items-center gap-2 border px-3 py-2">
 	<Button variant="ghost" size="icon" onclick={() => window.history.back()}><ChevronLeft /></Button>
 	<div class="flex flex-row items-center gap-2">
 		<h1 class="font-display text-6xl font-bold">
@@ -29,7 +29,7 @@
 		</Badge>
 	</div>
 </div>
-<div class="flex w-full flex-row gap-2 overflow-x-auto">
+<div class="flex w-full flex-row gap-2 overflow-x-auto border p-2">
 	{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 		<Button
 			variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`) ? "default" : "outline"}
