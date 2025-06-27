@@ -27,7 +27,8 @@
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
 	const thumbnailProxies = fileProxy(formData, "thumbnail");
-	let filesName = $state();
+	let attachmentNames = $state();
+	let thumbnailNames = $state();
 
 	let quillInstance: Quill | null = null;
 	let editorElement: HTMLElement | undefined = $state();
@@ -124,7 +125,7 @@
 					type="file"
 					accept="image/*,video/*"
 					bind:files={$thumbnailProxies}
-					bind:value={filesName}
+					bind:value={thumbnailNames}
 				/>
 			{/snippet}
 		</Form.Control>
@@ -164,7 +165,7 @@
 					type="file"
 					multiple
 					bind:files={$attachmentProxies}
-					bind:value={filesName}
+					bind:value={attachmentNames}
 				/>
 			{/snippet}
 		</Form.Control>
