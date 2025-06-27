@@ -359,7 +359,7 @@
 								</Popover.Trigger>
 								<Popover.Content class="w-auto p-0" side="top">
 									<Calendar
-										yearSelect={true}
+										captionLayout="dropdown"
 										type="single"
 										value={value as DateValue}
 										minValue={new CalendarDate(2000, 1, 1)}

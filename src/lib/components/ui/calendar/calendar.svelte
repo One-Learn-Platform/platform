@@ -1,65 +1,42 @@
 <script lang="ts">
 	import { Calendar as CalendarPrimitive } from "bits-ui";
-	import { DateFormatter, getLocalTimeZone, today } from "@internationalized/date";
 	import * as Calendar from "./index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
 	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
+	import type { ButtonVariant } from "../button/button.svelte";
+	import { isEqualMonth, type DateValue } from "@internationalized/date";
+	import type { Snippet } from "svelte";
 
 	let {
-		yearSelect = false,
 		ref = $bindable(null),
 		value = $bindable(),
-		placeholder = $bindable(today(getLocalTimeZone())),
+		placeholder = $bindable(),
 		class: className,
 		weekdayFormat = "short",
-		minValue,
-		maxValue,
+		buttonVariant = "ghost",
+		captionLayout = "label",
+		locale = "en-US",
+		months: monthsProp,
+		years,
+		monthFormat: monthFormatProp,
+		yearFormat = "numeric",
+		day,
+		disableDaysOutsideMonth = false,
 		...restProps
-	}: { yearSelect: boolean } & WithoutChildrenOrChild<CalendarPrimitive.RootProps> = $props();
+	}: WithoutChildrenOrChild<CalendarPrimitive.RootProps> & {
+		buttonVariant?: ButtonVariant;
+		captionLayout?: "dropdown" | "dropdown-months" | "dropdown-years" | "label";
+		months?: CalendarPrimitive.MonthSelectProps["months"];
+		years?: CalendarPrimitive.YearSelectProps["years"];
+		monthFormat?: CalendarPrimitive.MonthSelectProps["monthFormat"];
+		yearFormat?: CalendarPrimitive.YearSelectProps["yearFormat"];
+		day?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;
+	} = $props();
 
-	const currentDate = today(getLocalTimeZone());
-	const monthFmt = new DateFormatter("en-US", {
-		month: "long",
+	const monthFormat = $derived.by(() => {
+		if (monthFormatProp) return monthFormatProp;
+		if (captionLayout.startsWith("dropdown")) return "short";
+		return "long";
 	});
-	const monthOptions = $derived.by(() => {
-		return Array.from({ length: 12 }, (_, i) => {
-			const monthIndex = i + 1;
-			const month = currentDate.set({ month: monthIndex });
-
-			return {
-				value: month.month,
-				label: monthFmt.format(month.toDate(getLocalTimeZone())),
-				disabled:
-					(minValue && placeholder.year === minValue.year && monthIndex < minValue.month) ||
-					(maxValue && placeholder.year === maxValue.year && monthIndex > maxValue.month),
-			};
-		}).filter((option) => !option.disabled);
-	});
-
-	const yearOptions = $derived.by(() => {
-		const minYear = minValue ? minValue.year : new Date().getFullYear() - 100;
-		const maxYear = maxValue ? maxValue.year : new Date().getFullYear();
-
-		const yearCount = maxYear - minYear + 1;
-		return Array.from({ length: yearCount }, (_, i) => ({
-			label: String(maxYear - i),
-			value: maxYear - i,
-		}));
-	});
-	const defaultYear = $derived(
-		placeholder ? { value: placeholder.year, label: String(placeholder.year) } : undefined,
-	);
-	const defaultMonth = $derived(
-		placeholder
-			? {
-					value: placeholder.month,
-					label: monthFmt.format(placeholder.toDate(getLocalTimeZone())),
-				}
-			: undefined,
-	);
-	const monthLabel = $derived(
-		monthOptions.find((m) => m.value === defaultMonth?.value)?.label ?? "Select a month",
-	);
 </script>
 
 <!--
@@ -71,94 +48,40 @@ get along, so we shut typescript up by casting `value` to `never`.
 	bind:ref
 	bind:placeholder
 	{weekdayFormat}
-	{minValue}
-	{maxValue}
-	class={cn("p-3", className)}
+	{disableDaysOutsideMonth}
+	class={cn(
+		"group/calendar bg-background p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+		className,
+	)}
+	{locale}
+	{monthFormat}
+	{yearFormat}
 	{...restProps}
 >
 	{#snippet children({ months, weekdays })}
-		{#if yearSelect}
-			<Calendar.Header class="flex w-full items-center justify-between gap-2">
-				<Select.Root
-					type="single"
-					value={`${defaultMonth?.value}`}
-					onValueChange={(v) => {
-						if (!placeholder) return;
-						if (v === `${placeholder.month}`) return;
-						placeholder = placeholder.set({ month: Number.parseInt(v) });
-					}}
-				>
-					<Select.Trigger aria-label="Select month" class="w-[60%]">
-						{monthLabel}
-					</Select.Trigger>
-					<Select.Content class="max-h-[200px] overflow-y-auto">
-						<Select.Group>
-							<Select.GroupHeading>Month</Select.GroupHeading>
-							{#each monthOptions as { value, label } (value)}
-								<Select.Item value={`${value}`} {label} />
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-				<Select.Root
-					type="single"
-					value={`${defaultYear?.value}`}
-					onValueChange={(v) => {
-						if (!v || !placeholder) return;
-						if (v === `${placeholder?.year}`) return;
-						placeholder = placeholder.set({ year: Number.parseInt(v) });
-					}}
-				>
-					<Select.Trigger aria-label="Select year" class="w-[40%]">
-						{defaultYear?.label ?? "Select year"}
-					</Select.Trigger>
-					<Select.Content class="max-h-[200px] overflow-y-auto">
-						<Select.Group>
-							<Select.GroupHeading>Year</Select.GroupHeading>
-							{#each yearOptions as { value, label } (value)}
-								<Select.Item value={`${value}`} {label} />
-							{/each}
-						</Select.Group>
-					</Select.Content>
-				</Select.Root>
-			</Calendar.Header>
-			<Calendar.Months>
-				{#each months as month (month)}
+		<Calendar.Months>
+			<Calendar.Nav>
+				<Calendar.PrevButton variant={buttonVariant} />
+				<Calendar.NextButton variant={buttonVariant} />
+			</Calendar.Nav>
+			{#each months as month, monthIndex (month)}
+				<Calendar.Month>
+					<Calendar.Header>
+						<Calendar.Caption
+							{captionLayout}
+							months={monthsProp}
+							{monthFormat}
+							{years}
+							{yearFormat}
+							month={month.value}
+							bind:placeholder
+							{locale}
+							{monthIndex}
+						/>
+					</Calendar.Header>
 					<Calendar.Grid>
 						<Calendar.GridHead>
-							<Calendar.GridRow class="flex">
-								{#each weekdays as weekday (weekday)}
-									<Calendar.HeadCell>
-										{weekday.slice(0, 2)}
-									</Calendar.HeadCell>
-								{/each}
-							</Calendar.GridRow>
-						</Calendar.GridHead>
-						<Calendar.GridBody>
-							{#each month.weeks as weekDates (weekDates)}
-								<Calendar.GridRow class="mt-2 w-full">
-									{#each weekDates as date (date)}
-										<Calendar.Cell class="select-none" {date} month={month.value}>
-											<Calendar.Day />
-										</Calendar.Cell>
-									{/each}
-								</Calendar.GridRow>
-							{/each}
-						</Calendar.GridBody>
-					</Calendar.Grid>
-				{/each}
-			</Calendar.Months>
-		{:else}
-			<Calendar.Header>
-				<Calendar.PrevButton />
-				<Calendar.Heading />
-				<Calendar.NextButton />
-			</Calendar.Header>
-			<Calendar.Months>
-				{#each months as month (month)}
-					<Calendar.Grid>
-						<Calendar.GridHead>
-							<Calendar.GridRow class="flex">
+							<Calendar.GridRow class="select-none">
 								{#each weekdays as weekday (weekday)}
 									<Calendar.HeadCell>
 										{weekday.slice(0, 2)}
@@ -171,15 +94,22 @@ get along, so we shut typescript up by casting `value` to `never`.
 								<Calendar.GridRow class="mt-2 w-full">
 									{#each weekDates as date (date)}
 										<Calendar.Cell {date} month={month.value}>
-											<Calendar.Day />
+											{#if day}
+												{@render day({
+													day: date,
+													outsideMonth: !isEqualMonth(date, month.value),
+												})}
+											{:else}
+												<Calendar.Day />
+											{/if}
 										</Calendar.Cell>
 									{/each}
 								</Calendar.GridRow>
 							{/each}
 						</Calendar.GridBody>
 					</Calendar.Grid>
-				{/each}
-			</Calendar.Months>
-		{/if}
+				</Calendar.Month>
+			{/each}
+		</Calendar.Months>
 	{/snippet}
 </CalendarPrimitive.Root>

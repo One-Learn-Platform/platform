@@ -126,7 +126,7 @@
 								</Popover.Trigger>
 								<Popover.Content class="w-auto p-0" side="top">
 									<Calendar
-										yearSelect={true}
+										captionLayout="dropdown"
 										type="single"
 										value={valueStart as DateValue}
 										maxValue={new CalendarDate(2100, 12, 31)}
@@ -170,7 +170,7 @@
 								</Popover.Trigger>
 								<Popover.Content class="w-auto p-0" side="top">
 									<Calendar
-										yearSelect={true}
+										captionLayout="dropdown"
 										type="single"
 										value={valueEnd as DateValue}
 										maxValue={new CalendarDate(2100, 12, 31)}
