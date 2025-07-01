@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { subject, subjectType, forum, user, material } from "$lib/schema/db";
+import { subject, subjectType, forum, user, material, assignment } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
@@ -26,6 +26,13 @@ export const load: PageServerLoad = async (event) => {
 		if (!subjectData) {
 			return error(404, "Subject not found");
 		}
+		const assignmentColumns = getTableColumns(assignment);
+		const assignmentList = await db
+			.select({
+				...assignmentColumns,
+			})
+			.from(assignment)
+			.where(eq(assignment.subjectId, subjectData.id));
 		const forumColumns = getTableColumns(forum);
 		const forumList = await db
 			.select({
@@ -55,7 +62,7 @@ export const load: PageServerLoad = async (event) => {
 					eq(material.chapter, page),
 				),
 			);
-		return { forum: forumList, material: materialList };
+		return { forum: forumList, material: materialList, assignment: assignmentList };
 	}
 	return redirect(302, "/signin");
 };

@@ -1,0 +1,1 @@
+ALTER TABLE `assignment` ADD `due_date` text NOT NULL;

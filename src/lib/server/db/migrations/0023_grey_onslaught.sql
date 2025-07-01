@@ -1,0 +1,1 @@
+ALTER TABLE `assignment_question` ADD `question_type` text;

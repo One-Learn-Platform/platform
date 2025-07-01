@@ -15,6 +15,8 @@
 				secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
 				ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
 				link: "text-primary underline-offset-4 hover:underline",
+				success:
+					"shadows-xs bg-success text-white hover:bg-success/90 focus-visible:ring-success/20 dark:bg-success/60 dark:hover:bg-success/50 dark:focus-visible:ring-success/40",
 			},
 			outline: {
 				true: "border bg-transparent dark:bg-transparent",
@@ -37,6 +39,11 @@
 				variant: "destructive",
 				outline: true,
 				class: "border-destructive/60 text-destructive hover:text-white",
+			},
+			{
+				variant: "success",
+				outline: true,
+				class: "border-success/60 text-success hover:text-white",
 			},
 		],
 		defaultVariants: {

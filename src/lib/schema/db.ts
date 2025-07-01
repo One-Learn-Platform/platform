@@ -2,6 +2,8 @@ import { sql } from "drizzle-orm";
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 
+import { QUESTION_TYPE_VALUE } from "../types/assignment";
+
 export const school = sqliteTable("school", {
 	id: integer("school_id").primaryKey({ autoIncrement: true }),
 	name: text("name").notNull(),
@@ -196,6 +198,7 @@ export const assignment = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment").notNull(),
+		dueDate: text("due_date").notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
@@ -207,6 +210,25 @@ export const assignment = sqliteTable(
 		index("assignment_subject_index").on(table.subjectId),
 		index("assignment_school_index").on(table.schoolId),
 	],
+);
+
+export const assignmentQuestion = sqliteTable(
+	"assignment_question",
+	{
+		id: integer("question_id").primaryKey({ autoIncrement: true }),
+		assignmentId: integer("assignment_id")
+			.references(() => assignment.id)
+			.notNull(),
+		question: text("question").notNull(),
+		questionType: text("question_type", {
+			enum: QUESTION_TYPE_VALUE,
+		}).notNull(),
+		choice: text("choice"),
+		answer: text("answer").notNull(),
+		clue: text("clue"),
+		attachment: text("attachment"),
+	},
+	(table) => [index("assignment_question_assignment_index").on(table.assignmentId)],
 );
 
 export const submission = sqliteTable(
@@ -280,6 +302,7 @@ export type Material = typeof material.$inferSelect;
 export type Forum = typeof forum.$inferSelect;
 export type Comment = typeof comment.$inferSelect;
 export type Assignment = typeof assignment.$inferSelect;
+export type AssignmentQuestion = typeof assignmentQuestion.$inferSelect;
 export type Submission = typeof submission.$inferSelect;
 export type Enrollment = typeof enrollment.$inferSelect;
 export type Announcement = typeof announcement.$inferSelect;

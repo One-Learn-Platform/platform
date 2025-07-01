@@ -1,0 +1,1 @@
+ALTER TABLE `assignment_question` ADD `attachment` text;

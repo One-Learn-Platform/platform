@@ -141,6 +141,41 @@
 			"when": 1750349505688,
 			"tag": "0019_tranquil_glorian",
 			"breakpoints": true
+		},
+		{
+			"idx": 20,
+			"version": "6",
+			"when": 1750430471334,
+			"tag": "0020_breezy_squadron_supreme",
+			"breakpoints": true
+		},
+		{
+			"idx": 21,
+			"version": "6",
+			"when": 1751019697394,
+			"tag": "0021_wonderful_wilson_fisk",
+			"breakpoints": true
+		},
+		{
+			"idx": 22,
+			"version": "6",
+			"when": 1751182534378,
+			"tag": "0022_bumpy_nick_fury",
+			"breakpoints": true
+		},
+		{
+			"idx": 23,
+			"version": "6",
+			"when": 1751384479013,
+			"tag": "0023_grey_onslaught",
+			"breakpoints": true
+		},
+		{
+			"idx": 24,
+			"version": "6",
+			"when": 1751384705824,
+			"tag": "0024_broken_justice",
+			"breakpoints": true
 		}
 	]
 }
