@@ -75,9 +75,6 @@
 		untrack(() => (questionsList = list));
 	});
 	$effect(() => {
-		$inspect(questionsList);
-	});
-	$effect(() => {
 		if (form) {
 			if (form?.create?.success) {
 				toast.success("Question added successfully");
