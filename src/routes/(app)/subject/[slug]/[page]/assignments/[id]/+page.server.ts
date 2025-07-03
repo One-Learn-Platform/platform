@@ -74,6 +74,9 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return error(403, "Forbidden");
 		}
+		if (event.locals.user.role !== 3) {
+			return error(403, "Forbidden");
+		}
 		const subjectCode = event.params.slug;
 		const schoolId = event.locals.user.school;
 		const chapter = Number(event.params.page);

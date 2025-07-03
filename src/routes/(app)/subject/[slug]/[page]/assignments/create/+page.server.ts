@@ -19,25 +19,28 @@ export const load: PageServerLoad = async (event) => {
 		if (!event.locals.user.school) {
 			return error(403, "Forbidden");
 		}
-		if (isNaN(page) || page < 1) {
-			return error(400, "Invalid chapter");
+		if (event.locals.user.role === 3) {
+			if (isNaN(page) || page < 1) {
+				return error(400, "Invalid chapter");
+			}
+			if (!slug) {
+				return error(400, "Invalid subject");
+			}
+			if (!schoolId) {
+				return error(403, "Forbidden");
+			}
+			const db = getDb(event);
+			const selectedSubject = await db
+				.select()
+				.from(subject)
+				.where(and(eq(subject.code, slug), eq(subject.schoolId, schoolId)))
+				.get();
+			if (!selectedSubject) {
+				return error(404, "Subject not found");
+			}
+			return { subject: selectedSubject, form: await superValidate(event, zod4(formSchema)) };
 		}
-		if (!slug) {
-			return error(400, "Invalid subject");
-		}
-		if (!schoolId) {
-			return error(403, "Forbidden");
-		}
-		const db = getDb(event);
-		const selectedSubject = await db
-			.select()
-			.from(subject)
-			.where(and(eq(subject.code, slug), eq(subject.schoolId, schoolId)))
-			.get();
-		if (!selectedSubject) {
-			return error(404, "Subject not found");
-		}
-		return { subject: selectedSubject, form: await superValidate(event, zod4(formSchema)) };
+		return error(404, "Not found");
 	}
 	return redirect(302, "/signin");
 };
