@@ -2,6 +2,10 @@ import type { QuestionType } from "$lib/types/assignment";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
+import { formSchema } from "$lib/schema/assignment/schema";
+import { fail as superFail, setError, superValidate, withFiles } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+
 import { assignment, assignmentQuestion, subject } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -50,6 +54,9 @@ export const load: PageServerLoad = async (event) => {
 				),
 			)
 			.get();
+		if (!selectedAssignments) {
+			return error(404, "Assignment not found");
+		}
 		const allQuestions = await db
 			.select()
 			.from(assignmentQuestion)
@@ -64,12 +71,193 @@ export const load: PageServerLoad = async (event) => {
 			assignment: selectedAssignments,
 			questions: allQuestions,
 			questionCount: questionCount?.count ?? 0,
+			form: await superValidate(event, zod4(formSchema)),
 		};
 	}
 	return redirect(302, "/signin");
 };
 
 export const actions: Actions = {
+	edit: async (event) => {
+		if (!event.locals.user) {
+			return error(403, "Forbidden");
+		}
+
+		const form = await superValidate(event, zod4(formSchema));
+		const subjectId = event.params.slug;
+		const chapter = Number(event.params.page);
+		const schoolId = event.locals.user.school;
+		const assignmentId = Number(event.params.id);
+		if (isNaN(chapter) || chapter < 1) {
+			return error(400, "Invalid chapter");
+		}
+		if (isNaN(assignmentId) || assignmentId < 1) {
+			return error(400, "Invalid assignment ID");
+		}
+		if (!schoolId) {
+			return error(403, "Forbidden");
+		}
+		if (!form.valid) {
+			setError(form, "", "Invalid form data");
+			return superFail(400, {
+				edit: {
+					success: false,
+					message: "Invalid form data",
+				},
+				form,
+			});
+		}
+		const db = getDb(event);
+		const selectedSubject = await db
+			.select({ id: subject.id })
+			.from(subject)
+			.where(and(eq(subject.code, subjectId), eq(subject.schoolId, schoolId)))
+			.get();
+
+		if (!selectedSubject) {
+			return superFail(404, {
+				edit: {
+					success: false,
+					message: "Subject not found",
+				},
+				form,
+			});
+		}
+
+		const oldAssignment = await db
+			.select()
+			.from(assignment)
+			.where(eq(assignment.id, assignmentId))
+			.get();
+		if (!oldAssignment) {
+			return superFail(404, {
+				edit: {
+					success: false,
+					message: "Assignment not found",
+				},
+				form,
+			});
+		}
+		const r2 = getR2(event);
+		const attachmentArray: string[] = [];
+		const oldAttachment = oldAssignment.attachment
+			? (JSON.parse(oldAssignment.attachment) as string[])
+			: [];
+		if (form.data.attachment) {
+			const uploadPromises = form.data.attachment.map(async (file) => {
+				try {
+					const uniqueFileName = `assignment/${selectedSubject.id}/${chapter}/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
+					attachmentArray.push(uniqueFileName);
+					const fileBuffer = await file.arrayBuffer();
+					await r2.put(uniqueFileName, fileBuffer);
+					return { success: true };
+				} catch (error) {
+					console.error("Error uploading file:", error, file.name);
+					return { success: false, fileName: file.name };
+				}
+			});
+			const results = await Promise.all(uploadPromises);
+			const failures = results.filter((result) => !result.success);
+			if (failures.length > 0) {
+				throw new Error(
+					`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
+				);
+			}
+		}
+		try {
+			await db
+				.update(assignment)
+				.set({
+					title: form.data.title,
+					description: form.data.description,
+					dueDate: form.data.dueDate,
+					attachment: attachmentArray.length > 0 ? JSON.stringify(attachmentArray) : undefined,
+				})
+				.where(eq(assignment.id, assignmentId));
+			if (form.data.attachment && oldAttachment.length > 0) {
+				await Promise.all(
+					oldAttachment.map(async (element) => {
+						await r2.delete(element);
+					}),
+				);
+			}
+		} catch (error) {
+			await Promise.all(
+				attachmentArray.map(async (element) => {
+					await r2.delete(element);
+				}),
+			);
+			console.error("Error inserting assignment:", error);
+			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
+			return superFail(500, {
+				edit: {
+					success: false,
+					message: error instanceof Error ? error.message : "Failed to create assignment",
+				},
+				form,
+			});
+		}
+
+		return withFiles({
+			edit: {
+				success: true,
+				message: null,
+			},
+			form,
+		});
+	},
+	delete: async (event) => {
+		const db = getDb(event);
+		const formData = await event.request.formData();
+		const id = formData.get("id");
+
+		if (!id) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
+			});
+		}
+		const numberId = Number(id);
+		if (isNaN(numberId) || numberId < 1) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "ID is invalid. Please try again." },
+			});
+		}
+		const selectedAssignment = await db
+			.select()
+			.from(assignment)
+			.where(eq(assignment.id, numberId))
+			.get();
+		if (!selectedAssignment) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "Assignment not found. Please try again.",
+				},
+			});
+		}
+		try {
+			await db.delete(assignmentQuestion).where(eq(assignmentQuestion.assignmentId, numberId));
+			await db.delete(assignment).where(eq(assignment.id, numberId));
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+				},
+			});
+		}
+		return redirect(
+			303,
+			"/subject/" +
+				selectedAssignment.subjectId +
+				"/" +
+				selectedAssignment.chapter +
+				"/assignments",
+		);
+	},
 	addquestion: async (event) => {
 		if (!event.locals.user) {
 			return error(403, "Forbidden");

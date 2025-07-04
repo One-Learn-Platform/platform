@@ -13,6 +13,7 @@
 		type DateValue,
 		getLocalTimeZone,
 		parseDate,
+		parseZonedDateTime,
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
@@ -22,6 +23,7 @@
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
@@ -35,7 +37,9 @@
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let attachmentNames = $state();
 
-	let value = $derived($formData.dueDate ? parseDate($formData.dueDate) : undefined);
+	let date: string = $state("");
+	let time = $state("23:59:59");
+	let value = $derived(date ? parseDate(date) : undefined);
 	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
@@ -82,40 +86,71 @@
 			{/if}
 		</Form.Field>
 
-		<Form.Field form={superform} name="dueDate" class="col-span-2">
+		<Form.Field form={superform} name="dueDate" class="">
 			<Form.Control>
 				{#snippet children({ props })}
-					<Form.Label>Due Date</Form.Label>
-					<Popover.Root>
-						<Popover.Trigger
-							{...props}
-							class={cn(
-								buttonVariants({ variant: "outline" }),
-								"w-full text-left font-normal",
-								!value && "text-muted-foreground",
-							)}
-						>
-							{value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date"}
-							<CalendarIcon class="ml-auto size-4 opacity-50" />
-						</Popover.Trigger>
-						<Popover.Content class="w-auto p-0" side="top">
-							<Calendar
-								captionLayout="dropdown"
-								type="single"
-								value={value as DateValue}
-								maxValue={new CalendarDate(2100, 1, 1)}
-								minValue={today(getLocalTimeZone())}
-								calendarLabel="Due date"
-								onValueChange={(v) => {
+					<div class="flex flex-col items-center gap-4 sm:flex-row">
+						<div class="flex flex-col gap-1">
+							<Form.Label>Due Date</Form.Label>
+							<Popover.Root>
+								<Popover.Trigger
+									{...props}
+									class={cn(
+										buttonVariants({ variant: "outline" }),
+										" text-left font-normal",
+										!value && "text-muted-foreground",
+									)}
+								>
+									{value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date"}
+									<CalendarIcon class="ml-auto size-4 opacity-50" />
+								</Popover.Trigger>
+								<Popover.Content class="w-auto p-0" side="top">
+									<Calendar
+										captionLayout="dropdown"
+										type="single"
+										value={value as DateValue}
+										maxValue={new CalendarDate(2100, 1, 1)}
+										minValue={today(getLocalTimeZone())}
+										calendarLabel="Due date"
+										onValueChange={(v) => {
+											if (v) {
+												const dateStr = v.toString();
+												date = dateStr;
+												$formData.dueDate = parseZonedDateTime(
+													`${date}T${time}[${getLocalTimeZone()}]`,
+												)
+													.toAbsoluteString()
+													.slice(0, 19)
+													.replace("T", " ");
+											} else {
+												$formData.dueDate = "";
+											}
+										}}
+									/>
+								</Popover.Content>
+							</Popover.Root>
+						</div>
+						<div class="flex flex-col gap-1">
+							<Label for="time" class="px-1">Time</Label>
+							<Input
+								type="time"
+								bind:value={time}
+								id="time"
+								step="1"
+								class="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+								onchange={(v) => {
 									if (v) {
-										$formData.dueDate = v.toString();
+										$formData.dueDate = parseZonedDateTime(`${date}T${time}[${getLocalTimeZone()}]`)
+											.toAbsoluteString()
+											.slice(0, 19)
+											.replace("T", " ");
 									} else {
 										$formData.dueDate = "";
 									}
 								}}
 							/>
-						</Popover.Content>
-					</Popover.Root>
+						</div>
+					</div>
 					<input type="hidden" hidden value={$formData.dueDate} name={props.name} />
 				{/snippet}
 			</Form.Control>
