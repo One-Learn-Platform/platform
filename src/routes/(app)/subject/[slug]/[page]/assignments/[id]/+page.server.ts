@@ -109,7 +109,7 @@ export const actions: Actions = {
 		}
 		const db = getDb(event);
 		const selectedSubject = await db
-			.select({ id: subject.id })
+			.select()
 			.from(subject)
 			.where(and(eq(subject.code, subjectId), eq(subject.schoolId, schoolId)))
 			.get();
@@ -146,7 +146,7 @@ export const actions: Actions = {
 		if (form.data.attachment) {
 			const uploadPromises = form.data.attachment.map(async (file) => {
 				try {
-					const uniqueFileName = `assignment/${selectedSubject.id}/${chapter}/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
+					const uniqueFileName = `subject/${selectedSubject.code}/${chapter}/assignment/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
 					attachmentArray.push(uniqueFileName);
 					const fileBuffer = await file.arrayBuffer();
 					await r2.put(uniqueFileName, fileBuffer);
