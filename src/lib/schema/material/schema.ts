@@ -1,5 +1,5 @@
 import { material } from "$lib/schema/db";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
 
 export const formSchema = createInsertSchema(material, {
