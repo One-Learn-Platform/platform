@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import type { PageServerData, ActionData } from "./$types.js";
 	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { enhance as svelteEnhance } from "$app/forms";
 
 	import { formSchemaEdit } from "$lib/schema/material/schema";
 	import { superForm, filesProxy, fileProxy } from "sveltekit-superforms";
@@ -123,7 +124,7 @@
 			{/snippet}
 		</AlertDialog.Trigger>
 		<AlertDialog.Content>
-			<form action="?/delete" method="POST" class="contents">
+			<form action="?/delete" method="POST" class="contents" use:svelteEnhance>
 				<input type="hidden" name="material_id" value={data.material?.id} />
 				<AlertDialog.Header>
 					<AlertDialog.Title

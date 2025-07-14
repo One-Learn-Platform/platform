@@ -11,7 +11,7 @@
 <Button
 	variant="outline"
 	class="h-fit max-w-full flex-col items-start text-left"
-	href="{page.url.pathname}/material/1"
+	href="{page.url.pathname}/material/{material.id}"
 >
 	<p class="text-xl font-semibold tracking-tight">{material.title}</p>
 	<p class="max-w-full text-sm whitespace-normal text-muted-foreground">

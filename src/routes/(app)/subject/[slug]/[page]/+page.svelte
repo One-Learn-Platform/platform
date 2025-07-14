@@ -30,7 +30,13 @@
 
 		<div class="space-y-1">
 			<div>
-				<p class="text-2xl font-medium tracking-tight">{firstMaterial.title}</p>
+				<Button
+					variant="link"
+					href="{page.url.pathname}/material/{firstMaterial.id}"
+					class="p-0 text-2xl font-medium tracking-tight"
+				>
+					{firstMaterial.title}
+				</Button>
 				<Separator />
 			</div>
 			<p class="text-sm text-muted-foreground">{firstMaterial.description}</p>

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { enhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
-	import type { PageServerData, PageServerParentData } from "./$types";
+	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
+  
+	import { toast } from "svelte-sonner";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -14,9 +18,23 @@
 
 	import DOMpurify from "dompurify";
 
-	const { data }: { data: PageServerData & PageServerParentData } = $props();
+	const { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } =
+		$props();
 	const attachmentToArray = $derived(JSON.parse(data.material?.attachment || "[]"));
 	let dialogOpen = $state(false);
+
+	$effect(() => {
+		if (form) {
+			if (form.delete?.success) {
+				toast.success("Material deleted successfully.");
+				invalidateAll();
+				dialogOpen = false;
+			} else {
+				toast.error(form.delete.message);
+				dialogOpen = false;
+			}
+		}
+	});
 </script>
 
 <div class="flex flex-row items-center justify-between gap-2 *:grow">
@@ -80,7 +98,7 @@
 
 <AlertDialog.Root open={dialogOpen} onOpenChange={(value) => (dialogOpen = value)}>
 	<AlertDialog.Content>
-		<form action="?/delete" method="POST" class="contents">
+		<form action="?/delete" method="POST" class="contents" use:enhance>
 			<input type="hidden" name="id" value={data.material?.id} />
 			<AlertDialog.Header>
 				<AlertDialog.Title>Are you sure you want to delete this material?</AlertDialog.Title>
