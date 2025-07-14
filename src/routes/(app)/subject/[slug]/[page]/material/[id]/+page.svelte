@@ -4,7 +4,7 @@
 	import { invalidateAll } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
-  
+
 	import { toast } from "svelte-sonner";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
