@@ -11,6 +11,9 @@ export const load: PageServerLoad = async (event) => {
 		const { page, id } = event.params;
 		const assignmentId = Number(id);
 		const chapter = Number(page);
+		if (event.locals.user.role !== 4) {
+			return error(404, "Not Found");
+		}
 		if (isNaN(assignmentId) || isNaN(chapter)) {
 			return error(400, "Invalid assignment or chapter ID");
 		}
@@ -84,12 +87,6 @@ export const actions: Actions = {
 				score: score,
 				content: JSON.stringify(processedFormData),
 			});
-			return {
-				submit: {
-					success: true,
-					message: null,
-				},
-			};
 		} catch (error) {
 			console.error("Error inserting submission:", error);
 			return fail(500, {
@@ -102,5 +99,9 @@ export const actions: Actions = {
 				},
 			});
 		}
+		return redirect(
+			303,
+			`/subject/${assignmentData.subjectId}/${chapter}/assignments/${assignmentId}`,
+		);
 	},
 };

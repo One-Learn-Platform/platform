@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { PUBLIC_R2_URL } from "$env/static/public";
-	import type { PageServerData } from "./$types";
+	import type { PageServerData, ActionData } from "./$types";
 	import { enhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
 
 	import { QuestionType } from "$lib/types/assignment";
 
@@ -20,7 +21,7 @@
 	import SendHorizontal from "@lucide/svelte/icons/send-horizontal";
 	import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
 
-	let { data }: { data: PageServerData } = $props();
+	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	let dialogOpen = $state(false);
 	let showError = $state(false);
 
@@ -38,6 +39,17 @@
 	$effect(() => {
 		if (unansweredQuestions.length === 0) {
 			showError = false;
+		}
+	});
+	$effect(() => {
+		if (form?.submit?.success) {
+			toast.success("Your answers have been submitted successfully.");
+			dialogOpen = false;
+			currentQuestion = 0;
+			invalidateAll();
+		} else if (form?.submit?.message) {
+			dialogOpen = false;
+			toast.error(form.submit.message);
 		}
 	});
 </script>
