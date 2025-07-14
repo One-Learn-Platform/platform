@@ -320,7 +320,7 @@
 
 <AlertDialog.Root open={dialogOpen} onOpenChange={(open) => (dialogOpen = open)}>
 	<AlertDialog.Content>
-		<form action="?/deleteAttachment" method="POST" class="contents">
+		<form action="?/deleteAttachment" method="POST" class="contents" use:svelteEnhance>
 			<input type="hidden" name="attachment_name" value={toDeleteAttachment} />
 			<AlertDialog.Header>
 				<AlertDialog.Title>Are you sure you want to delete {toDeleteAttachment}?</AlertDialog.Title>
