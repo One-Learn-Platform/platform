@@ -1,5 +1,5 @@
 import { error, fail, redirect } from "@sveltejs/kit";
-import type { PageServerLoad, Actions } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 
 import { assignment, assignmentQuestion, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
@@ -43,7 +43,7 @@ export const actions: Actions = {
 			return redirect(302, "/login");
 		}
 		const db = getDb(event);
-		const { page, id } = event.params;
+		const { page, id, slug } = event.params;
 		const assignmentId = Number(id);
 		const chapter = Number(page);
 		const schoolId = event.locals.user.school;
@@ -62,6 +62,7 @@ export const actions: Actions = {
 		if (!assignmentData) {
 			return error(404, "Assignment not found");
 		}
+
 		const questions = await db
 			.select()
 			.from(assignmentQuestion)
@@ -99,9 +100,6 @@ export const actions: Actions = {
 				},
 			});
 		}
-		return redirect(
-			303,
-			`/subject/${assignmentData.subjectId}/${chapter}/assignments/${assignmentId}`,
-		);
+		return redirect(303, `/subject/${slug}/${chapter}/assignments/${assignmentId}`);
 	},
 };
