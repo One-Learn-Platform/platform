@@ -14,6 +14,7 @@
 	import { nav } from "$lib/assets/nav/main";
 	import { acronym } from "$lib/utils";
 
+	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 	import BookCopy from "@lucide/svelte/icons/book-copy";
 	import BookMarked from "@lucide/svelte/icons/book-marked";
 	import ChartArea from "@lucide/svelte/icons/chart-area";
@@ -22,11 +23,8 @@
 	import LogOut from "@lucide/svelte/icons/log-out";
 	import MessagesSquare from "@lucide/svelte/icons/messages-square";
 	import School from "@lucide/svelte/icons/school";
-	import Search from "@lucide/svelte/icons/search";
-	import Settings from "@lucide/svelte/icons/settings";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
-	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -36,18 +34,6 @@
 			title: "Statistic",
 			href: `${prefix}`,
 			icon: ChartArea,
-			superadmin: false,
-		},
-		{
-			title: "Search",
-			href: `${prefix}/search`,
-			icon: Search,
-			superadmin: false,
-		},
-		{
-			title: "Settings",
-			href: `${prefix}/settings`,
-			icon: Settings,
 			superadmin: false,
 		},
 	];
