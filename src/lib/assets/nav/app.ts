@@ -3,6 +3,7 @@ import BookMarked from "@lucide/svelte/icons/book-marked";
 import MessagesSquare from "@lucide/svelte/icons/messages-square";
 import ClipboardList from "@lucide/svelte/icons/clipboard-list";
 import Megaphone from "@lucide/svelte/icons/megaphone";
+import ChartArea from "@lucide/svelte/icons/chart-area";
 
 export const appNav = [
 	{
@@ -24,6 +25,11 @@ export const appNav = [
 		title: "Assignments",
 		icon: ClipboardList,
 		href: "/assignments",
+	},
+	{
+		title: "Leaderboard",
+		icon: ChartArea,
+		href: "/leaderboard",
 	},
 	{
 		title: "Announcements",
