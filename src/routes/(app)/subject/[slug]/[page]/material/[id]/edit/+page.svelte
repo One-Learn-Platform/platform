@@ -201,7 +201,7 @@
 		{/if}
 	</Form.Field>
 
-	<Form.Field form={superform} name="content" class="flex h-fit min-h-1/2 flex-col">
+	<Form.Field form={superform} name="content" class="flex h-fit flex-col">
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>Content</Form.Label>
