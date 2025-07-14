@@ -134,15 +134,11 @@
 	const { form: formData, enhance, errors, reset } = superform;
 	const { enhance: enhanceUpload, errors: errorsUpload } = superformUpload;
 
-	let value = $state<DateValue | undefined>();
+	let value = $derived($formData.dob ? parseDate($formData.dob) : undefined);
 	// @ts-expect-error - Let the value be undefined so the user locale will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
-	$effect(() => {
-		value = $formData.dob ? parseDate($formData.dob) : undefined;
-	});
-
 	$effect(() => {
 		$formData.fullname = userDetail.fullname ?? "";
 		$formData.dob = userDetail.dob ?? "";

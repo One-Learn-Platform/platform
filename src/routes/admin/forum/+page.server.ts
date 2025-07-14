@@ -1,7 +1,7 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { forum, material, user, subject } from "$lib/schema/db";
+import { forum, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
 

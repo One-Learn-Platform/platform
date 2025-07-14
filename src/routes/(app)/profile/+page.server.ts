@@ -21,6 +21,7 @@ export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
 
 	if (event.locals.user) {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password, ...rest } = getTableColumns(table.user);
 		const user = await db
 			.select({ ...rest })
