@@ -243,7 +243,7 @@ export const submission = sqliteTable(
 			.notNull(),
 		score: integer("score"),
 		content: text("content").notNull(),
-		attachment: text("attachment").notNull(),
+		attachment: text("attachment"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
