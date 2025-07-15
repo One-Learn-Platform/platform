@@ -112,11 +112,6 @@
 	</Card.Content>
 </Card.Root>
 
-<div class="mt-8 flex flex-col items-center gap-2">
-	<blockquote cite="https://www.huxley.net/bnw/four.html">
-		<p>
-			{data.quote.quote}
-		</p>
-	</blockquote>
-	<p>—<cite>{data.quote.author}</cite></p>
+<div class="mt-8 flex flex-col items-center gap-2 text-muted-foreground italic">
+	"{data.quote.advice}"
 </div>

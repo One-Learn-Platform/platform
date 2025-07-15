@@ -13,12 +13,13 @@ export const load: PageServerLoad = async (event) => {
 		if (!schoolId) {
 			return error(400, "School ID is required");
 		}
-		const quote = await fetch("https://api.api-ninjas.com/v1/quotes", {
+		const quote = await fetch("https://api.api-ninjas.com/v1/advice", {
 			headers: {
 				"X-Api-Key": "cbz9iWrhpOZb3ohLKPatVg==FQoNN8wxRV7vat5I",
 			},
 		});
-		const quoteData = (await quote.json()) as { quote: string; author: string; category: string }[];
+		const quoteData = (await quote.json()) as { advice: string };
+		console.log(quoteData);
 		const submissionsColumn = getTableColumns(submission);
 		const leaderboard = await db
 			.select({
@@ -33,7 +34,7 @@ export const load: PageServerLoad = async (event) => {
 			.innerJoin(assignment, eq(submission.assignmentId, assignment.id))
 			.where(and(eq(submission.schoolId, schoolId)))
 			.orderBy(desc(submission.score));
-		return { leaderboard, quote: quoteData[0] };
+		return { leaderboard, quote: quoteData };
 	}
 	return redirect(302, "/signin");
 };
