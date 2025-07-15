@@ -2,15 +2,20 @@
 	import { browser } from "$app/environment";
 	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
+	import dayjs from "dayjs";
+	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { PageData } from "./$types";
+	dayjs.extend(relativeTime);
 
 	import Material from "$lib/components/cards/material.svelte";
 	import Forum from "$lib/components/page/forum.svelte";
 
+	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 
 	import Edit from "@lucide/svelte/icons/edit";
+	import ListTodo from "@lucide/svelte/icons/list-todo";
 	import Plus from "@lucide/svelte/icons/plus";
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
@@ -20,9 +25,40 @@
 	const firstMaterial = $derived(data.material[0]);
 	const firstMaterialAttachment = $derived(JSON.parse(firstMaterial?.attachment));
 	const otherMaterials = $derived(data.material.slice(1));
+	const unfinishedAssignments = $derived(data.assignment.filter((a) => a.done === 0));
+
+	const assignmentsDueInWeek = $derived(
+		unfinishedAssignments.filter((assignment) =>
+			dayjs(assignment.dueDate + "Z").isSame(dayjs().add(1, "week"), "week"),
+		),
+	);
+	const assignmentsDueTomorrow = $derived(
+		unfinishedAssignments.filter((assignment) =>
+			dayjs(assignment.dueDate + "Z").isSame(dayjs().add(1, "day"), "day"),
+		),
+	);
 </script>
 
 <section class="flex h-fit flex-col space-y-2">
+	{#if assignmentsDueTomorrow.length > 0}
+		<Alert.Root variant="destructive" fill="muted">
+			<ListTodo />
+			<Alert.Title>You have {assignmentsDueTomorrow.length} assignment due tomorrow!</Alert.Title>
+			<Alert.Description>Please complete assignments immediately</Alert.Description>
+		</Alert.Root>
+	{:else if assignmentsDueInWeek.length > 0}
+		<Alert.Root variant="warning" fill="muted">
+			<ListTodo />
+			<Alert.Title>You have {assignmentsDueInWeek.length} assignment(s) due tomorrow</Alert.Title>
+			<Alert.Description>Please complete all assignments before the due date</Alert.Description>
+		</Alert.Root>
+	{:else if unfinishedAssignments.length > 0}
+		<Alert.Root variant="informative" fill="muted">
+			<ListTodo />
+			<Alert.Title>You have unfinished assignments</Alert.Title>
+			<Alert.Description>Please complete all assignments before due date</Alert.Description>
+		</Alert.Root>
+	{/if}
 	{#if firstMaterial}
 		{@const sanitizedContent = browser
 			? DOMpurify.sanitize(firstMaterial.content)
@@ -108,24 +144,22 @@
 	{/if}
 </section>
 
-<section class="h-fit space-y-2">
-	<div>
-		<h2 class="font-display text-2xl font-semibold tracking-tight">Assignment</h2>
-		<Separator />
+<section class="mt-4 h-fit space-y-2">
+	<div class="mb-0">
+		<div class="flex flex-row items-center justify-between">
+			<h2 class="font-display text-3xl font-semibold tracking-tight">Assignment</h2>
+			<Button variant="link" href="{page.url.pathname}/assignments">See All Assignments</Button>
+		</div>
 	</div>
-	<div
-		class="flex flex-row items-center {data.user.role === 3 ? 'justify-between' : 'justify-end'}"
-	>
-		{#if data.user.role === 3}
-			<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
-				<Plus class="" /> Add Assignment
-			</Button>
-		{/if}
-		<Button variant="link" href="{page.url.pathname}/assignments">See All Assignments</Button>
-	</div>
-	{#if data.assignment && data.assignment.length > 0}
+	<Separator />
+	{#if data.user.role === 3}
+		<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
+			<Plus class="" /> Add Assignment
+		</Button>
+	{/if}
+	{#if unfinishedAssignments && unfinishedAssignments.length > 0}
 		<ul class="space-y-2">
-			{#each data.assignment as assignment (assignment.id)}
+			{#each unfinishedAssignments as assignment (assignment.id)}
 				<li>
 					<Button
 						variant="outline"
@@ -146,6 +180,6 @@
 	{/if}
 </section>
 
-<section class="h-dvh space-y-2">
+<section class="mt-4 h-dvh space-y-2">
 	<Forum forumList={data.forum} />
 </section>

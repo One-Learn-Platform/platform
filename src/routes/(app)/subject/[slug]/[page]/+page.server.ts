@@ -1,9 +1,17 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { subject, subjectType, forum, user, material, assignment } from "$lib/schema/db";
+import {
+  assignment,
+  forum,
+  material,
+  subject,
+  subjectType,
+  submission,
+  user,
+} from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const slug = event.params.slug;
@@ -30,6 +38,17 @@ export const load: PageServerLoad = async (event) => {
 		const assignmentList = await db
 			.select({
 				...assignmentColumns,
+				done: sql<number>`${exists(
+					db
+						.select()
+						.from(submission)
+						.where(
+							and(
+								eq(submission.assignmentId, assignment.id),
+								eq(submission.userId, event.locals.user.id),
+							),
+						),
+				)}`,
 			})
 			.from(assignment)
 			.where(eq(assignment.subjectId, subjectData.id));
