@@ -15,6 +15,14 @@
 
 	const { data }: { data: PageServerData } = $props();
 	let searchQuery = $state("");
+
+	const sortChoice = [
+		{ label: "Created At", value: "createdAt" },
+		{ label: "Title", value: "title" },
+		{ label: "Author", value: "fullname" },
+	];
+	let sortBy = $state("createdAt");
+	let sortOpt = $state("desc");
 	const filteredForums = $derived.by(() =>
 		data.forums
 			.filter((forum) => {
@@ -34,14 +42,6 @@
 				}
 			}),
 	);
-
-	const sortChoice = [
-		{ label: "Created At", value: "createdAt" },
-		{ label: "Title", value: "title" },
-		{ label: "Author", value: "fullname" },
-	];
-	let sortBy = $state("createdAt");
-	let sortOpt = $state("desc");
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 </script>
 

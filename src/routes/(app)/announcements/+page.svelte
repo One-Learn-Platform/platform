@@ -1,21 +1,48 @@
 <script lang="ts">
+	import { flip } from "svelte/animate";
+	import { cubicOut } from "svelte/easing";
+	import { fade } from "svelte/transition";
 	import type { PageServerData } from "./$types";
 
+	import dayjs from "dayjs";
+
+	import { Input } from "$lib/components/ui/input/index.js";
+
+	import Announcement from "$lib/components/cards/announcement.svelte";
+
 	const { data }: { data: PageServerData } = $props();
+	let search = $state("");
+	const filteredAnnouncements = $derived(
+		data.announcements
+			.filter(
+				(announcement) =>
+					dayjs(announcement.startDate).isBefore(dayjs()) &&
+					dayjs(announcement.endDate).isAfter(dayjs()),
+			)
+			.filter(
+				(announcement) =>
+					announcement.title.toLowerCase().includes(search.toLowerCase()) ||
+					announcement.content.toLowerCase().includes(search.toLowerCase()),
+			),
+	);
 </script>
 
-{#if data.announcements.length > 0}
-	<ul class="">
-		{#each data.announcements as announcement (announcement.id)}
-			<li class="mb-2 space-y-1 rounded-sm border p-2">
-				<h3 class="text-2xl font-semibold tracking-tight">{announcement.title}</h3>
-				<p class="text-muted-foreground">{announcement.content}</p>
-				<p class="text-xs text-muted-foreground">
-					Started on {new Date(announcement.startDate).toLocaleDateString()}
-				</p>
-			</li>
-		{/each}
-	</ul>
+<Input
+	type="search"
+	bind:value={search}
+	id="search"
+	class="max-w-sm"
+	placeholder="Search announcements..."
+/>
+{#if filteredAnnouncements.length > 0}
+	{#each filteredAnnouncements as announcement (announcement.id)}
+		<div
+			transition:fade={{ duration: 200, easing: cubicOut }}
+			animate:flip={{ duration: 200, easing: cubicOut }}
+		>
+			<Announcement {announcement} />
+		</div>
+	{/each}
 {:else}
 	<p class="self-center text-center text-muted-foreground">No announcements at this time.</p>
 {/if}
