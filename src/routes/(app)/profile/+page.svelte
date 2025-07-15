@@ -9,8 +9,6 @@
 		formSchemaPassOnly,
 		formSchemaUploadImage,
 		formSchemaWithoutPass,
-		Role,
-		type RoleEnum,
 	} from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
@@ -35,7 +33,6 @@
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
 
 	import { acronym } from "$lib/utils";
 
@@ -48,23 +45,6 @@
 	let alertDialogOpen = $state(false);
 
 	const userDetail = $derived(data.userData);
-	const currentRole = $derived.by(() => {
-		switch (userDetail.roleId) {
-			case 1:
-				return Role.enum["super admin"];
-			case 2:
-				return Role.enum["admin"];
-			case 3:
-				return Role.enum["teacher"];
-			case 4:
-				return Role.enum["student"];
-			default:
-				return Role.enum["student"];
-		}
-	});
-	const currentSchool = $derived(
-		data.schoolList.find((school) => school.id === userDetail.schoolId)?.id.toString() ?? "",
-	);
 
 	const changes = $state({
 		fullname: false,
@@ -100,18 +80,6 @@
 						changes.dob = true;
 					} else {
 						changes.dob = false;
-					}
-				} else if (event.paths.includes("roleId")) {
-					if ($formData.roleId !== currentRole) {
-						changes.roleId = true;
-					} else {
-						changes.roleId = false;
-					}
-				} else if (event.paths.includes("schoolId")) {
-					if ($formData.schoolId !== currentSchool) {
-						changes.schoolId = true;
-					} else {
-						changes.schoolId = false;
 					}
 				} else {
 					changes.dob = false;
@@ -153,8 +121,6 @@
 		$formData.fullname = userDetail.fullname ?? "";
 		$formData.dob = userDetail.dob ?? "";
 		$formData.username = userDetail?.username ?? "";
-		$formData.roleId = currentRole;
-		$formData.schoolId = currentSchool;
 	});
 	const initial = $derived(acronym(userDetail.fullname));
 
@@ -398,95 +364,6 @@
 					<Form.Description>The date of birth of the user.</Form.Description>
 				{/if}
 			</Form.Field>
-
-			<Form.Field form={superform} name="roleId">
-				<Form.Control>
-					{#snippet children({ props })}
-						<Form.Label>Role</Form.Label>
-						<Select.Root
-							type="single"
-							value={$formData.roleId}
-							onValueChange={(value) => {
-								const roleValue = value as RoleEnum;
-								$formData.roleId = roleValue;
-								// set timeout to allow the role value to be registered before changing the school value
-								setTimeout(() => {
-									if (value === Role.enum["super admin"]) {
-										$formData.schoolId = "";
-									}
-								}, 10);
-							}}
-							name={props.name}
-						>
-							<Select.Trigger {...props} class={changes.roleId ? changesClass : ""}>
-								{$formData.roleId
-									? $formData.roleId.replace(
-											/\w\S*/g,
-											(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-										)
-									: "Select a role"}
-							</Select.Trigger>
-							<Select.Content>
-								<Select.Group>
-									<Select.Label>Role</Select.Label>
-
-									{#each Object.values(Role.options) as role (role)}
-										{@const roleTitleCase = role.replace(
-											/\w\S*/g,
-											(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-										)}
-										<Select.Item value={role} label={roleTitleCase}>{roleTitleCase}</Select.Item>
-									{/each}
-								</Select.Group>
-							</Select.Content>
-						</Select.Root>
-					{/snippet}
-				</Form.Control>
-				{#if $errors.roleId}
-					<Form.FieldErrors />
-				{:else}
-					<Form.Description>
-						Select a role for the user. This will determine their access level.
-					</Form.Description>
-				{/if}
-			</Form.Field>
-
-			<Form.Field form={superform} name="schoolId">
-				<Form.Control>
-					{#snippet children({ props })}
-						<Form.Label>School</Form.Label>
-						<Select.Root
-							type="single"
-							value={$formData.schoolId}
-							name={props.name}
-							allowDeselect
-							disabled={$formData.roleId === Role.enum["super admin"]}
-							onValueChange={(value) => ($formData.schoolId = value)}
-						>
-							<Select.Trigger {...props}>
-								{$formData.schoolId
-									? data.schoolList.find((school) => school.id.toString() === $formData.schoolId)
-											?.name
-									: "Select a school"}
-							</Select.Trigger>
-							<Select.Content>
-								{#each data.schoolList as school (school)}
-									<Select.Item value={school.id.toString()} label={school.name}>
-										{school.name}
-									</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					{/snippet}
-				</Form.Control>
-				{#if $errors.schoolId}
-					<Form.FieldErrors />
-				{:else}
-					<Form.Description>
-						This will determine the school affiliation of the user.
-					</Form.Description>
-				{/if}
-			</Form.Field>
 		</Card.Content>
 		<Card.Footer class="justify-end gap-4">
 			{#if $errors._errors}
@@ -502,15 +379,11 @@
 							fullname: userDetail.fullname,
 							dob: userDetail.dob,
 							username: userDetail.username,
-							roleId: currentRole,
-							schoolId: currentSchool,
 						},
 					});
 					changes.fullname = false;
 					changes.username = false;
 					changes.dob = false;
-					changes.roleId = false;
-					changes.schoolId = false;
 				}}>Cancel</Button
 			>
 			<Form.Button disabled={!isChanged}>Save Changes</Form.Button>

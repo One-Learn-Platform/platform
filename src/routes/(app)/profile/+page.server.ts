@@ -18,9 +18,8 @@ import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-
 	if (event.locals.user) {
+		const db = getDb(event);
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { password, ...rest } = getTableColumns(table.user);
 		const user = await db
@@ -60,24 +59,6 @@ export const actions: Actions = {
 				edit: { success: false, data: null, message: "Content is invalid, please try again" },
 				form,
 			});
-		}
-
-		let roleId = 0;
-		switch (formData.roleId) {
-			case "super admin":
-				roleId = 1;
-				break;
-			case "admin":
-				roleId = 2;
-				break;
-			case "teacher":
-				roleId = 3;
-				break;
-			case "student":
-				roleId = 4;
-				break;
-			default:
-				break;
 		}
 
 		const prevUserData = (
@@ -124,7 +105,6 @@ export const actions: Actions = {
 					fullname: formData.fullname,
 					username: formData.username,
 					dob: formData.dob,
-					roleId: roleId,
 				})
 				.where(eq(table.user.id, event.locals.user.id));
 		} catch (error) {

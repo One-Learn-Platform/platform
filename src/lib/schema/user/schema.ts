@@ -75,40 +75,12 @@ export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 		}),
 });
 
-export const formSchemaWithoutPass = formSchema
-	.omit({ password: true })
-	.refine(
-		(data) => {
-			if (
-				data.roleId === Role.enum["super admin"] &&
-				data.schoolId !== undefined &&
-				data.schoolId !== ""
-			) {
-				return false;
-			}
-			return true;
-		},
-		{
-			error: "Super Admin is not allowed to have a school",
-			path: ["school"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (
-				data.roleId !== Role.enum["super admin"] &&
-				data.schoolId === undefined &&
-				data.schoolId === ""
-			) {
-				return false;
-			}
-			return true;
-		},
-		{
-			error: "School is required for non-super admin roles",
-			path: ["schoolId"],
-		},
-	);
+export const formSchemaWithoutPass = formSchema.omit({
+	password: true,
+	roleId: true,
+	schoolId: true,
+	gradesId: true,
+});
 
 export const formSchemaPassOnly = formSchema
 	.pick({
