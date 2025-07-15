@@ -122,7 +122,11 @@
 					<Badge variant={subjectColor(group.subjectType)}>{group.subjectType}</Badge>
 				</div>
 				{#each group.assignments as assignment (assignment.id)}
-					<div transition:fade={{ duration: 150, easing: cubicOut }} class="w-full">
+					<div
+						transition:fade={{ duration: 150, easing: cubicOut }}
+						animate:flip={{ duration: 150, easing: cubicOut }}
+						class="w-full"
+					>
 						<Assignment {assignment} done={assignment.done === 1} />
 					</div>
 				{/each}
