@@ -14,16 +14,16 @@ import { zod4 } from "sveltekit-superforms/adapters";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
-		const page = Number(event.params.page);
+		const chapter = Number(event.params.chapter);
 		const id = Number(event.params.id);
 
-		if (isNaN(page) || page < 1) {
+		if (isNaN(chapter) || chapter < 1) {
 			return error(400, "Invalid chapter");
 		}
 		const selectedMaterial = await db
 			.select()
 			.from(material)
-			.where(and(eq(material.id, id), eq(material.chapter, page)))
+			.where(and(eq(material.id, id), eq(material.chapter, chapter)))
 			.get();
 		return {
 			material: selectedMaterial,
@@ -42,8 +42,8 @@ export const actions: Actions = {
 		const r2 = getR2(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
-		const subjectCode = event.params.slug;
-		const chapter = Number(event.params.page);
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
 		const form = await superValidate(event, zod4(formSchema));
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");
@@ -199,9 +199,9 @@ export const actions: Actions = {
 		const r2 = getR2(event);
 		const formData = await event.request.formData();
 		const id = Number(formData.get("material_id"));
-		const subjectCode = event.params.slug;
+		const { subjectCode } = event.params;
 		const schoolId = event.locals.user.school;
-		const chapter = Number(event.params.page);
+		const chapter = Number(event.params.chapter);
 		if (!id) {
 			return fail(400, {
 				delete: {
@@ -287,8 +287,8 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const name = formData.get("attachment_name");
 		const schoolId = event.locals.user.school;
-		const subjectCode = event.params.slug;
-		const chapter = Number(event.params.page);
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
 		if (name === null || typeof name !== "string" || name.trim() === "") {
 			return fail(400, {
 				deleteAttachment: {

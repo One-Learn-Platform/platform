@@ -6,8 +6,7 @@ import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {
-	const { slug } = event.params;
-	const params = slug;
+	const { subjectCode } = event.params;
 	if (event.locals.user) {
 		if (!event.locals.user.school) {
 			return error(403, "Forbidden");
@@ -17,13 +16,13 @@ export const load: LayoutServerLoad = async (event) => {
 		const subjectData = await db
 			.select({ ...columns, subjectTypeName: subjectType.name })
 			.from(subject)
-			.where(and(eq(subject.code, params), eq(subject.schoolId, event.locals.user.school)))
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, event.locals.user.school)))
 			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 			.get();
 		if (!subjectData) {
 			return error(404, "Subject not found");
 		}
-		return { params: params, subject: subjectData };
+		return { params: subjectCode, subject: subjectData };
 	}
 	return redirect(302, "/signin");
 };

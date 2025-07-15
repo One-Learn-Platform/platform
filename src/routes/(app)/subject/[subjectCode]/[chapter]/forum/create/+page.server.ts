@@ -26,8 +26,16 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
-		const subjectCode = event.params.slug;
-		const chapter = event.params.page;
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
+		if (isNaN(chapter) || chapter < 1) {
+			return fail(400, {
+				create: {
+					success: false,
+					message: "Invalid chapter",
+				},
+			});
+		}
 		const form = await superValidate(event, zod4(formSchemaCreate));
 		if (event.locals.user.role === 2 || event.locals.user.role === 1) {
 			setError(form, "", "You are not allowed to create a forum post.");
@@ -88,7 +96,7 @@ export const actions: Actions = {
 			await db.insert(forum).values({
 				title: form.data.title,
 				description: form.data.description,
-				chapter: Number(chapter),
+				chapter: chapter,
 				schoolId: schoolId,
 				subjectId: subjectId?.id,
 				userId: userId,

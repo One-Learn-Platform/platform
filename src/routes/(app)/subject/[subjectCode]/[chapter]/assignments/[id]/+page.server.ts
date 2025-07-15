@@ -15,8 +15,8 @@ import { exists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const schoolId = event.locals.user?.school;
-	const subjectCode = event.params.slug;
-	const chapter = Number(event.params.page);
+	const { subjectCode } = event.params;
+	const chapter = Number(event.params.chapter);
 	const id = Number(event.params.id);
 	if (event.locals.user) {
 		if (!event.locals.user.school) {
@@ -99,8 +99,8 @@ export const actions: Actions = {
 		}
 
 		const form = await superValidate(event, zod4(formSchema));
-		const subjectId = event.params.slug;
-		const chapter = Number(event.params.page);
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
 		const schoolId = event.locals.user.school;
 		const assignmentId = Number(event.params.id);
 		if (isNaN(chapter) || chapter < 1) {
@@ -126,7 +126,7 @@ export const actions: Actions = {
 		const selectedSubject = await db
 			.select()
 			.from(subject)
-			.where(and(eq(subject.code, subjectId), eq(subject.schoolId, schoolId)))
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
 			.get();
 
 		if (!selectedSubject) {
@@ -280,9 +280,9 @@ export const actions: Actions = {
 		if (event.locals.user.role !== 3) {
 			return error(403, "Forbidden");
 		}
-		const subjectCode = event.params.slug;
+		const { subjectCode } = event.params;
 		const schoolId = event.locals.user.school;
-		const chapter = Number(event.params.page);
+		const chapter = Number(event.params.chapter);
 		const formData = await event.request.formData();
 
 		const db = getDb(event);

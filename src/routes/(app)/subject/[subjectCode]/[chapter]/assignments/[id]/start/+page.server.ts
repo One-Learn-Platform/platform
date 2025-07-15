@@ -8,9 +8,9 @@ import { eq, and, sql, exists, getTableColumns } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
-		const { page, id } = event.params;
+		const { id } = event.params;
+		const chapter = Number(event.params.chapter);
 		const assignmentId = Number(id);
-		const chapter = Number(page);
 		if (event.locals.user.role !== 4) {
 			return error(404, "Not Found");
 		}
@@ -65,9 +65,9 @@ export const actions: Actions = {
 			return redirect(302, "/login");
 		}
 		const db = getDb(event);
-		const { page, id, slug } = event.params;
+		const { id, subjectCode } = event.params;
 		const assignmentId = Number(id);
-		const chapter = Number(page);
+		const chapter = Number(event.params.chapter);
 		const schoolId = event.locals.user.school;
 
 		if (isNaN(assignmentId) || isNaN(chapter)) {
@@ -122,6 +122,6 @@ export const actions: Actions = {
 				},
 			});
 		}
-		return redirect(303, `/subject/${slug}/${chapter}/assignments/${assignmentId}`);
+		return redirect(303, `/subject/${subjectCode}/${chapter}/assignments/${assignmentId}`);
 	},
 };

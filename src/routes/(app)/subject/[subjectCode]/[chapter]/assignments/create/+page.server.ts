@@ -12,18 +12,18 @@ import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
 import { and, eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const slug = event.params.slug;
+	const { subjectCode } = event.params;
 	const schoolId = event.locals.user?.school;
-	const page = Number(event.params.page);
+	const chapter = Number(event.params.chapter);
 	if (event.locals.user) {
 		if (!event.locals.user.school) {
 			return error(403, "Forbidden");
 		}
 		if (event.locals.user.role === 3) {
-			if (isNaN(page) || page < 1) {
+			if (isNaN(chapter) || chapter < 1) {
 				return error(400, "Invalid chapter");
 			}
-			if (!slug) {
+			if (!subjectCode) {
 				return error(400, "Invalid subject");
 			}
 			if (!schoolId) {
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async (event) => {
 			const selectedSubject = await db
 				.select()
 				.from(subject)
-				.where(and(eq(subject.code, slug), eq(subject.schoolId, schoolId)))
+				.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
 				.get();
 			if (!selectedSubject) {
 				return error(404, "Subject not found");
@@ -52,8 +52,8 @@ export const actions: Actions = {
 		}
 
 		const form = await superValidate(event, zod4(formSchema));
-		const subjectId = event.params.slug;
-		const chapter = Number(event.params.page);
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
 		const schoolId = event.locals.user.school;
 		if (isNaN(chapter) || chapter < 1) {
 			return error(400, "Invalid chapter");
@@ -75,7 +75,7 @@ export const actions: Actions = {
 		const selectedSubject = await db
 			.select()
 			.from(subject)
-			.where(and(eq(subject.code, subjectId), eq(subject.schoolId, schoolId)))
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
 			.get();
 
 		if (!selectedSubject) {
@@ -150,7 +150,7 @@ export const actions: Actions = {
 			.get();
 		return redirect(
 			303,
-			`/subject/${event.params.slug}/${event.params.page}/assignments/${currentAssignment?.id}`,
+			`/subject/${event.params.subjectCode}/${event.params.chapter}/assignments/${currentAssignment?.id}`,
 		);
 	},
 };

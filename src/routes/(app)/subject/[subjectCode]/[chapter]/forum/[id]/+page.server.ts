@@ -12,10 +12,10 @@ import { and, eq, count, getTableColumns, desc } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
-		const page = Number(event.params.page);
+		const chapter = Number(event.params.chapter);
 		const id = Number(event.params.id);
 
-		if (isNaN(page) || page < 1) {
+		if (isNaN(chapter) || chapter < 1) {
 			return error(400, "Invalid chapter");
 		}
 		const forumColumns = getTableColumns(forum);
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 			})
 			.from(forum)
 			.leftJoin(user, eq(forum.userId, user.id))
-			.where(and(eq(forum.chapter, page), eq(forum.id, id)))
+			.where(and(eq(forum.chapter, chapter), eq(forum.id, id)))
 			.get();
 		if (!selectedForum) {
 			return error(404, "Forum not found");
@@ -67,8 +67,8 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
-		const subjectCode = event.params.slug;
-		const chapter = Number(event.params.page);
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
 		const form = await superValidate(event, zod4(formSchema));
 		if (!schoolId) {
 			return fail(404, {

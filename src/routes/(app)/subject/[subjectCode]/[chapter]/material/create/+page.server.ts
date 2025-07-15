@@ -29,8 +29,8 @@ export const actions: Actions = {
 		const r2 = getR2(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
-		const subjectCode = event.params.slug;
-		const chapter = event.params.page;
+		const { subjectCode } = event.params;
+		const chapter = event.params.chapter;
 		const form = await superValidate(event, zod4(formSchema));
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");

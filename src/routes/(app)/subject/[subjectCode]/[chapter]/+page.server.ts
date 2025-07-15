@@ -2,25 +2,25 @@ import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 import {
-  assignment,
-  forum,
-  material,
-  subject,
-  subjectType,
-  submission,
-  user,
+	assignment,
+	forum,
+	material,
+	subject,
+	subjectType,
+	submission,
+	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const slug = event.params.slug;
-	const page = Number(event.params.page);
+	const { subjectCode } = event.params;
+	const chapter = Number(event.params.chapter);
 	if (event.locals.user) {
 		if (!event.locals.user.school) {
 			return error(403, "Forbidden");
 		}
-		if (isNaN(page) || page < 1) {
+		if (isNaN(chapter) || chapter < 1) {
 			return error(400, "Invalid chapter");
 		}
 		const db = getDb(event);
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async (event) => {
 		const subjectData = await db
 			.select({ ...subjectColumns, subjectTypeName: subjectType.name })
 			.from(subject)
-			.where(and(eq(subject.code, slug), eq(subject.schoolId, event.locals.user.school)))
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, event.locals.user.school)))
 			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 			.get();
 		if (!subjectData) {
@@ -65,7 +65,7 @@ export const load: PageServerLoad = async (event) => {
 				and(
 					eq(forum.schoolId, event.locals.user.school),
 					eq(forum.subjectId, subjectData.id),
-					eq(forum.chapter, page),
+					eq(forum.chapter, chapter),
 				),
 			)
 			.innerJoin(user, eq(forum.userId, user.id))
@@ -78,7 +78,7 @@ export const load: PageServerLoad = async (event) => {
 				and(
 					eq(material.schoolId, event.locals.user.school),
 					eq(material.subjectId, subjectData.id),
-					eq(material.chapter, page),
+					eq(material.chapter, chapter),
 				),
 			);
 		return { forum: forumList, material: materialList, assignment: assignmentList };

@@ -8,12 +8,11 @@ import { and, desc, eq, getTableColumns, exists, sql } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
-		const { slug, page } = event.params;
+		const { subjectCode, page } = event.params;
 		const school = event.locals.user.school;
 		if (!school) {
 			return error(400, "Not associated with a school");
 		}
-		const subjectCode = slug;
 		const chapter = Number(page);
 
 		if (isNaN(chapter) || chapter <= 0) {

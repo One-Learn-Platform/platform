@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			const slug = event.params.slug;
+			const { slug } = event.params;
 			const announcementId = Number(slug);
 			if (isNaN(announcementId)) {
 				return error(400, { message: "Invalid Announcement ID" });
