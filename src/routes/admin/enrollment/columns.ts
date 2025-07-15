@@ -1,4 +1,4 @@
-import type { Announcement } from "$lib/schema/db";
+import type { Subject } from "$lib/schema/db";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 
@@ -8,7 +8,11 @@ import DataTableActions from "$lib/components/table/enrollment-table-actions.sve
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-export const columns: ColumnDef<Announcement>[] = [
+type SubjectWithTeacher = Subject & {
+	teacherName: string | null;
+	subjectTypeName: string | null;
+};
+export const columns: ColumnDef<SubjectWithTeacher>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>
@@ -47,28 +51,55 @@ export const columns: ColumnDef<Announcement>[] = [
 		},
 	},
 	{
-		accessorKey: "title",
+		accessorKey: "code",
 		header: ({ column }) =>
 			renderComponent(sortable, {
-				name: "Title",
+				name: "Code",
+				sort: column.getIsSorted(),
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+		cell: ({ row }) => {
+			const value = row.getValue("code");
+			const codeCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="text-left font-mono">${value}</div>`,
+				};
+			});
+			return renderSnippet(codeCellSnippet, value);
+		},
+	},
+	{
+		accessorKey: "name",
+		header: ({ column }) =>
+			renderComponent(sortable, {
+				name: "Name",
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
 	},
 	{
-		accessorKey: "startDate",
+		accessorKey: "subjectTypeName",
 		header: ({ column }) =>
 			renderComponent(sortable, {
-				name: "Start Date",
+				name: "Subject Type",
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
+		cell: ({ row }) => {
+			const value = row.getValue("subjectTypeName");
+			const typeCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="">${value}</div>`,
+				};
+			});
+			return renderSnippet(typeCellSnippet, value);
+		},
 	},
 	{
-		accessorKey: "endDate",
+		accessorKey: "teacherName",
 		header: ({ column }) =>
 			renderComponent(sortable, {
-				name: "End Date",
+				name: "Teacher Name",
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
@@ -78,8 +109,8 @@ export const columns: ColumnDef<Announcement>[] = [
 		cell: ({ row }) => {
 			return renderComponent(DataTableActions, {
 				id: row.original.id.toString(),
-				name: row.original.title,
-				href: "announcement",
+				name: row.original.name,
+				href: "enrollment",
 			});
 		},
 	},
