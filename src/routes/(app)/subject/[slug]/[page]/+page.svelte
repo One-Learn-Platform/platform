@@ -122,8 +122,17 @@
 		<ul class="space-y-2">
 			{#each data.assignment as assignment (assignment.id)}
 				<li>
-					<p class="text-lg font-semibold">{assignment.title}</p>
-					<p class="text-sm text-muted-foreground">{assignment.description}</p>
+					<Button
+						variant="outline"
+						href="{page.url.pathname}/assignments/{assignment.id}"
+						class="h-fit w-full flex-col items-start gap-1 text-left text-xl font-semibold tracking-tight"
+					>
+						{assignment.title}
+						<span
+							class="text-sm font-normal tracking-normal whitespace-normal text-muted-foreground"
+							>{assignment.description}</span
+						>
+					</Button>
 				</li>
 			{/each}
 		</ul>
