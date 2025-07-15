@@ -19,7 +19,6 @@ export const load: PageServerLoad = async (event) => {
 			},
 		});
 		const quoteData = (await quote.json()) as { advice: string };
-		console.log(quoteData);
 		const submissionsColumn = getTableColumns(submission);
 		const leaderboard = await db
 			.select({
