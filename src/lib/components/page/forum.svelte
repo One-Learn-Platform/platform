@@ -40,11 +40,11 @@
 </script>
 
 <div>
-	<h2 class="font-display text-3xl font-semibold">Forum</h2>
+	<h2 class="font-display text-2xl font-semibold sm:text-3xl">Forum</h2>
 	<Separator />
 </div>
 <div class="flex justify-between">
-	<Button variant="secondary" href={`${page.url.pathname}/forum/create`}><Plus />New Post</Button>
+	<Button variant="default" href={`${page.url.pathname}/forum/create`}><Plus />New Post</Button>
 	<div class="flex flex-row gap-2">
 		<Button variant="secondary" onclick={() => (sortOpt = sortOpt === "asc" ? "desc" : "asc")}>
 			{#if sortOpt === "asc"}

@@ -37,17 +37,17 @@
 	});
 </script>
 
-<div class="flex flex-row items-center justify-between gap-2 *:grow">
+<div class="flex flex-col items-center justify-between gap-2 sm:flex-row">
 	{#if data.user.role === 3}
-		<Button variant="outline" href="{data.material?.id}/edit">
-			<Edit class="" /> Edit
+		<Button variant="outline" href="{data.material?.id}/edit" class="w-full grow sm:w-fit">
+			<Edit class="" />Edit
 		</Button>
-		<Button variant="destructive" onclick={() => (dialogOpen = true)}>
-			<Trash class="" /> Delete Material
+		<Button variant="destructive" class="w-full grow sm:w-fit" onclick={() => (dialogOpen = true)}>
+			<Trash class="" />Delete Material
 		</Button>
 	{/if}
 </div>
-<div class="space-y-1">
+<div class="space-y-2">
 	{#if data.material?.thumbnail}
 		<div class="">
 			<img
@@ -61,11 +61,11 @@
 		{@const sanitizedContent = browser
 			? DOMpurify.sanitize(data.material.content)
 			: data.material.content}
-		<div>
+		<div class="space-y-0">
 			<p class="text-2xl font-medium tracking-tight">{data.material.title}</p>
 			<Separator />
+			<p class="text-sm text-muted-foreground">{data.material.description}</p>
 		</div>
-		<p class="text-sm text-muted-foreground">{data.material.description}</p>
 
 		<div class="raw">
 			{@html sanitizedContent}

@@ -19,12 +19,16 @@
 </svelte:head>
 
 <div class="-mb-px flex items-center gap-2 border px-3 py-2">
-	<Button variant="ghost" size="icon" onclick={() => window.history.back()}><ChevronLeft /></Button>
-	<div class="flex flex-row items-center gap-2">
-		<h1 class="font-display text-6xl font-bold">
+	<Button variant="ghost" size="icon" onclick={() => window.history.back()} class="max-sm:hidden">
+		<ChevronLeft />
+	</Button>
+	<div
+		class="flex flex-col-reverse items-start gap-px sm:flex-row sm:items-center sm:gap-1 md:gap-2"
+	>
+		<h1 class="font-display text-4xl font-bold sm:text-5xl md:text-6xl">
 			{data.subject.name}
 		</h1>
-		<Badge class="mt-0.5" variant={subjectColor(data.subject.subjectTypeName, true)}>
+		<Badge class="mt-0.5 text-xs" variant={subjectColor(data.subject.subjectTypeName, true)}>
 			{data.subject.subjectTypeName}
 		</Badge>
 	</div>
@@ -35,7 +39,7 @@
 			variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`) ? "default" : "outline"}
 			size="sm"
 			href="/subject/{data.params}/{i}"
-			class="w-10 font-display tracking-tight"
+			class="w-8 font-display text-sm tracking-tight sm:w-10"
 		>
 			{i}
 		</Button>

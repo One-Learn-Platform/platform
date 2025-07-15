@@ -173,7 +173,9 @@
 	<div class="space-y-4">
 		<div class="mb-2 space-y-2">
 			<div class="mb-2">
-				<h1 class="font-display text-4xl font-semibold">{data.assignment?.title}</h1>
+				<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+					{data.assignment?.title}
+				</h1>
 				<Separator />
 			</div>
 			<form
@@ -214,7 +216,7 @@
 				<Form.Field form={superform} name="dueDate" class="">
 					<Form.Control>
 						{#snippet children({ props })}
-							<div class="flex flex-col items-center gap-4 sm:flex-row">
+							<div class="flex flex-row items-center gap-2 sm:gap-4">
 								<div class="flex flex-col gap-1">
 									<Form.Label>Due Date</Form.Label>
 									<Popover.Root>
@@ -407,7 +409,7 @@
 			<form
 				action="?/addquestion"
 				method="POST"
-				class="flex flex-col gap-2"
+				class="flex flex-col gap-4 sm:gap-2"
 				enctype="multipart/form-data"
 				use:svelteEnhance
 			>
@@ -415,17 +417,17 @@
 				{#each questionsList as question, listIndex (question.key)}
 					{@const questionIndex = questionsList.indexOf(question)}
 					<div
-						class="flex w-full flex-row items-stretch gap-2"
+						class="flex w-full flex-col items-stretch gap-2 sm:flex-row"
 						animate:flip={{ duration: 300, easing: cubicOut }}
 						transition:slide={{ axis: "y", easing: cubicOut, duration: 300 }}
 					>
 						<div
-							class="hidden w-12 flex-col items-center justify-between overflow-hidden rounded-xl border bg-card px-2 pb-1.5 text-center font-display text-lg font-semibold tracking-tight break-all text-card-foreground tabular-nums shadow-sm sm:flex"
+							class="flex w-full flex-row items-center justify-between overflow-hidden rounded-xl border bg-card px-0 pb-0 text-center font-display text-lg font-semibold tracking-tight break-all text-card-foreground tabular-nums shadow-sm sm:w-12 sm:flex-col sm:px-2 sm:pb-1.5"
 						>
-							<p class="w-12 border-b py-2">
+							<p class="w-12 border-r py-2 sm:border-b">
 								{listIndex + 1}
 							</p>
-							<div class="space-y-0">
+							<div class="space-y-0 px-2 py-2 sm:py-0">
 								<Tooltip.Provider delayDuration={200} disableHoverableContent>
 									<Tooltip.Root>
 										<Tooltip.Trigger>
@@ -435,7 +437,7 @@
 													type="button"
 													variant="outline"
 													size="icon"
-													class="rounded-none rounded-t-lg"
+													class="rounded-none max-sm:rounded-l-lg sm:rounded-t-lg"
 													disabled={listIndex === 0}
 													onclick={() => {
 														if (listIndex > 0) {
@@ -461,7 +463,7 @@
 													{...props}
 													variant="outline"
 													size="icon"
-													class="mb-2 rounded-none rounded-b-lg"
+													class="rounded-none max-sm:mr-2 max-sm:rounded-r-lg sm:mb-2 sm:rounded-b-lg"
 													disabled={listIndex === questionsList.length - 1}
 													onclick={() => {
 														if (listIndex < questionsList.length - 1) {
@@ -487,7 +489,7 @@
 													type="button"
 													variant="outline"
 													size="icon"
-													class="mb-2 rounded-lg"
+													class="rounded-lg max-sm:mr-2 sm:mb-2"
 													onclick={() => {
 														const newKey = uuidv4();
 														// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -514,7 +516,7 @@
 													type="button"
 													variant="outline"
 													size="icon"
-													class="rounded-lg hover:bg-destructive-muted hover:text-destructive"
+													class="rounded-lg hover:bg-destructive-muted hover:text-destructive max-sm:border-destructive max-sm:text-destructive max-sm:hover:bg-destructive"
 													onclick={() => {
 														questionsList.splice(questionIndex, 1);
 													}}
@@ -542,7 +544,7 @@
 									value={question.type}
 								/>
 								<RadioGroup.Root
-									class="flex w-full flex-row gap-8"
+									class="flex w-full flex-col gap-4 sm:flex-row sm:gap-6 md:gap-8"
 									bind:value={questionsList[questionIndex].type}
 									onValueChange={(newValue) => {
 										if (newValue === "multiple-choice") {
@@ -622,7 +624,7 @@
 												}}
 											>
 												<div
-													class="flex size-9 items-center justify-center rounded-sm border px-4 text-center font-display font-medium"
+													class="flex h-9 w-4 items-center justify-center rounded-sm border px-4 text-center font-display text-sm font-medium sm:size-9 sm:text-base"
 												>
 													{letter}
 												</div>

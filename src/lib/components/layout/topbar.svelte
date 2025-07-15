@@ -61,7 +61,7 @@
 
 <header
 	class={[
-		"fixed top-0 left-0 z-1 flex h-(--header-height) w-full items-center  gap-2 border-b bg-background px-2",
+		"fixed top-0 left-0 z-1 flex h-(--header-height) w-full items-center gap-2 border-b bg-background px-2",
 	]}
 >
 	<Sidebar.Trigger class="z-50 size-8 h-10 bg-background" />
@@ -79,7 +79,7 @@
 		</Breadcrumb.List>
 	</Breadcrumb.Root>
 
-	<div class="flex items-center gap-2">
+	<div class="flex grow items-center justify-end gap-2 sm:grow-0">
 		{#if user?.role === 1 || user?.role === 2}
 			<Button variant="outline" outline href="/admin"><UserCog />Admin Panel</Button>
 		{/if}

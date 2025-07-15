@@ -79,7 +79,7 @@
 
 			<div class="raw">
 				{#if firstMaterial.thumbnail}
-					<div class="float-right m-1 w-1/3 min-w-xs p-1">
+					<div class="m-1 h-auto w-full min-w-xs p-1 sm:float-right sm:w-1/3">
 						<img
 							src="{PUBLIC_R2_URL}/{firstMaterial.thumbnail}"
 							alt="Thumbnail for {firstMaterial.title}"
@@ -147,7 +147,7 @@
 <section class="mt-4 h-fit space-y-2">
 	<div class="mb-0">
 		<div class="flex flex-row items-center justify-between">
-			<h2 class="font-display text-3xl font-semibold tracking-tight">Assignment</h2>
+			<h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignment</h2>
 			<Button variant="link" href="{page.url.pathname}/assignments">See All Assignments</Button>
 		</div>
 	</div>
@@ -164,11 +164,11 @@
 					<Button
 						variant="outline"
 						href="{page.url.pathname}/assignments/{assignment.id}"
-						class="h-fit w-full flex-col items-start gap-1 text-left text-xl font-semibold tracking-tight"
+						class="h-fit max-h-32 w-full flex-col items-start gap-1 text-left text-xl font-semibold tracking-tight"
 					>
 						{assignment.title}
 						<span
-							class="text-sm font-normal tracking-normal whitespace-normal text-muted-foreground"
+							class="overflow-hidden text-sm font-normal tracking-normal text-ellipsis whitespace-normal text-muted-foreground"
 							>{assignment.description}</span
 						>
 					</Button>

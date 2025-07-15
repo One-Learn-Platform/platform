@@ -152,13 +152,17 @@
 	<title>{data.forum.title} | OneLearn</title>
 </svelte:head>
 
-<h1 class="font-display text-3xl font-semibold tracking-tight">View Forum</h1>
-<Separator />
+<div>
+	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">View Forum</h1>
+	<Separator />
+</div>
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title class="text-4xl tracking-tight">{data.forum.title}</Card.Title>
-		<Separator />
+		<Card.Title class="text-2xl tracking-tight sm:text-3xl md:text-4xl">
+			{data.forum.title}
+			<Separator />
+		</Card.Title>
 	</Card.Header>
 	<Card.Content>
 		<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
@@ -171,7 +175,9 @@
 			<Avatar.Image src="{PUBLIC_R2_URL}/{data.forum.avatar}" alt={data.forum.fullname} />
 			<Avatar.Fallback>{initials}</Avatar.Fallback>
 		</Avatar.Root>
-		<div class="flex w-full flex-row items-center justify-between gap-2">
+		<div
+			class="flex w-full flex-col items-start justify-between gap-0 sm:flex-row sm:items-center sm:gap-2"
+		>
 			<span class="truncate font-medium">
 				{data.forum.fullname}
 			</span>
@@ -209,9 +215,13 @@
 			<p class="pt-2 pb-4 text-muted-foreground">No comments yet.</p>
 		</div>
 	{:else}
-		<div class="flex flex-row justify-between gap-2">
-			<div class="flex flex-row gap-2">
-				<Button variant="secondary" onclick={() => (sortOpt = sortOpt === "asc" ? "desc" : "asc")}>
+		<div class="flex flex-col justify-between gap-2 sm:flex-row">
+			<div class="flex grow flex-row gap-2">
+				<Button
+					variant="secondary"
+					class="grow sm:grow-0"
+					onclick={() => (sortOpt = sortOpt === "asc" ? "desc" : "asc")}
+				>
 					{#if sortOpt === "asc"}
 						<ArrowDown />Descending
 					{:else}
@@ -219,7 +229,7 @@
 					{/if}
 				</Button>
 				<Select.Root value={sortBy} type="single" onValueChange={(value) => (sortBy = value)}>
-					<Select.Trigger class="">{sortContent}</Select.Trigger>
+					<Select.Trigger class="grow sm:grow-0">{sortContent}</Select.Trigger>
 					<Select.Content>
 						<Select.Group>
 							<Select.Label>Sort By</Select.Label>
@@ -230,9 +240,9 @@
 					</Select.Content>
 				</Select.Root>
 			</div>
-			<div class="flex flex-row items-center gap-2">
-				<div class="flex flex-row gap-2">
-					<Label for="perPage">Comments per page:</Label>
+			<div class="flex flex-col items-center gap-2 sm:flex-row">
+				<div class="flex w-full flex-row gap-2">
+					<Label for="perPage" class="whitespace-nowrap">Comments per page:</Label>
 					<Input
 						name="perPage"
 						id="perPage"
@@ -240,7 +250,7 @@
 						min="1"
 						max={data.commentsCount < 10 ? 10 : data.commentsCount}
 						bind:value={perPage}
-						class="w-16"
+						class="sm:w-16"
 						oninput={() => sessionStorage.setItem("forum_perPage", perPage.toString())}
 					/>
 				</div>
@@ -291,12 +301,14 @@
 						</div>
 					</Card.Content>
 					<Separator />
-					<Card.Footer class="flex items-center gap-2">
+					<Card.Footer class="flex flex-row items-center gap-4 sm:gap-2">
 						<Avatar.Root>
 							<Avatar.Image src="{PUBLIC_R2_URL}/{comment.avatar}" alt={comment.fullname} />
 							<Avatar.Fallback>{acronym(comment.fullname ?? "ID")}</Avatar.Fallback>
 						</Avatar.Root>
-						<div class="flex w-full flex-row items-center justify-between gap-2">
+						<div
+							class="flex w-full flex-col items-start justify-between gap-0 sm:flex-row sm:items-center sm:gap-2"
+						>
 							<span class="truncate font-medium">
 								{comment.fullname}
 							</span>

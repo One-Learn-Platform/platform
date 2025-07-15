@@ -44,34 +44,36 @@
 	);
 </script>
 
-<h1 class="font-display text-3xl font-semibold tracking-tight">Assignments</h1>
+<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
-	<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
-	<div class="flex items-center gap-4 self-end">
-		<div class="flex items-center space-x-2">
-			<Switch bind:checked={hideDone} id="hide" />
-			<Label for="hide">Hide Completed</Label>
+	<div class="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+		<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
+		<div class="grid w-full grid-cols-2 flex-row items-center gap-4 self-end sm:flex sm:w-fit">
+			<div class="flex place-content-end items-center space-x-2 max-sm:col-span-2">
+				<Switch bind:checked={hideDone} id="hide" />
+				<Label for="hide">Hide Completed</Label>
+			</div>
+			<Select.Root type="single" bind:value={sortBy}>
+				<Select.Trigger class="w-full">{selectedSort?.label}</Select.Trigger>
+				<Select.Content>
+					{#each sortChoice as { label, value } (value)}
+						<Select.Item {value}>{label}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+			<Button
+				variant="secondary"
+				onclick={() => {
+					sortOpt = sortOpt === "asc" ? "desc" : "asc";
+				}}
+			>
+				{#if sortOpt === "asc"}
+					<ArrowUp /> <span>Ascending</span>
+				{:else}
+					<ArrowDown /> <span>Descending</span>
+				{/if}
+			</Button>
 		</div>
-		<Select.Root type="single" bind:value={sortBy}>
-			<Select.Trigger>{selectedSort?.label}</Select.Trigger>
-			<Select.Content>
-				{#each sortChoice as { label, value } (value)}
-					<Select.Item {value}>{label}</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
-		<Button
-			variant="secondary"
-			onclick={() => {
-				sortOpt = sortOpt === "asc" ? "desc" : "asc";
-			}}
-		>
-			{#if sortOpt === "asc"}
-				<ArrowUp /> <span>Ascending</span>
-			{:else}
-				<ArrowDown /> <span>Descending</span>
-			{/if}
-		</Button>
 	</div>
 </div>
 {#if filteredAssignments && filteredAssignments.length > 0}
