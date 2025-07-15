@@ -113,11 +113,16 @@
 		<h2 class="font-display text-2xl font-semibold tracking-tight">Assignment</h2>
 		<Separator />
 	</div>
-	{#if data.user.role === 3}
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
-			<Plus class="" /> Add Assignment
-		</Button>
-	{/if}
+	<div
+		class="flex flex-row items-center {data.user.role === 3 ? 'justify-between' : 'justify-end'}"
+	>
+		{#if data.user.role === 3}
+			<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
+				<Plus class="" /> Add Assignment
+			</Button>
+		{/if}
+		<Button variant="link" href="{page.url.pathname}/assignments">See All Assignments</Button>
+	</div>
 	{#if data.assignment && data.assignment.length > 0}
 		<ul class="space-y-2">
 			{#each data.assignment as assignment (assignment.id)}
