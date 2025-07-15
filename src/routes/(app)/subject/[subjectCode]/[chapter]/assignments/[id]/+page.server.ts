@@ -445,6 +445,15 @@ export const actions: Actions = {
 						},
 					});
 				}
+				if (!choices.includes(answer)) {
+					return fail(400, {
+						create: {
+							success: false,
+							input: "answer",
+							message: `Question ${i + 1} has answer that is not in the choices. Answer must be one of the choices`,
+						},
+					});
+				}
 				try {
 					await db.insert(assignmentQuestion).values({
 						assignmentId: assignmentId,
