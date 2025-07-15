@@ -105,9 +105,15 @@ export const actions: Actions = {
 			const results = await Promise.all(uploadPromises);
 			const failures = results.filter((result) => !result.success);
 			if (failures.length > 0) {
-				throw new Error(
-					`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
+				setError(
+					form,
+					"attachment._errors",
+					`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}`,
 				);
+				return fail(500, {
+					message: `Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
+					form,
+				});
 			}
 		}
 		try {
