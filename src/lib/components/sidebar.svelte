@@ -25,7 +25,6 @@
 	import School from "@lucide/svelte/icons/school";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
-	import GraduationCap from "@lucide/svelte/icons/graduation-cap";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -62,12 +61,6 @@
 			title: "Subject",
 			href: `${prefix}/subject`,
 			icon: BookMarked,
-			superadmin: false,
-		},
-		{
-			title: "Enrollment",
-			href: `${prefix}/enrollment`,
-			icon: GraduationCap,
 			superadmin: false,
 		},
 		{

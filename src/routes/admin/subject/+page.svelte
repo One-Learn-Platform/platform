@@ -1,11 +1,14 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
+	import { page } from "$app/state";
 
 	import Plus from "@lucide/svelte/icons/plus";
+	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus";
+
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
+	import { buttonVariants, Button } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";

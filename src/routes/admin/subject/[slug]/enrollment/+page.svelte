@@ -19,8 +19,8 @@
 	import * as Table from "$lib/components/ui/table/index.js";
 	import * as Tabs from "$lib/components/ui/tabs/index.js";
 
-	import { columns } from "../table/column";
-	import DataTable from "../table/enrollment-table.svelte";
+	import { columns } from "./table/column";
+	import DataTable from "./table/enrollment-table.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -32,9 +32,6 @@
 	let triggerRef = $state<HTMLButtonElement>(null!);
 
 	const selectedValue = $derived(data.studentList.find((f) => f.id === value)?.fullname);
-	// We want to refocus the trigger button when the user selects
-	// an item from the list so users can continue navigating the
-	// rest of the form with the keyboard.
 	function closeAndFocusTrigger() {
 		open = false;
 		tick().then(() => {
