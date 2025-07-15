@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from "./$types";
 
 import { assignment, assignmentQuestion, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq } from "drizzle-orm";
+import { eq, and, sql, exists, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -17,14 +17,36 @@ export const load: PageServerLoad = async (event) => {
 		if (isNaN(assignmentId) || isNaN(chapter)) {
 			return error(400, "Invalid assignment or chapter ID");
 		}
+		const assignmentColumns = getTableColumns(assignment);
 		const assignmentData = await db
-			.select()
+			.select({
+				...assignmentColumns,
+				done: sql<number>`${exists(
+					db
+						.select()
+						.from(submission)
+						.where(
+							and(
+								eq(submission.assignmentId, assignment.id),
+								eq(submission.userId, event.locals.user.id),
+							),
+						),
+				)}`,
+			})
 			.from(assignment)
 			.where(eq(assignment.id, assignmentId))
 			.get();
 		if (!assignmentData) {
 			return error(404, "Assignment not found");
 		}
+		const dueDate = assignmentData.dueDate + "Z";
+		if (dueDate && new Date(dueDate).getTime() < Date.now()) {
+			return error(403, "This assignment is already closed");
+		}
+		if (assignmentData.done === 1) {
+			return error(403, "You have already submitted this assignment");
+		}
+
 		const questions = await db
 			.select()
 			.from(assignmentQuestion)

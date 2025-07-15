@@ -889,19 +889,34 @@
 
 		<Card.Root class="h-fit w-md min-w-md grow">
 			<Card.Header>
-				<Card.Title>Submission</Card.Title>
+				<Card.Title class="flex flex-row items-center justify-between text-xl tracking-tight">
+					Submission
+					{#if data.assignment.done === 0}
+						<span
+							class="text-base {dayjs(data.assignment.dueDate + 'Z').isBefore(dayjs())
+								? 'text-destructive'
+								: dayjs(data.assignment.dueDate + 'Z').isSame(dayjs().add(1, 'day'), 'day')
+									? 'text-warning'
+									: ''}"
+						>
+							{dayjs(data.assignment.dueDate + "Z").fromNow()}
+						</span>
+					{:else}
+						<span class="text-base text-success">Submitted</span>
+					{/if}
+				</Card.Title>
 				<Card.Description>
-					due {dayjs(data.assignment.dueDate + "Z").fromNow()} | {dfTime.format(
-						new Date(data.assignment.dueDate + "Z"),
-					)}
+					Due Date:
+					<span class="font-medium text-foreground">
+						{dfTime.format(new Date(data.assignment.dueDate + "Z"))}
+					</span>
 				</Card.Description>
 			</Card.Header>
-			<Card.Content>
-				<p>Submission</p>
-			</Card.Content>
 			<Card.Footer>
 				<Button
-					variant="outline"
+					variant="default"
+					disabled={dayjs(data.assignment.dueDate + "Z").isBefore(dayjs()) ||
+						data.assignment.done === 1}
 					class="w-full"
 					href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data.assignment
 						.id}/start"

@@ -23,6 +23,7 @@
 	} from "$lib/functions/subject";
 
 	const { data }: { data: PageServerData } = $props();
+	let hideDone = $state(false);
 	let searchQuery = $state("");
 	let sortBy = $state("createdAt");
 	let sortOpt = $state("desc");
@@ -34,6 +35,7 @@
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 	const filteredAssignments = $derived.by(() =>
 		data.assignments
+			.filter((assignment) => (hideDone ? assignment.done === 0 : true))
 			.filter((assignment) => {
 				const searchLower = searchQuery.toLowerCase();
 				return (
@@ -80,8 +82,8 @@
 	<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
 	<div class="flex items-center gap-4 self-end">
 		<div class="flex items-center space-x-2">
-			<Switch id="airplane-mode" />
-			<Label for="airplane-mode">Hide Completed</Label>
+			<Switch bind:checked={hideDone} id="hide" />
+			<Label for="hide">Hide Completed</Label>
 		</div>
 		<Select.Root type="single" bind:value={sortBy}>
 			<Select.Trigger>{selectedSort?.label}</Select.Trigger>
@@ -120,8 +122,8 @@
 					<Badge variant={subjectColor(group.subjectType)}>{group.subjectType}</Badge>
 				</div>
 				{#each group.assignments as assignment (assignment.id)}
-					<div transition:fade={{ duration: 150 }} class="w-full">
-						<Assignment {assignment} />
+					<div transition:fade={{ duration: 150, easing: cubicOut }} class="w-full">
+						<Assignment {assignment} done={assignment.done === 1} />
 					</div>
 				{/each}
 			</div>

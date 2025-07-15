@@ -1,9 +1,9 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, subject, subjectType } from "$lib/schema/db";
+import { assignment, subject, subjectType, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, desc, eq, getTableColumns } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, exists, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -28,12 +28,24 @@ export const load: PageServerLoad = async (event) => {
 			return error(404, "Subject not found");
 		}
 		const assignmentColumn = getTableColumns(assignment);
+
 		const assignmentList = await db
 			.select({
 				...assignmentColumn,
 				subject: subject.name,
 				subjectCode: subject.code,
 				subjectType: subjectType.name,
+				done: sql<number>`${exists(
+					db
+						.select()
+						.from(submission)
+						.where(
+							and(
+								eq(submission.assignmentId, assignment.id),
+								eq(submission.userId, event.locals.user.id),
+							),
+						),
+				)}`,
 			})
 			.from(assignment)
 			.where(

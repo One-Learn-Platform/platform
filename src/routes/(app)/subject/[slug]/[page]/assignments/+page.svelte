@@ -7,6 +7,8 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
+	import { Switch } from "$lib/components/ui/switch/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
@@ -14,6 +16,7 @@
 	import Assignment from "$lib/components/cards/assignment.svelte";
 	let { data }: { data: PageServerData } = $props();
 	let searchQuery = $state("");
+	let hideDone = $state(false);
 	let sortBy = $state("createdAt");
 	let sortOpt = $state("desc");
 	const sortChoice = [
@@ -21,8 +24,13 @@
 		{ label: "Title", value: "title" },
 	];
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
+	const assignmentList = $derived(
+		hideDone
+			? data.assignmentList.filter((assignment) => assignment.done === 0)
+			: data.assignmentList,
+	);
 	const filteredAssignments = $derived.by(() =>
-		data.assignmentList
+		assignmentList
 			.filter((assignment) => assignment.title.toLowerCase().includes(searchQuery.toLowerCase()))
 			.sort((a, b) => {
 				const aValue = a[sortBy];
@@ -40,6 +48,10 @@
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
 	<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
 	<div class="flex items-center gap-4 self-end">
+		<div class="flex items-center space-x-2">
+			<Switch bind:checked={hideDone} id="hide" />
+			<Label for="hide">Hide Completed</Label>
+		</div>
 		<Select.Root type="single" bind:value={sortBy}>
 			<Select.Trigger>{selectedSort?.label}</Select.Trigger>
 			<Select.Content>
@@ -69,7 +81,7 @@
 			animate:flip={{ duration: 200, easing: cubicOut }}
 			class="w-full"
 		>
-			<Assignment {assignment} />
+			<Assignment {assignment} done={assignment.done === 1} />
 		</div>
 	{/each}
 {:else}

@@ -6,11 +6,12 @@ import { formSchema } from "$lib/schema/assignment/schema";
 import { fail as superFail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { assignment, assignmentQuestion, subject } from "$lib/schema/db";
+import { assignment, assignmentQuestion, subject, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, sql, getTableColumns } from "drizzle-orm";
+import { exists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const schoolId = event.locals.user?.school;
@@ -42,8 +43,22 @@ export const load: PageServerLoad = async (event) => {
 		if (!selectedSubject) {
 			return error(404, "Subject not found");
 		}
+		const assignmentColumns = getTableColumns(assignment);
 		const selectedAssignments = await db
-			.select()
+			.select({
+				...assignmentColumns,
+				done: sql<number>`${exists(
+					db
+						.select()
+						.from(submission)
+						.where(
+							and(
+								eq(submission.assignmentId, assignment.id),
+								eq(submission.userId, event.locals.user.id),
+							),
+						),
+				)}`,
+			})
 			.from(assignment)
 			.where(
 				and(

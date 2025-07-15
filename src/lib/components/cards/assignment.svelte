@@ -11,8 +11,11 @@
 
 	let {
 		assignment,
-	}: { assignment: Assignment & { subject: string; subjectCode: string; subjectType: string } } =
-		$props();
+		done = false,
+	}: {
+		assignment: Assignment & { subject: string; subjectCode: string; subjectType: string };
+		done?: boolean;
+	} = $props();
 
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
 		dateStyle: "long",
@@ -37,10 +40,12 @@
 	<div class="">
 		<h2 class="flex items-center gap-2 text-xl font-semibold tracking-tight">
 			{assignment.title}
-			<Badge variant="informative" class="tracking-normal">
-				<BadgeCheck />
-				Done
-			</Badge>
+			{#if done}
+				<Badge variant="success" class="tracking-normal">
+					<BadgeCheck />
+					Done
+				</Badge>
+			{/if}
 		</h2>
 		<Separator class="w-fit" />
 		<p class="max-h-20 max-w-full overflow-clip bg-transparent text-muted-foreground">

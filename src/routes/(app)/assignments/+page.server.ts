@@ -1,9 +1,9 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, subject, subjectType } from "$lib/schema/db";
+import { assignment, subject, subjectType, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { desc, eq, getTableColumns } from "drizzle-orm";
+import { desc, eq, getTableColumns, sql, and, exists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -16,12 +16,24 @@ export const load: PageServerLoad = async (event) => {
 			return error(400, "Invalid school");
 		}
 		const assignmentColumns = getTableColumns(assignment);
+
 		const allAssignments = await db
 			.select({
+				...assignmentColumns,
 				subject: subject.name,
 				subjectCode: subject.code,
 				subjectType: subjectType.name,
-				...assignmentColumns,
+				done: sql<number>`${exists(
+					db
+						.select()
+						.from(submission)
+						.where(
+							and(
+								eq(submission.assignmentId, assignment.id),
+								eq(submission.userId, event.locals.user.id),
+							),
+						),
+				)}`,
 			})
 			.from(assignment)
 			.where(eq(assignment.schoolId, schoolId))
