@@ -24,6 +24,14 @@
 
 	const { data }: { data: PageServerData } = $props();
 	let searchQuery = $state("");
+	let sortBy = $state("createdAt");
+	let sortOpt = $state("desc");
+	const sortChoice = [
+		{ label: "Created At", value: "createdAt" },
+		{ label: "Title", value: "title" },
+		{ label: "Subject", value: "subject" },
+	];
+	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 	const filteredAssignments = $derived.by(() =>
 		data.assignments
 			.filter((assignment) => {
@@ -65,15 +73,6 @@
 			};
 		});
 	});
-
-	const sortChoice = [
-		{ label: "Created At", value: "createdAt" },
-		{ label: "Title", value: "title" },
-		{ label: "Subject", value: "subject" },
-	];
-	let sortBy = $state("createdAt");
-	let sortOpt = $state("desc");
-	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 </script>
 
 <h1 class="font-display text-5xl font-semibold tracking-tight">Assignments</h1>
