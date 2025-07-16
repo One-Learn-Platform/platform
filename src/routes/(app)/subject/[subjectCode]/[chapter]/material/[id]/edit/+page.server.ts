@@ -44,6 +44,7 @@ export const actions: Actions = {
 		const schoolId = event.locals.user.school;
 		const { subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
+    const materialId = Number(event.params.id);
 		const form = await superValidate(event, zod4(formSchema));
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");
@@ -95,7 +96,7 @@ export const actions: Actions = {
 			const beforeMaterial = await db
 				.select()
 				.from(material)
-				.where(and(eq(material.subjectId, subjectId.id), eq(material.chapter, chapter)))
+				.where(eq(material.id, materialId))
 				.get();
 			if (!beforeMaterial) {
 				setError(form, "", "Material not found. Please try again.");
@@ -160,7 +161,7 @@ export const actions: Actions = {
 					content: form.data.content,
 					attachment: JSON.stringify(attachmentArray.concat(existingAttachments)),
 				})
-				.where(and(eq(material.subjectId, subjectId.id), eq(material.chapter, chapter)));
+				.where(eq(material.id, materialId));
 		} catch (error) {
 			await Promise.all(
 				attachmentArray.map(async (element) => {
