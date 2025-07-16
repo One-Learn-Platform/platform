@@ -3,6 +3,7 @@
 	import type { PageServerData, ActionData } from "./$types.js";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { enhance as svelteEnhance } from "$app/forms";
+	import { invalidateAll } from "$app/navigation";
 
 	import { formSchemaEdit } from "$lib/schema/material/schema";
 	import { superForm, filesProxy, fileProxy } from "sveltekit-superforms";
@@ -95,18 +96,21 @@
 	$effect(() => {
 		if (form?.create) {
 			if (form.create?.success) {
+				invalidateAll();
 				toast.success(form.create.message || "Material created successfully!");
 			} else {
 				toast.error(form.create.message || "Failed to create material.");
 			}
 		} else if (form?.delete) {
 			if (form.delete?.success) {
+				invalidateAll();
 				toast.success(form.delete.message || "Material deleted successfully!");
 			} else {
 				toast.error(form.delete.message || "Failed to delete material.");
 			}
 		} else if (form?.deleteAttachment) {
 			if (form.deleteAttachment?.success) {
+				dialogOpen = false;
 				toast.success(form.deleteAttachment.message || "Attachment deleted successfully!");
 			} else {
 				toast.error(form.deleteAttachment.message || "Failed to delete attachment.");
