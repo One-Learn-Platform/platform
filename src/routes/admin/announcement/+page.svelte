@@ -73,7 +73,7 @@
 <div class="flex flex-col gap-2">
 	<Dialog.Root>
 		<Dialog.Trigger class={buttonVariants({ variant: "outline" })}><Plus />Add</Dialog.Trigger>
-		<Dialog.Content class="">
+		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>Add Announcement</Dialog.Title>
 				<Dialog.Description
