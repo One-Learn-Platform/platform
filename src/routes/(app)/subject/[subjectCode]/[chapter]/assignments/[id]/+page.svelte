@@ -911,14 +911,16 @@
 				>
 					Start Assignment
 				</Button>
-				<Button
-					variant="outline"
-					class="w-full"
-					href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data.assignment
-						.id}/result"
-				>
-					Result/Score
-				</Button>
+				{#if data.assignment.done === 1}
+					<Button
+						variant="outline"
+						class="w-full"
+						href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data
+							.assignment.id}/result"
+					>
+						Result/Score
+					</Button>
+				{/if}
 			</Card.Footer>
 		</Card.Root>
 	</div>
