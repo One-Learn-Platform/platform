@@ -45,7 +45,6 @@
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
-	;
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {

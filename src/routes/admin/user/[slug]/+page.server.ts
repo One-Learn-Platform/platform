@@ -48,7 +48,7 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const params = event.params;
 		const { slug } = params;
-		const userId = parseInt(slug, 10)
+		const userId = parseInt(slug, 10);
 		const form = await superValidate(event, zod4(formSchemaWithPass), {
 			id: "edit",
 		});

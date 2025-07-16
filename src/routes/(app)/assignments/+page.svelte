@@ -44,9 +44,9 @@
 				);
 			})
 			.sort((a, b) => {
-        // @ts-expect-error - sortBy is a string, but we know it matches the keys of the assignment object
+				// @ts-expect-error - sortBy is a string, but we know it matches the keys of the assignment object
 				const aValue = a[sortBy];
-        // @ts-expect-error - sortBy is a string, but we know it matches the keys of the assignment object
+				// @ts-expect-error - sortBy is a string, but we know it matches the keys of the assignment object
 				const bValue = b[sortBy];
 				if (sortOpt === "asc") {
 					return aValue > bValue ? 1 : -1;
