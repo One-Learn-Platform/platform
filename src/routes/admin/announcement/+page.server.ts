@@ -52,6 +52,13 @@ export const actions: Actions = {
 				form,
 			});
 		}
+		if (new Date(form.data.startDate) > new Date(form.data.endDate)) {
+			setError(form, "endDate", "End date must be after start date");
+			return fail(400, {
+				create: { success: false, data: null, message: "End date must be after start date" },
+				form,
+			});
+		}
 
 		try {
 			await db.insert(announcement).values({

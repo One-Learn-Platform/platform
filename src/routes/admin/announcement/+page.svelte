@@ -174,7 +174,7 @@
 										type="single"
 										value={valueEnd as DateValue}
 										maxValue={new CalendarDate(2100, 12, 31)}
-										minValue={today(getLocalTimeZone())}
+										minValue={valueStart ?? today(getLocalTimeZone())}
 										calendarLabel="End Date"
 										onValueChange={(v) => {
 											if (v) {
