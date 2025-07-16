@@ -8,13 +8,16 @@
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import BadgeCheck from "@lucide/svelte/icons/badge-check";
+	import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
 
 	let {
 		assignment,
 		done = false,
+		missed = false,
 	}: {
 		assignment: Assignment & { subject: string; subjectCode: string; subjectType: string };
 		done?: boolean;
+		missed?: boolean;
 	} = $props();
 
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -44,6 +47,11 @@
 				<Badge variant="success" class="tracking-normal">
 					<BadgeCheck />
 					Done
+				</Badge>
+			{:else if missed}
+				<Badge variant="destructive" class="tracking-normal">
+					<OctagonAlert />
+					Missed
 				</Badge>
 			{/if}
 		</h2>

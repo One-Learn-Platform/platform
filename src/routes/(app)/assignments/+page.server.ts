@@ -34,6 +34,22 @@ export const load: PageServerLoad = async (event) => {
 							),
 						),
 				)}`,
+				missed: sql<number>`CASE 
+                  WHEN ${assignment.dueDate} < datetime('now') 
+                  AND NOT ${exists(
+										db
+											.select()
+											.from(submission)
+											.where(
+												and(
+													eq(submission.assignmentId, assignment.id),
+													eq(submission.userId, event.locals.user.id),
+												),
+											),
+									)}
+                  THEN 1 
+                  ELSE 0 
+              END`,
 			})
 			.from(assignment)
 			.where(eq(assignment.schoolId, schoolId))

@@ -17,6 +17,7 @@
 	let { data }: { data: PageServerData } = $props();
 	let searchQuery = $state("");
 	let hideDone = $state(false);
+	let hideMissed = $state(false);
 	let sortBy = $state("createdAt");
 	let sortOpt = $state("desc");
 	const sortChoice = [
@@ -24,11 +25,18 @@
 		{ label: "Title", value: "title" },
 	];
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
-	const assignmentList = $derived(
-		hideDone
-			? data.assignmentList.filter((assignment) => assignment.done === 0)
-			: data.assignmentList,
-	);
+	const assignmentList = $derived.by(() => {
+		if (hideDone && hideMissed) {
+			return data.assignmentList.filter(
+				(assignment) => assignment.done === 0 && assignment.missed === 0,
+			);
+		} else if (hideDone) {
+			return data.assignmentList.filter((assignment) => assignment.done === 0);
+		} else if (hideMissed) {
+			return data.assignmentList.filter((assignment) => assignment.missed === 0);
+		}
+		return data.assignmentList;
+	});
 	const filteredAssignments = $derived.by(() =>
 		assignmentList
 			.filter((assignment) => assignment.title.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -46,12 +54,16 @@
 
 <h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
-	<div class="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+	<div class="flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
 		<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
 		<div class="grid w-full grid-cols-2 flex-row items-center gap-4 self-end sm:flex sm:w-fit">
-			<div class="flex place-content-end items-center space-x-2 max-sm:col-span-2">
+			<div class="flex place-content-end items-center space-x-2 max-sm:place-self-start">
 				<Switch bind:checked={hideDone} id="hide" />
 				<Label for="hide">Hide Completed</Label>
+			</div>
+			<div class="flex place-content-end items-center space-x-2">
+				<Switch bind:checked={hideMissed} id="hide-missed" />
+				<Label for="hide-missed">Hide Missed</Label>
 			</div>
 			<Select.Root type="single" bind:value={sortBy}>
 				<Select.Trigger class="w-full">{selectedSort?.label}</Select.Trigger>
@@ -83,7 +95,7 @@
 			animate:flip={{ duration: 200, easing: cubicOut }}
 			class="w-full"
 		>
-			<Assignment {assignment} done={assignment.done === 1} />
+			<Assignment {assignment} done={assignment.done === 1} missed={assignment.missed === 1} />
 		</div>
 	{/each}
 {:else}

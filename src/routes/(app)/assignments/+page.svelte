@@ -24,6 +24,7 @@
 
 	const { data }: { data: PageServerData } = $props();
 	let hideDone = $state(false);
+	let hideMissed = $state(false);
 	let searchQuery = $state("");
 	let sortBy = $state("createdAt");
 	let sortOpt = $state("desc");
@@ -36,6 +37,7 @@
 	const filteredAssignments = $derived.by(() =>
 		data.assignments
 			.filter((assignment) => (hideDone ? assignment.done === 0 : true))
+			.filter((assignment) => (hideMissed ? assignment.missed === 0 : true))
 			.filter((assignment) => {
 				const searchLower = searchQuery.toLowerCase();
 				return (
@@ -83,14 +85,16 @@
 	Assignments
 </h1>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
-	<div class="flex w-full flex-col items-center justify-between gap-2 sm:flex-row">
+	<div class="flex w-full flex-col items-center justify-between gap-4 sm:flex-row sm:gap-2">
 		<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
-		<div
-			class="grid w-full grid-cols-2 flex-row items-center gap-2 self-end sm:flex sm:w-fit sm:gap-4"
-		>
-			<div class="flex place-content-end items-center space-x-2 max-sm:col-span-2">
+		<div class="grid w-full grid-cols-2 flex-row items-center gap-4 self-end sm:flex sm:w-fit">
+			<div class="flex place-content-end items-center space-x-2 max-sm:place-self-start">
 				<Switch bind:checked={hideDone} id="hide" />
 				<Label for="hide">Hide Completed</Label>
+			</div>
+			<div class="flex place-content-end items-center space-x-2">
+				<Switch bind:checked={hideMissed} id="hide-missed" />
+				<Label for="hide-missed">Hide Missed</Label>
 			</div>
 			<Select.Root type="single" bind:value={sortBy}>
 				<Select.Trigger class="w-full">{selectedSort?.label}</Select.Trigger>
@@ -135,7 +139,11 @@
 						animate:flip={{ duration: 150, easing: cubicOut }}
 						class="w-full"
 					>
-						<Assignment {assignment} done={assignment.done === 1} />
+						<Assignment
+							{assignment}
+							done={assignment.done === 1}
+							missed={assignment.missed === 1}
+						/>
 					</div>
 				{/each}
 			</div>
