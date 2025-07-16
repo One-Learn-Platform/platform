@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { PageServerData } from "./$types";
+	import type { PageServerData, ActionData } from "./$types";
 
 	import { formSchema } from "$lib/schema/assignment/schema";
 	import { filesProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
+	import { toast } from "svelte-sonner";
 	import { getFileIcon } from "$lib/functions/material";
 	import { cn } from "$lib/utils.js";
 	import {
@@ -28,7 +29,7 @@
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
-	let { data }: { data: PageServerData } = $props();
+	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 
 	const superform = superForm(data.form, {
 		validators: zod4Client(formSchema),
@@ -43,6 +44,18 @@
 	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
+	});
+
+	$effect(() => {
+		if (form) {
+			if (form.create) {
+				if (form.create.success) {
+					toast.success(`Assignment successfully created`);
+				} else {
+					toast.error(form.create.message ?? "Unknown error");
+				}
+			}
+		}
 	});
 </script>
 
