@@ -900,7 +900,7 @@
 					</span>
 				</Card.Description>
 			</Card.Header>
-			<Card.Footer>
+			<Card.Footer class="flex-col gap-2">
 				<Button
 					variant="default"
 					disabled={dayjs(data.assignment.dueDate + "Z").isBefore(dayjs()) ||
@@ -909,8 +909,16 @@
 					href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data.assignment
 						.id}/start"
 				>
-					Start Assignment</Button
+					Start Assignment
+				</Button>
+				<Button
+					variant="outline"
+					class="w-full"
+					href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data.assignment
+						.id}/result"
 				>
+					Result/Score
+				</Button>
 			</Card.Footer>
 		</Card.Root>
 	</div>
