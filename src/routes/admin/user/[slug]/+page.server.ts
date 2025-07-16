@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaUploadImage, formSchemaWithoutPass } from "$lib/schema/user/schema";
+import { formSchemaUploadImage, formSchemaWithPass } from "$lib/schema/user/schema";
 import { eq } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async (event) => {
 					return {
 						userData: userData,
 						schoolList: schoolList,
-						form: await superValidate(zod4(formSchemaWithoutPass)),
+						form: await superValidate(zod4(formSchemaWithPass)),
 						uploadForm: await superValidate(zod4(formSchemaUploadImage)),
 					};
 				} else {
@@ -48,8 +48,8 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const params = event.params;
 		const { slug } = params;
-		const userId = parseInt(slug, 10);
-		const form = await superValidate(event, zod4(formSchemaWithoutPass), {
+		const userId = parseInt(slug, 10)
+		const form = await superValidate(event, zod4(formSchemaWithPass), {
 			id: "edit",
 		});
 
@@ -120,7 +120,7 @@ export const actions: Actions = {
 				.set({
 					fullname: form.data.fullname,
 					username: form.data.username,
-					schoolId: form.data.schoolId ? Number(form.data.schoolId) : null,
+					schoolId: form.data.schoolId ? Number(form.data.schoolId) : undefined,
 					dob: form.data.dob,
 					roleId: roleId,
 				})
