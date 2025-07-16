@@ -78,9 +78,9 @@
 					{#if item.averageScore >= scoreThreshold}
 						<Table.Row
 							class="
-        {index === 0 ? 'bg-yellow-100' : ''}
-          {index === 1 ? 'bg-slate-100' : ''}
-          {index === 2 ? 'bg-amber-100' : ''}"
+        {index === 0 ? 'bg-yellow-100 dark:bg-yellow-500/10' : ''}
+          {index === 1 ? 'bg-slate-100 dark:bg-slate-500/10' : ''}
+          {index === 2 ? 'bg-amber-100 dark:bg-amber-600/10' : ''}"
 						>
 							<Table.Cell class="text-center font-medium">
 								{#if index === 0}
@@ -88,7 +88,7 @@
 								{:else if index === 1}
 									<Crown class="text-slate-400" />
 								{:else if index === 2}
-									<Crown class="text-amber-400" />
+									<Crown class="text-amber-400 dark:text-amber-500" />
 								{:else}
 									{index + 1}
 								{/if}
