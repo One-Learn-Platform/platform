@@ -116,8 +116,9 @@ export const actions: Actions = {
 				});
 			}
 		}
+
 		try {
-			await db.insert(assignment).values({
+			const current = await db.insert(assignment).values({
 				title: form.data.title,
 				description: form.data.description,
 				dueDate: form.data.dueDate,
@@ -126,6 +127,10 @@ export const actions: Actions = {
 				schoolId: schoolId,
 				subjectId: selectedSubject.id,
 			});
+			return redirect(
+				303,
+				`/subject/${event.params.subjectCode}/${event.params.chapter}/assignments/${current.id}`,
+			);
 		} catch (error) {
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
@@ -137,20 +142,5 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const currentAssignment = await db
-			.select({ id: assignment.id })
-			.from(assignment)
-			.where(
-				and(
-					eq(assignment.subjectId, selectedSubject.id),
-					eq(assignment.schoolId, schoolId),
-					eq(assignment.chapter, chapter),
-				),
-			)
-			.get();
-		return redirect(
-			303,
-			`/subject/${event.params.subjectCode}/${event.params.chapter}/assignments/${currentAssignment?.id}`,
-		);
 	},
 };
