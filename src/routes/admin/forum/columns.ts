@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
-import DataTableActions from "$lib/components/table/data-table-actions.svelte";
+import DataTableActions from "./data-table-actions.svelte";
 
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
@@ -80,7 +80,7 @@ export const columns: ColumnDef<ForumWithUser>[] = [
 			const value = row.getValue("user");
 			const userCellSnippet = createRawSnippet(() => {
 				return {
-					render: () => `<div class="text-left font-mono">${value || "N/A"}</div>`,
+					render: () => `<div class="text-left">${value || "N/A"}</div>`,
 				};
 			});
 			return renderSnippet(userCellSnippet, value);
