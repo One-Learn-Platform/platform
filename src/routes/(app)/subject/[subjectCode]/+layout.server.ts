@@ -6,7 +6,7 @@ import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {
-	const { subjectCode } = event.params;
+	const { subjectCode, chapter } = event.params;
 	if (event.locals.user) {
 		if (!event.locals.user.school) {
 			return error(403, "Forbidden");
@@ -22,7 +22,7 @@ export const load: LayoutServerLoad = async (event) => {
 		if (!subjectData) {
 			return error(404, "Subject not found");
 		}
-		return { params: subjectCode, subject: subjectData };
+		return { params: subjectCode, chapter: chapter, subject: subjectData };
 	}
 	return redirect(302, "/signin");
 };

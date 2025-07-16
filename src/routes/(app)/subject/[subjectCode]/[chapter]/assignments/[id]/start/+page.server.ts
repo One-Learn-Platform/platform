@@ -125,6 +125,6 @@ export const actions: Actions = {
 				},
 			});
 		}
-		return redirect(303, `/subject/${subjectCode}/${chapter}/assignments/${assignmentId}`);
+		return redirect(303, `/subject/${subjectCode}/${chapter}/assignments/${assignmentId}/finish`);
 	},
 };

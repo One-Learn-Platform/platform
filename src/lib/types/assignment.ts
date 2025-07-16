@@ -9,6 +9,8 @@ export const QUESTION_TYPE_VALUE = [
 	QuestionType.MULTIPLE_CHOICE,
 ] as const;
 
+export type SubmissionContent = Record<number, string>;
+
 export type Question =
 	| {
 			key: string;
