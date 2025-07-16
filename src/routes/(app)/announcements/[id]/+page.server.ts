@@ -17,12 +17,12 @@ export const load: PageServerLoad = async (event) => {
 			.get();
 
 		if (!selectedAnnouncement) {
-			throw error(404, "Announcement not found");
+			return error(404, "Announcement not found");
 		}
 
 		return {
 			announcement: selectedAnnouncement,
 		};
 	}
-	return redirect(302, "/login");
+	return redirect(302, "/signin");
 };
