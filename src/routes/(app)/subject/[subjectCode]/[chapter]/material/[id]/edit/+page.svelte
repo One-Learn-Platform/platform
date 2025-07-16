@@ -225,7 +225,7 @@
 	<Form.Field form={superform} name="attachment" class="">
 		<Form.Control>
 			{#snippet children({ props })}
-				<Form.Label>Content</Form.Label>
+				<Form.Label>Attachment</Form.Label>
 				<Input
 					{...props}
 					type="file"
