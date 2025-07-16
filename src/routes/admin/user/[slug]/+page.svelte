@@ -166,6 +166,7 @@
 			} else toast.error(form.edit.message ?? "Unknown error");
 		} else if (form?.upload) {
 			if (form.upload.success) {
+				invalidateAll();
 				toast.success(`Avatar for ${userDetail.fullname} updated successfully`);
 				dialogOpen = false;
 			} else toast.error(form.upload.message ?? "Unknown error");
