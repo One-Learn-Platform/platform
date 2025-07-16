@@ -51,6 +51,7 @@
 			} else if (form.unenroll) {
 				if (form.unenroll.success) {
 					invalidateAll();
+					dialogOpen = false;
 					toast.success("Student unenrolled successfully.");
 				} else if (form.unenroll?.message) {
 					toast.error(form.unenroll.message);
