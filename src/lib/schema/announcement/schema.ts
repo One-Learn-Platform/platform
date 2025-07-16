@@ -6,7 +6,7 @@ export const formSchema = createInsertSchema(announcement, {
 	title: z.string().min(1, { error: "Title is required" }),
 	content: z.string().min(1, { error: "Content is required" }),
 	startDate: z.string().refine((v) => v, { error: "Start date is required" }),
-	endDate: z.string().optional(),
+	endDate: z.string(),
 	createdAt: z.string().optional(),
 }).omit({
 	id: true,
