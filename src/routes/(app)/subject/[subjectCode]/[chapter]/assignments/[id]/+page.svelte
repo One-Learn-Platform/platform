@@ -690,6 +690,7 @@
 													bind:value={choice.value}
 													placeholder="Enter choice"
 													class="w-full"
+													oninput={() => (question.answer = choice.value)}
 												/>
 												<Tooltip.Provider delayDuration={200} disableHoverableContent>
 													<Tooltip.Root>
