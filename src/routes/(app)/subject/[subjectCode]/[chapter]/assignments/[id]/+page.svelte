@@ -141,7 +141,7 @@
 		if (form) {
 			if (form.create) {
 				if (form.create.success) {
-          invalidateAll();
+					invalidateAll();
 					toast.success("Question added successfully");
 				} else if (form.create.message) {
 					toast.error(form.create.message);
@@ -856,7 +856,7 @@
 		{/if}
 	</div>
 {:else}
-	<div class="flex w-full flex-row justify-between gap-8">
+	<div class="flex w-full flex-col justify-between gap-4 sm:flex-row sm:gap-8">
 		<div class="grow">
 			<p class="text-sm text-muted-foreground">Assignment</p>
 			<div>
@@ -890,7 +890,7 @@
 			{/if}
 		</div>
 
-		<Card.Root class="h-fit w-md min-w-md grow">
+		<Card.Root class="h-fit w-full max-w-lg grow sm:min-w-md">
 			<Card.Header>
 				<Card.Title class="flex flex-row items-center justify-between text-xl tracking-tight">
 					Submission
