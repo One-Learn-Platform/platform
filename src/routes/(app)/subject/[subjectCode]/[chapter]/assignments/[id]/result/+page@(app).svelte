@@ -36,7 +36,7 @@
 	</div>
 </section>
 <section class="flex w-full grow flex-col justify-center gap-2">
-	{#if new Date(data.assignment?.dueDate + "Z") > new Date()}
+	{#if new Date(data.assignment?.dueDate + "Z") < new Date()}
 		{@const userAnswer = JSON.parse(data.submission.content) as SubmissionContent}
 		<div>
 			<h2 class="font-display text-2xl font-medium tracking-tight sm:text-3xl">Answers</h2>
