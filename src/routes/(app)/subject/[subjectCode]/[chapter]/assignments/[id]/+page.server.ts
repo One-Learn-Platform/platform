@@ -223,6 +223,7 @@ export const actions: Actions = {
 	},
 	delete: async (event) => {
 		const db = getDb(event);
+		const { subjectCode } = event.params;
 		const formData = await event.request.formData();
 		const id = formData.get("id");
 
@@ -266,11 +267,7 @@ export const actions: Actions = {
 		}
 		return redirect(
 			303,
-			"/subject/" +
-				selectedAssignment.subjectId +
-				"/" +
-				selectedAssignment.chapter +
-				"/assignments",
+			"/subject/" + subjectCode + "/" + selectedAssignment.chapter + "/assignments",
 		);
 	},
 	addquestion: async (event) => {
