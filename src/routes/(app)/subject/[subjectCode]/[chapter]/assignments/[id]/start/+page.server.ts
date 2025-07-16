@@ -51,6 +51,9 @@ export const load: PageServerLoad = async (event) => {
 			.select()
 			.from(assignmentQuestion)
 			.where(eq(assignmentQuestion.assignmentId, assignmentId));
+		if (!questions || questions.length === 0) {
+			return error(404, "No questions found for this assignment, Please contact your teacher.");
+		}
 		return {
 			assignment: assignmentData,
 			questions,
