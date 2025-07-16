@@ -117,8 +117,9 @@ export const actions: Actions = {
 			}
 		}
 
+		let currentAssignment;
 		try {
-			const current = await db.insert(assignment).values({
+			currentAssignment = await db.insert(assignment).values({
 				title: form.data.title,
 				description: form.data.description,
 				dueDate: form.data.dueDate,
@@ -127,10 +128,6 @@ export const actions: Actions = {
 				schoolId: schoolId,
 				subjectId: selectedSubject.id,
 			});
-			return redirect(
-				303,
-				`/subject/${event.params.subjectCode}/${event.params.chapter}/assignments/${current.id}`,
-			);
 		} catch (error) {
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
@@ -142,5 +139,9 @@ export const actions: Actions = {
 				form,
 			});
 		}
+		return redirect(
+			303,
+			`/subject/${event.params.subjectCode}/${event.params.chapter}/assignments/${currentAssignment.id}`,
+		);
 	},
 };
