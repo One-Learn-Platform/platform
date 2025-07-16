@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
+	import { invalidateAll } from "$app/navigation";
 
 	import { formSchemaWithPass, Role, type RoleEnum } from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
@@ -39,22 +40,24 @@
 	const proxy = fileProxy(formData, "avatar");
 	let fileValue = $state();
 
-	let value = $state<DateValue | undefined>();
+	let value = $derived($formData.dob ? parseDate($formData.dob) : undefined);
 	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
-	$effect(() => {
-		value = $formData.dob ? parseDate($formData.dob) : undefined;
-	});
+	;
 	$effect(() => {
 		if (form?.delete) {
-			if (form.delete.success) toast.success(`User ${form.delete.data?.fullname} deleted`);
-			else toast.error(form.delete.message ?? "Unknown error");
+			if (form.delete.success) {
+				invalidateAll();
+				toast.success(`User ${form.delete.data?.fullname} deleted`);
+			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
-				if (form.create.success) toast.success(`User ${form.create.data?.fullname} created`);
-				else toast.error(form.create.message ?? "Unknown error");
+				if (form.create.success) {
+					invalidateAll();
+					toast.success(`User ${form.create.data?.fullname} created`);
+				} else toast.error(form.create.message ?? "Unknown error");
 			}
 		}
 	});

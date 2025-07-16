@@ -112,6 +112,7 @@
 			if (form.deleteAttachment?.success) {
 				dialogOpen = false;
 				toast.success(form.deleteAttachment.message || "Attachment deleted successfully!");
+        invalidateAll();
 			} else {
 				toast.error(form.deleteAttachment.message || "Failed to delete attachment.");
 			}

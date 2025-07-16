@@ -52,7 +52,9 @@
 		if (form?.delete) {
 			if (form.delete.success) {
 				invalidateAll();
-			} else toast.error(form.delete.message ?? "Unknown error");
+			} else {
+				toast.error(form.delete.message ?? "Unknown error");
+			}
 		} else if (form?.edit) {
 			if (form.edit.success) {
 				toast.success(`User ${form.edit.data?.name} edited successfully`);

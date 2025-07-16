@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
+	import { invalidateAll } from "$app/navigation";
 
 	import { formSchemaCreate } from "$lib/schema/school/schema";
 	import Plus from "@lucide/svelte/icons/plus";
@@ -28,14 +29,20 @@
 
 	$effect(() => {
 		if (form?.delete) {
-			if (form.delete.success)
+			if (form.delete.success) {
+				invalidateAll();
 				toast.success(`School ${form.delete.data?.name} successfully deleted`);
-			else toast.error(form.delete.message ?? "Unknown error");
+			} else {
+				toast.error(form.delete.message ?? "Unknown error");
+			}
 		} else {
 			if (form?.create) {
-				if (form.create.success)
+				if (form.create.success) {
+					invalidateAll();
 					toast.success(`School ${form.create.data?.name} successfully created`);
-				else toast.error(form.create.message ?? "Unknown error");
+				} else {
+					toast.error(form.create.message ?? "Unknown error");
+				}
 			}
 		}
 	});

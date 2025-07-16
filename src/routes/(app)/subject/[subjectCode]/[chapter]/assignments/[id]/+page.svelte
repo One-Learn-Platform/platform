@@ -141,6 +141,7 @@
 		if (form) {
 			if (form.create) {
 				if (form.create.success) {
+          invalidateAll();
 					toast.success("Question added successfully");
 				} else if (form.create.message) {
 					toast.error(form.create.message);

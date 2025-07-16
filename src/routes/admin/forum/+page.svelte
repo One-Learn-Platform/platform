@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
+	import { invalidateAll } from "$app/navigation";
 
 	import Plus from "@lucide/svelte/icons/plus";
 
@@ -16,9 +17,12 @@
 
 	$effect(() => {
 		if (form?.delete) {
-			if (form.delete.success)
+			if (form.delete.success) {
+				invalidateAll();
 				toast.success(`Forum ${form.delete.data?.name} successfully deleted`);
-			else toast.error(form.delete.message ?? "Unknown error");
+			} else {
+				toast.error(form.delete.message ?? "Unknown error");
+			}
 		}
 	});
 </script>

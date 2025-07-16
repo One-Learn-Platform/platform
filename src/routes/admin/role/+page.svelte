@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
+	import { invalidateAll } from "$app/navigation";
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
@@ -24,13 +25,18 @@
 	const { form: formData, enhance, errors: formErrors } = superform;
 	$effect(() => {
 		if (form?.delete) {
-			if (form.delete.success) toast.success(`Role ${form.delete.data?.name} successfully deleted`);
-			else toast.error(form.delete.message ?? "Unknown error");
+			if (form.delete.success) {
+				invalidateAll();
+				toast.success(`Role ${form.delete.data?.name} successfully deleted`);
+			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
-				if (form.create.success)
+				if (form.create.success) {
+					invalidateAll();
 					toast.success(`Role ${form.create.data?.name} successfully created`);
-				else toast.error(form.create.message ?? "Unknown error");
+				} else {
+					toast.error(form.create.message ?? "Unknown error");
+				}
 			}
 		}
 	});

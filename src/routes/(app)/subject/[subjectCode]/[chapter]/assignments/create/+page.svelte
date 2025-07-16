@@ -4,7 +4,8 @@
 	import { formSchema } from "$lib/schema/assignment/schema";
 	import { filesProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-
+  
+  import { invalidateAll } from "$app/navigation";
 	import { toast } from "svelte-sonner";
 	import { getFileIcon } from "$lib/functions/material";
 	import { cn } from "$lib/utils.js";
@@ -51,6 +52,7 @@
 			if (form.create) {
 				if (form.create.success) {
 					toast.success(`Assignment successfully created`);
+          invalidateAll();
 				} else {
 					toast.error(form.create.message ?? "Unknown error");
 				}
