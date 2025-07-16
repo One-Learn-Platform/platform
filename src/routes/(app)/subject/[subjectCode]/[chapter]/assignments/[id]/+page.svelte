@@ -563,10 +563,6 @@
 										<Label for="short-answer-{listIndex}">Short Answer</Label>
 									</div>
 									<div class="flex items-center space-x-2">
-										<RadioGroup.Item value="long-answer" id="long-answer-{listIndex}" />
-										<Label for="long-answer-{listIndex}">Long Answer</Label>
-									</div>
-									<div class="flex items-center space-x-2">
 										<RadioGroup.Item value="multiple-choice" id="multiple-choice-{listIndex}" />
 										<Label for="multiple-choice-{listIndex}">Multiple Choice</Label>
 									</div>
@@ -593,18 +589,6 @@
 											id="answer-{listIndex}"
 											bind:value={question.answer}
 											placeholder="Enter answer"
-											class="mb-2 w-full"
-										/>
-									</div>
-								{/if}
-								{#if question.type === "long-answer"}
-									<div class="flex w-full flex-col gap-1.5">
-										<Label for="answer-{listIndex}">Answer</Label>
-										<Textarea
-											name="answer-{listIndex}"
-											id="answer-{listIndex}"
-											placeholder="Enter answer"
-											bind:value={question.answer}
 											class="mb-2 w-full"
 										/>
 									</div>

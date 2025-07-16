@@ -1,11 +1,9 @@
 export enum QuestionType {
 	SHORT_ANSWER = "short-answer",
-	LONG_ANSWER = "long-answer",
 	MULTIPLE_CHOICE = "multiple-choice",
 }
 export const QUESTION_TYPE_VALUE = [
 	QuestionType.SHORT_ANSWER,
-	QuestionType.LONG_ANSWER,
 	QuestionType.MULTIPLE_CHOICE,
 ] as const;
 
@@ -15,7 +13,7 @@ export type Question =
 	| {
 			key: string;
 			question: string;
-			type: "short-answer" | "long-answer";
+			type: "short-answer";
 			answer: string;
 			attachment?: string[];
 			upload?: FileList;
