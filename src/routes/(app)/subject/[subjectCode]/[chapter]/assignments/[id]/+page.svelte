@@ -580,6 +580,76 @@
 										class="mb-2 w-full"
 									/>
 								</div>
+								<div class="grid items-center gap-1.5">
+									<Label for="question-{listIndex}-attachment">Attachment</Label>
+									<Input
+										id="question-{listIndex}-attachment"
+										name="question-{listIndex}-attachment"
+										type="file"
+										accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+										files={question.upload}
+										multiple
+										onchange={(event) => {
+											const target = event?.target as HTMLInputElement | null;
+											if (!target || !("files" in target)) return;
+											const newFiles = target.files;
+											const oldFiles = question.upload ?? new DataTransfer().files;
+											const dataTransfer = new DataTransfer();
+											for (let i = 0; i < oldFiles.length; i++) {
+												dataTransfer.items.add(oldFiles[i]);
+											}
+											if (newFiles) {
+												for (let i = 0; i < newFiles.length; i++) {
+													dataTransfer.items.add(newFiles[i]);
+												}
+											}
+											question.upload = dataTransfer.files;
+										}}
+									/>
+								</div>
+								{#if question?.upload && question.upload.length > 0}
+									{#each question.upload as file (file)}
+										{@const Icons = getFileIcon(file.name)}
+										<li
+											animate:flip={{ duration: 300, easing: cubicOut }}
+											transition:slide={{ axis: "x", duration: 200, easing: cubicOut }}
+											class="flex w-fit flex-row items-center gap-1 truncate rounded-sm border px-2 py-1"
+										>
+											<Icons class="size-5" />
+											<span class="text-sm">{file.name}</span>
+											<Tooltip.Provider delayDuration={150} disableHoverableContent>
+												<Tooltip.Root>
+													<Tooltip.Trigger>
+														{#snippet child({ props })}
+															<Button
+																{...props}
+																variant="destructive"
+																size="icon"
+																type="button"
+																class="ml-2 h-fit w-fit rounded-xs"
+																outline
+																onclick={() => {
+																	const filesArray = Array.from(question?.upload ?? []);
+																	const filteredFiles = filesArray.filter(
+																		(f) => f.name !== file.name,
+																	);
+																	const dataTransfer = new DataTransfer();
+																	filteredFiles.forEach((f) => dataTransfer.items.add(f));
+																	question.upload = dataTransfer.files;
+																}}
+															>
+																<X />
+															</Button>
+														{/snippet}
+													</Tooltip.Trigger>
+													<Tooltip.Content side="right">
+														<p>Remove file</p>
+													</Tooltip.Content>
+												</Tooltip.Root>
+											</Tooltip.Provider>
+										</li>
+									{/each}
+								{/if}
 								{#if question.type === "short-answer"}
 									<div class="flex w-full flex-col gap-1.5">
 										<Label for="answer-{listIndex}">Answer</Label>
@@ -743,76 +813,6 @@
 										<Plus />
 										Add Choice
 									</Button>
-								{/if}
-								<div class="grid items-center gap-1.5">
-									<Label for="question-{listIndex}-attachment">Attachment</Label>
-									<Input
-										id="question-{listIndex}-attachment"
-										name="question-{listIndex}-attachment"
-										type="file"
-										accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
-										files={question.upload}
-										multiple
-										onchange={(event) => {
-											const target = event?.target as HTMLInputElement | null;
-											if (!target || !("files" in target)) return;
-											const newFiles = target.files;
-											const oldFiles = question.upload ?? new DataTransfer().files;
-											const dataTransfer = new DataTransfer();
-											for (let i = 0; i < oldFiles.length; i++) {
-												dataTransfer.items.add(oldFiles[i]);
-											}
-											if (newFiles) {
-												for (let i = 0; i < newFiles.length; i++) {
-													dataTransfer.items.add(newFiles[i]);
-												}
-											}
-											question.upload = dataTransfer.files;
-										}}
-									/>
-								</div>
-								{#if question?.upload && question.upload.length > 0}
-									{#each question.upload as file (file)}
-										{@const Icons = getFileIcon(file.name)}
-										<li
-											animate:flip={{ duration: 300, easing: cubicOut }}
-											transition:slide={{ axis: "x", duration: 200, easing: cubicOut }}
-											class="flex w-fit flex-row items-center gap-1 truncate rounded-sm border px-2 py-1"
-										>
-											<Icons class="size-5" />
-											<span class="text-sm">{file.name}</span>
-											<Tooltip.Provider delayDuration={150} disableHoverableContent>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														{#snippet child({ props })}
-															<Button
-																{...props}
-																variant="destructive"
-																size="icon"
-																type="button"
-																class="ml-2 h-fit w-fit rounded-xs"
-																outline
-																onclick={() => {
-																	const filesArray = Array.from(question?.upload ?? []);
-																	const filteredFiles = filesArray.filter(
-																		(f) => f.name !== file.name,
-																	);
-																	const dataTransfer = new DataTransfer();
-																	filteredFiles.forEach((f) => dataTransfer.items.add(f));
-																	question.upload = dataTransfer.files;
-																}}
-															>
-																<X />
-															</Button>
-														{/snippet}
-													</Tooltip.Trigger>
-													<Tooltip.Content side="right">
-														<p>Remove file</p>
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</Tooltip.Provider>
-										</li>
-									{/each}
 								{/if}
 							</Card.Content>
 						</Card.Root>
