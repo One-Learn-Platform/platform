@@ -39,10 +39,14 @@
 
 <div class="flex flex-col items-center justify-between gap-2 sm:flex-row">
 	{#if data.user.role === 3}
-		<Button variant="outline" href="{data.material?.id}/edit" class="w-full grow sm:w-fit">
+		<Button variant="outline" href="{data.material?.id}/edit" class="w-full grow basis-0 sm:w-fit">
 			<Edit class="" />Edit
 		</Button>
-		<Button variant="destructive" class="w-full grow sm:w-fit" onclick={() => (dialogOpen = true)}>
+		<Button
+			variant="destructive"
+			class="w-full grow basis-0 sm:w-fit"
+			onclick={() => (dialogOpen = true)}
+		>
 			<Trash class="" />Delete Material
 		</Button>
 	{/if}
