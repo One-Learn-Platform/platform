@@ -240,7 +240,7 @@ export const submission = sqliteTable(
 		assignmentId: integer("assignment_id")
 			.references(() => assignment.id)
 			.notNull(),
-		score: integer("score"),
+		score: integer("score").notNull(),
 		content: text("content").notNull(),
 		attachment: text("attachment"),
 		schoolId: integer("school_id")

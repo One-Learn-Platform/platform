@@ -11,6 +11,8 @@
 					"border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
 				destructive:
 					"border-transparent bg-destructive text-white focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90",
+				destructive_muted:
+					"border-destructive bg-destructive-muted text-destructive focus-visible:ring-destructive-muted/20 dark:bg-destructive-muted/70 dark:focus-visible:ring-destructive-muted/40 [a&]:hover:bg-destructive-muted/90",
 				informative:
 					"border-transparent bg-informative text-white focus-visible:ring-informative/20 dark:bg-informative/70 dark:focus-visible:ring-informative/40 [a&]:hover:bg-informative/90",
 				informative_muted:
@@ -18,7 +20,7 @@
 				success:
 					"border-transparent bg-success text-white focus-visible:ring-success/20 dark:bg-success/70 dark:focus-visible:ring-success/40 [a&]:hover:bg-success/90",
 				success_muted:
-					"border-transparent bg-success-muted text-success focus-visible:ring-success-muted/20 dark:bg-success-muted/70 dark:focus-visible:ring-success-muted/40 [a&]:hover:bg-success-muted/90",
+					"border-success bg-success-muted text-success focus-visible:ring-success-muted/20 dark:bg-success-muted/70 dark:focus-visible:ring-success-muted/40 [a&]:hover:bg-success-muted/90",
 				warning:
 					"border-transparent bg-warning text-white focus-visible:ring-warning/20 dark:bg-warning/70 dark:focus-visible:ring-warning/40 [a&]:hover:bg-warning/90",
 				interactive:

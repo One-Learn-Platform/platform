@@ -12,6 +12,7 @@
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
+	import FileChartColumnIncreasing from "@lucide/svelte/icons/file-chart-column-increasing";
 	import Plus from "@lucide/svelte/icons/plus";
 
 	import Assignment from "$lib/components/cards/assignment.svelte";
@@ -42,7 +43,9 @@
 		assignmentList
 			.filter((assignment) => assignment.title.toLowerCase().includes(searchQuery.toLowerCase()))
 			.sort((a, b) => {
+				// @ts-expect-error - sortBy is a string, but we know it matches the keys of assignment
 				const aValue = a[sortBy];
+				// @ts-expect-error - sortBy is a string, but we know it matches the keys of assignment
 				const bValue = b[sortBy];
 				if (sortOpt === "asc") {
 					return aValue > bValue ? 1 : -1;
@@ -53,12 +56,17 @@
 	);
 </script>
 
-<div class="space-y-1">
+<div class="mb-4 space-y-1">
 	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
 	{#if data.user.role === 3}
-		<Button variant="outline" href="/subject/{data.params}/{data.chapter}/assignments/create">
-			<Plus />Add Assignment
-		</Button>
+		<div class="flex w-full gap-2 *:grow *:basis-0">
+			<Button variant="default" href="/subject/{data.params}/{data.chapter}/assignments/create">
+				<Plus />Add Assignment
+			</Button>
+			<Button variant="outline" href="/subject/{data.params}/{data.chapter}/assignments/results">
+				<FileChartColumnIncreasing />Results
+			</Button>
+		</div>
 	{/if}
 </div>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
