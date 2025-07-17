@@ -65,7 +65,7 @@
 </script>
 
 <div class="space-y-2 pr-2 pb-2">
-	<h1 class="font-display text-3xl font-semibold tracking-tight">User Detail</h1>
+	<h1 class="font-display text-3xl font-semibold tracking-tight">Role Detail</h1>
 	<Card.Root id="edit">
 		<Card.Header>
 			<Card.Title class="font-display">Edit Role</Card.Title>
