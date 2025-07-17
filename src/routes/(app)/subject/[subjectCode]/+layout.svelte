@@ -15,7 +15,7 @@
 	import { subjectColor } from "$lib/functions/subject";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
-	const urlException = [`/subject/${data.params}/people`];
+	const urlException = new Set([`/subject/${data.params}/people`]);
 </script>
 
 <svelte:head>
@@ -46,30 +46,34 @@
 	</div>
 	<div
 		class="flex flex-row gap-2 border p-2
-    {urlException.includes(page.url.pathname) ? ' rounded-b-xl' : ''}"
+    {urlException.has(page.url.pathname) ? ' rounded-b-xl' : ''}"
 	>
 		<Button
 			variant="outline"
-			href="/subject/{data.params}/materials"
+			href="/subject/{data.params}/{data.chapter}/materials"
 			class="min-w-fit grow basis-0"
 		>
 			<BookOpenText />Materials
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{data.params}/assignments"
+			href="/subject/{data.params}/{data.chapter}/assignments"
 			class="min-w-fit grow basis-0"
 		>
 			<ClipboardList />Assignments
 		</Button>
-		<Button variant="outline" href="/subject/{data.params}/forum" class="min-w-fit grow basis-0">
+		<Button
+			variant="outline"
+			href="/subject/{data.params}/{data.chapter}/forum"
+			class="min-w-fit grow basis-0"
+		>
 			<MessagesSquare />Forum
 		</Button>
 		<Button variant="secondary" href="/subject/{data.params}/people" class="min-w-fit grow basis-0">
 			<Users />People
 		</Button>
 	</div>
-	{#if !urlException.includes(page.url.pathname)}
+	{#if !urlException.has(page.url.pathname)}
 		<div class="mb-2 flex w-full flex-row gap-2 overflow-x-auto rounded-b-xl border p-2">
 			{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 				<Button
