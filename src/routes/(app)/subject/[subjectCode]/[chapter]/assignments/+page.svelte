@@ -2,19 +2,20 @@
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
-	import type { PageServerData } from "./$types";
+	import type { PageParentData, PageServerData } from "./$types";
 
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
+	import Plus from "@lucide/svelte/icons/plus";
 
 	import Assignment from "$lib/components/cards/assignment.svelte";
-	let { data }: { data: PageServerData } = $props();
+	let { data }: { data: PageServerData & PageParentData } = $props();
 	let searchQuery = $state("");
 	let hideDone = $state(false);
 	let hideMissed = $state(false);
@@ -52,7 +53,14 @@
 	);
 </script>
 
-<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
+<div class="space-y-1">
+	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
+	{#if data.user.role === 3}
+		<Button variant="outline" href="/subject/{data.params}/{data.chapter}/assignments/create">
+			<Plus />Add Assignment
+		</Button>
+	{/if}
+</div>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">
 	<div class="flex w-full flex-col items-center justify-between gap-4 sm:flex-row">
 		<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
