@@ -35,6 +35,7 @@
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 	import Check from "@lucide/svelte/icons/check";
 	import Copy from "@lucide/svelte/icons/copy";
+	import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
 	import Plus from "@lucide/svelte/icons/plus";
 	import Trash from "@lucide/svelte/icons/trash";
 	import X from "@lucide/svelte/icons/x";
@@ -42,6 +43,7 @@
 	import { v4 as uuidv4 } from "uuid";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
@@ -58,6 +60,7 @@
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 
 	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
+	const assignmentData = $derived(data.assignment);
 
 	const superform = superForm(data.form, {
 		validators: zod4Client(formSchema),
@@ -72,23 +75,6 @@
 	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
-	});
-	$effect(() => {
-		$formData.title = data.assignment.title || "";
-		$formData.description = data.assignment.description || "";
-		$formData.dueDate = data.assignment.dueDate || "";
-		if (data.assignment.dueDate) {
-			try {
-				const dateString = data.assignment.dueDate.replace(" ", "T").concat("Z");
-				const localDate = parseAbsoluteToLocal(dateString);
-				date = new CalendarDate(localDate.year, localDate.month, localDate.day).toString();
-				time = new Time(localDate.hour, localDate.minute, localDate.second).toString();
-			} catch (error) {
-				console.warn("Failed to parse date:", error);
-				date = "";
-				time = "23:59:59";
-			}
-		}
 	});
 
 	const role = $derived(data.user.role);
@@ -141,7 +127,21 @@
 		if (form) {
 			if (form.create) {
 				if (form.create.success) {
-					invalidateAll();
+					$formData.title = data.assignment.title;
+					$formData.description = data.assignment.description;
+					$formData.dueDate = data.assignment.dueDate;
+					if (data.assignment.dueDate) {
+						try {
+							const dateString = data.assignment.dueDate.replace(" ", "T").concat("Z");
+							const localDate = parseAbsoluteToLocal(dateString);
+							date = new CalendarDate(localDate.year, localDate.month, localDate.day).toString();
+							time = new Time(localDate.hour, localDate.minute, localDate.second).toString();
+						} catch (error) {
+							console.warn("Failed to parse date:", error);
+							date = "";
+							time = "23:59:59";
+						}
+					}
 					toast.success("Question added successfully");
 				} else if (form.create.message) {
 					toast.error(form.create.message);
@@ -151,12 +151,57 @@
 			} else if (form.edit) {
 				if (form.edit.success) {
 					toast.success("Assignment edited successfully");
-					invalidateAll();
+					invalidateAll().then(() => {
+						$formData.title = assignmentData.title;
+						$formData.description = assignmentData.description;
+						$formData.dueDate = assignmentData.dueDate;
+						invalidateAll().then(() => {
+							// Force update after data refresh
+							const assignment = data.assignment;
+							$formData.title = assignment.title;
+							$formData.description = assignment.description;
+							$formData.dueDate = assignment.dueDate;
+
+							if (assignment.dueDate) {
+								try {
+									const dateString = assignment.dueDate.replace(" ", "T").concat("Z");
+									const localDate = parseAbsoluteToLocal(dateString);
+									date = new CalendarDate(
+										localDate.year,
+										localDate.month,
+										localDate.day,
+									).toString();
+									time = new Time(localDate.hour, localDate.minute, localDate.second).toString();
+								} catch (error) {
+									console.warn("Failed to parse date:", error);
+									date = "";
+									time = "23:59:59";
+								}
+							}
+						});
+					});
 				} else if (form.edit.message) {
 					toast.error(form.edit.message);
 				} else {
 					toast.error("Failed to edit assignment");
 				}
+			}
+		}
+	});
+	$effect(() => {
+		$formData.title = assignmentData.title;
+		$formData.description = assignmentData.description;
+		$formData.dueDate = assignmentData.dueDate;
+		if (assignmentData.dueDate) {
+			try {
+				const dateString = assignmentData.dueDate.replace(" ", "T").concat("Z");
+				const localDate = parseAbsoluteToLocal(dateString);
+				date = new CalendarDate(localDate.year, localDate.month, localDate.day).toString();
+				time = new Time(localDate.hour, localDate.minute, localDate.second).toString();
+			} catch (error) {
+				console.warn("Failed to parse date:", error);
+				date = "";
+				time = "23:59:59";
 			}
 		}
 	});
@@ -841,11 +886,13 @@
 		{/if}
 	</div>
 {:else}
-	<div class="flex w-full flex-col justify-between gap-4 sm:flex-row sm:gap-8">
-		<div class="grow">
+	<div class="flex w-full flex-col justify-between gap-4 sm:gap-8 lg:flex-row">
+		<div class="w-full grow">
 			<p class="text-sm text-muted-foreground">Assignment</p>
-			<div>
-				<h1 class="font-display text-5xl font-bold tracking-tight">{data.assignment.title}</h1>
+			<div class="space-y-1">
+				<h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+					{data.assignment.title}
+				</h1>
 				<p class="text-muted-foreground">
 					{dfWithoutTime.format(new Date(data.assignment.createdAt))}
 				</p>
@@ -875,7 +922,7 @@
 			{/if}
 		</div>
 
-		<Card.Root class="h-fit w-full max-w-lg grow sm:min-w-md">
+		<Card.Root class="h-fit w-full grow lg:max-w-lg ">
 			<Card.Header>
 				<Card.Title class="flex flex-row items-center justify-between text-xl tracking-tight">
 					Submission
@@ -901,16 +948,38 @@
 				</Card.Description>
 			</Card.Header>
 			<Card.Footer class="flex-col gap-2">
-				<Button
-					variant="default"
-					disabled={dayjs(data.assignment.dueDate + "Z").isBefore(dayjs()) ||
-						data.assignment.done === 1}
-					class="w-full"
-					href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data.assignment
-						.id}/start"
-				>
-					Start Assignment
-				</Button>
+				<div class="flex w-full flex-col gap-1 rounded-lg border bg-muted">
+					{#if data.questions.length === 0}
+						<Alert.Root class="w-full">
+							<OctagonAlert />
+							<Alert.Title>Assignment doesn't have question yet</Alert.Title>
+							<Alert.Description>
+								Please contact your teacher for more information.
+							</Alert.Description>
+						</Alert.Root>
+					{:else}
+						<p
+							class="self-end px-2 pt-1 text-sm font-medium
+              {dayjs(data.assignment.dueDate + 'Z').isBefore(dayjs()) || data.assignment.done === 1
+								? 'text-muted-foreground'
+								: ''}"
+						>
+							{data.questions.length} question{data.questions.length !== 1 ? "s" : ""}
+						</p>
+					{/if}
+					<Button
+						variant="default"
+						disabled={dayjs(data.assignment.dueDate + "Z").isBefore(dayjs()) ||
+							data.assignment.done === 1 ||
+							data.questions.length === 0}
+						class="w-full"
+						href="/subject/{data.subject.code}/{data.assignment.chapter}/assignments/{data
+							.assignment.id}/start"
+					>
+						Start Assignment
+					</Button>
+				</div>
+
 				{#if data.assignment.done === 1}
 					<Button
 						variant="outline"
