@@ -8,7 +8,7 @@
 	import {
 		formSchemaPassOnly,
 		formSchemaUploadImage,
-		formSchemaWithoutPass,
+		formSchemaProfile,
 	} from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
@@ -58,7 +58,7 @@
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
-		validators: zod4Client(formSchemaWithoutPass),
+		validators: zod4Client(formSchemaProfile),
 		id: "edit",
 
 		onChange(event) {

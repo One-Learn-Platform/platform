@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from "./$types";
 import {
 	formSchemaPassOnly,
 	formSchemaUploadImage,
-	formSchemaWithoutPass,
+	formSchemaProfile,
 } from "$lib/schema/user/schema";
 import bcryptjs from "bcryptjs";
 import { eq, getTableColumns } from "drizzle-orm";
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async (event) => {
 			return {
 				userData: user,
 				schoolList: schoolList,
-				form: await superValidate(zod4(formSchemaWithoutPass)),
+				form: await superValidate(zod4(formSchemaProfile)),
 				uploadForm: await superValidate(zod4(formSchemaUploadImage)),
 				passForm: await superValidate(zod4(formSchemaPassOnly)),
 			};
@@ -48,7 +48,7 @@ export const actions: Actions = {
 		}
 
 		const db = getDb(event);
-		const form = await superValidate(event, zod4(formSchemaWithoutPass), {
+		const form = await superValidate(event, zod4(formSchemaProfile), {
 			id: "edit",
 		});
 		const formData = form.data;

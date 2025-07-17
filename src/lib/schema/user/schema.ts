@@ -20,7 +20,12 @@ export const formSchema = createInsertSchema(user, {
 		})
 		.optional(),
 	dob: z.string().refine((v) => v, { error: "A date of birth is required." }),
-	username: z.string().min(1, { error: "Username is required" }),
+	username: z
+		.string()
+		.min(1, { error: "Username is required" })
+		.refine((v) => /^[a-zA-Z0-9_]+$/.test(v), {
+			error: "Username must contain only letters, numbers, and underscores",
+		}),
 	password: z
 		.string()
 		.min(6, {
@@ -81,8 +86,13 @@ export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 
 export const formSchemaWithoutPass = formSchema.omit({
 	password: true,
-	roleId: true,
+	gradesId: true,
+});
+
+export const formSchemaProfile = formSchema.omit({
+	password: true,
 	schoolId: true,
+	roleId: true,
 	gradesId: true,
 });
 
