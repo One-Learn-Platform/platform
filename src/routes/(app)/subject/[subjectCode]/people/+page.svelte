@@ -11,12 +11,12 @@
 </script>
 
 <div class="mb-4 space-y-1">
-	<h1 class="font-display text-4xl font-semibold tracking-tight sm:text-5xl">People</h1>
+	<h1 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">People</h1>
 	<Separator class="" />
 </div>
 <section class="mb-4 space-y-2">
 	<div>
-		<h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Teacher</h2>
+		<h2 class="text-xl font-semibold tracking-tight sm:text-2xl">Teacher</h2>
 		<Separator />
 	</div>
 	{#if data.teacher}
@@ -36,7 +36,7 @@
 <section class="space-y-2">
 	<div>
 		<div class="flex flex-row items-end justify-between gap-1">
-			<h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Students</h2>
+			<h2 class="text-xl font-semibold tracking-tight sm:text-2xl">Students</h2>
 			<p class="text-sm text-muted-foreground">{data.students.length} enrolled</p>
 		</div>
 		<Separator />
