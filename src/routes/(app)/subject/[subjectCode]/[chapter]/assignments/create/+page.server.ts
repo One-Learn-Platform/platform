@@ -119,15 +119,20 @@ export const actions: Actions = {
 
 		let currentAssignment;
 		try {
-			currentAssignment = await db.insert(assignment).values({
-				title: form.data.title,
-				description: form.data.description,
-				dueDate: form.data.dueDate,
-				attachment: JSON.stringify(attachmentArray),
-				chapter: Number(chapter),
-				schoolId: schoolId,
-				subjectId: selectedSubject.id,
-			});
+			currentAssignment = await db
+				.insert(assignment)
+				.values({
+					title: form.data.title,
+					description: form.data.description,
+					dueDate: form.data.dueDate,
+					attachment: JSON.stringify(attachmentArray),
+					chapter: Number(chapter),
+					schoolId: schoolId,
+					subjectId: selectedSubject.id,
+				})
+				.returning()
+				.get();
+			console.log("Assignment created:", currentAssignment);
 		} catch (error) {
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
