@@ -3,7 +3,7 @@ import type { PageServerLoad } from "./$types";
 
 import { enrollment, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, asc, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -34,7 +34,8 @@ export const load: PageServerLoad = async (event) => {
 			})
 			.from(enrollment)
 			.innerJoin(user, eq(enrollment.userId, user.id))
-			.where(eq(enrollment.subjectId, currentSubject.id));
+			.where(eq(enrollment.subjectId, currentSubject.id))
+			.orderBy(asc(user.fullname), asc(user.username));
 		const teacher = await db
 			.select({
 				...userColumns,
