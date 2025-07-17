@@ -1,9 +1,9 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { assignment, assignmentQuestion, submission } from "$lib/schema/db";
+import { assignment, assignmentQuestion, enrollment, subject, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, and, sql, exists, getTableColumns } from "drizzle-orm";
+import { and, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -105,6 +105,16 @@ export const actions: Actions = {
 		const processedFormData = Object.fromEntries(
 			Array.from(formData.entries()).map(([key, value]) => [Number(key.replace("q-", "")), value]),
 		);
+
+		const selectedSubject = await db
+			.select()
+			.from(subject)
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
+			.get();
+		if (!selectedSubject) {
+			return error(404, "Subject not found");
+		}
+
 		try {
 			await db.insert(submission).values({
 				userId: event.locals.user.id,
@@ -113,6 +123,34 @@ export const actions: Actions = {
 				score: score,
 				content: JSON.stringify(processedFormData),
 			});
+			const assignmentColumns = getTableColumns(assignment);
+			const submissionColumns = getTableColumns(submission);
+			const allSubmissions = await db
+				.select({
+					...assignmentColumns,
+					...submissionColumns,
+				})
+				.from(submission)
+				.innerJoin(assignment, eq(submission.assignmentId, assignment.id))
+				.where(
+					and(
+						eq(assignment.subjectId, selectedSubject.id),
+						eq(submission.userId, event.locals.user.id),
+					),
+				);
+			const overallScore = allSubmissions.reduce((acc, sub) => acc + (sub.score ?? 0), 0);
+			const averageScore = allSubmissions.length > 0 ? overallScore / allSubmissions.length : 0;
+			await db
+				.update(enrollment)
+				.set({
+					score: averageScore,
+				})
+				.where(
+					and(
+						eq(enrollment.userId, event.locals.user.id),
+						eq(enrollment.subjectId, selectedSubject.id),
+					),
+				);
 		} catch (error) {
 			console.error("Error inserting submission:", error);
 			return fail(500, {
