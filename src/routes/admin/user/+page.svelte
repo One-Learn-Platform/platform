@@ -1,16 +1,22 @@
 <script lang="ts">
-	import type { ActionData, PageServerData } from "./$types";
 	import { invalidateAll } from "$app/navigation";
+	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
-	import { formSchemaWithPass, Role, type RoleEnum } from "$lib/schema/user/schema";
+	import {
+		formSchemaWithPass,
+		Role,
+		RoleWithoutSuperAdmin,
+		type RoleEnum,
+		type RoleWithoutSuperAdminEnum,
+	} from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
-		type DateValue,
 		getLocalTimeZone,
 		parseDate,
 		today,
+		type DateValue,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
 	import Plus from "@lucide/svelte/icons/plus";
@@ -30,7 +36,7 @@
 	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
 	import { columns } from "./columns.js";
 
-	let { data, form }: { data: PageServerData; form: ActionData } = $props();
+	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
@@ -45,6 +51,7 @@
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
+	const roleList = $derived(data.user.role === 1 ? Role : RoleWithoutSuperAdmin);
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
@@ -205,11 +212,13 @@
 									type="single"
 									value={$formData.roleId}
 									onValueChange={(value) => {
-										const roleValue = value as RoleEnum;
-										if (value === Role.enum["super admin"]) {
-											$formData.schoolId = undefined;
-										} else {
-											$formData.schoolId = $formData.schoolId;
+										const roleValue = value as RoleEnum | RoleWithoutSuperAdminEnum;
+										if (data.user.role === 1) {
+											if (value === Role.enum["super admin"]) {
+												$formData.schoolId = undefined;
+											} else {
+												$formData.schoolId = $formData.schoolId;
+											}
 										}
 										$formData.roleId = roleValue;
 									}}
@@ -226,7 +235,7 @@
 									<Select.Content>
 										<Select.Group>
 											<Select.Label>Role</Select.Label>
-											{#each Object.values(Role.options) as role (role)}
+											{#each Object.values(roleList.options) as role (role)}
 												{@const roleTitleCase = role.replace(
 													/\w\S*/g,
 													(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),

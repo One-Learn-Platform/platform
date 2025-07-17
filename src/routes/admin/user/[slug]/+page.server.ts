@@ -45,6 +45,9 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	edit: async (event) => {
+		if (!event.locals.user || (event.locals.user.role !== 1 && event.locals.user.role !== 2)) {
+			return error(403, { message: "You are not allowed to edit a user" });
+		}
 		const db = getDb(event);
 		const params = event.params;
 		const { slug } = params;
@@ -77,6 +80,35 @@ export const actions: Actions = {
 				break;
 			default:
 				break;
+		}
+		if (roleId === 0) {
+			setError(form, "roleId", "Invalid role selected");
+			return fail(400, {
+				create: { success: false, data: null, message: "Invalid role selected" },
+				form,
+			});
+		}
+		if (roleId === 1 && event.locals.user.role !== 1) {
+			setError(form, "roleId", "You are not allowed to create a super admin user");
+			return fail(403, {
+				create: {
+					success: false,
+					data: null,
+					message: "You are not allowed to create a super admin user",
+				},
+				form,
+			});
+		}
+		if (roleId !== 1 && !form.data.schoolId) {
+			setError(form, "schoolId", "School is required");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "School is required",
+				},
+				form,
+			});
 		}
 
 		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();

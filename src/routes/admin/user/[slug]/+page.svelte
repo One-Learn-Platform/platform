@@ -9,7 +9,9 @@
 		formSchemaWithoutPass,
 		formSchemaUploadImage,
 		Role,
+		RoleWithoutSuperAdmin,
 		type RoleEnum,
+		type RoleWithoutSuperAdminEnum,
 	} from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
@@ -63,6 +65,7 @@
 				return Role.enum["student"];
 		}
 	});
+	const roleList = $derived(data.user.role === 1 ? Role : RoleWithoutSuperAdmin);
 	const currentSchool = $derived(
 		data.schoolList.find((school) => school.id === userDetail.schoolId)?.id.toString() ?? "",
 	);
@@ -390,7 +393,7 @@
 								type="single"
 								value={$formData.roleId}
 								onValueChange={(value) => {
-									const roleValue = value as RoleEnum;
+									const roleValue = value as RoleEnum | RoleWithoutSuperAdminEnum;
 									$formData.roleId = roleValue;
 									// set timeout to allow the role value to be registered before changing the school value
 									setTimeout(() => {
@@ -412,7 +415,7 @@
 								<Select.Content>
 									<Select.Group>
 										<Select.Label>Role</Select.Label>
-										{#each Object.values(Role.options) as role (role)}
+										{#each Object.values(roleList.options) as role (role)}
 											{@const roleTitleCase = role.replace(
 												/\w\S*/g,
 												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),

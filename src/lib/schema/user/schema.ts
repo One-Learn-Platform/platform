@@ -7,6 +7,10 @@ export const Role = z.enum(["super admin", "admin", "teacher", "student"], {
 	error: "Role is required",
 });
 
+export const RoleWithoutSuperAdmin = z.enum(["admin", "teacher", "student"], {
+	error: "Role is required",
+});
+
 export const formSchema = createInsertSchema(user, {
 	fullname: z.string().min(1, { error: "Name is required" }),
 	avatar: z
@@ -60,7 +64,7 @@ export const formSchemaWithPass = formSchema
 			return true;
 		},
 		{
-			error: "School is required for non-super admin roles",
+			error: "School is required",
 			path: ["schoolId"],
 		},
 	);
@@ -107,3 +111,4 @@ export type FormSchemaWithPass = z.infer<typeof formSchemaWithPass>;
 export type FormSchemaWithoutPass = z.infer<typeof formSchemaWithoutPass>;
 export type FormSchemaPassOnly = z.infer<typeof formSchemaPassOnly>;
 export type RoleEnum = z.infer<typeof Role>;
+export type RoleWithoutSuperAdminEnum = z.infer<typeof RoleWithoutSuperAdmin>;

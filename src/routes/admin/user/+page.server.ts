@@ -48,6 +48,9 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	create: async (event) => {
+		if (!event.locals.user || (event.locals.user.role !== 1 && event.locals.user.role !== 2)) {
+			return error(403, { message: "You are not allowed to create a user" });
+		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaWithPass));
 
@@ -87,6 +90,35 @@ export const actions: Actions = {
 				break;
 			default:
 				break;
+		}
+		if (roleId === 0) {
+			setError(form, "roleId", "Invalid role selected");
+			return fail(400, {
+				create: { success: false, data: null, message: "Invalid role selected" },
+				form,
+			});
+		}
+		if (roleId === 1 && event.locals.user.role !== 1) {
+			setError(form, "roleId", "You are not allowed to create a super admin user");
+			return fail(403, {
+				create: {
+					success: false,
+					data: null,
+					message: "You are not allowed to create a super admin user",
+				},
+				form,
+			});
+		}
+		if (roleId !== 1 && !form.data.schoolId) {
+			setError(form, "schoolId", "School is required");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "School is required",
+				},
+				form,
+			});
 		}
 
 		const uniqueFileName = `user/avatar/${getFileName(form.data.username)}-${getTimeStamp()}.png`;
