@@ -28,11 +28,11 @@
 			<DropdownMenu.Label>{name}</DropdownMenu.Label>
 			<DropdownMenu.Group>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item>
+				<DropdownMenu.Item class="font-medium">
 					{#snippet child({ props })}
 						<a {...props} href="{href}/{id}/enrollment">
-							<UserRoundPlus class="mr-2 size-4" />
-							<span>Enroll Student</span>
+							<UserRoundPlus class="mr-2 size-4" strokeWidth={2.5} />
+							<span>Enrollment</span>
 						</a>
 					{/snippet}
 				</DropdownMenu.Item>
