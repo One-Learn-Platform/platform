@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { ActionData, PageServerData } from "./$types";
 	import { invalidateAll } from "$app/navigation";
+	import type { ActionData, PageServerData } from "./$types";
 
-	import Plus from "@lucide/svelte/icons/plus";
 	import Ellipsis from "@lucide/svelte/icons/ellipsis";
 	import Lightbulb from "@lucide/svelte/icons/lightbulb";
+	import Plus from "@lucide/svelte/icons/plus";
 
+	import { formSchemaCreate } from "$lib/schema/subject/schema";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
@@ -18,7 +19,6 @@
 
 	import FormErrors from "$lib/components/error/form-errors.svelte";
 	import DataTable from "$lib/components/table/data-table.svelte";
-	import { formSchemaCreate } from "$lib/schema/subject/schema";
 	import { columns } from "./columns";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
@@ -85,7 +85,10 @@
 					{#if $formErrors.code}
 						<Form.FieldErrors />
 					{:else}
-						<Form.Description>This is the Subject Code that will be displayed.</Form.Description>
+						<Form.Description>
+							This is the Subject Code that will be displayed. Please use lowercase letters and
+							numbers only.
+						</Form.Description>
 					{/if}
 				</Form.Field>
 

@@ -3,7 +3,10 @@ import { createInsertSchema } from "drizzle-zod";
 import { subject } from "$lib/schema/db";
 
 const formSchema = createInsertSchema(subject, {
-	code: z.string().min(1, { error: "Subject code is required" }),
+	code: z
+		.string()
+		.lowercase({ error: "Please use lowercase letters and numbers only." })
+		.min(1, { error: "Subject code is required" }),
 	name: z.string().min(1, { error: "Subject name is required" }),
 	teacher: z.string().min(1, { error: "Teacher is required" }),
 	subjectType: z.string().min(1, { error: "Subject type is required" }),

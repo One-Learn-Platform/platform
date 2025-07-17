@@ -8,6 +8,7 @@ import { zod4 } from "sveltekit-superforms/adapters";
 import { school, subject, subjectType, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, getTableColumns, or } from "drizzle-orm";
+import { and } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -104,6 +105,25 @@ export const actions: Actions = {
 					success: false,
 					data: null,
 					message: "Teacher not found, please select a valid teacher",
+				},
+				form,
+			});
+		}
+
+		const existingSubject = await db
+			.select()
+			.from(subject)
+			.where(
+				and(eq(subject.code, form.data.code.toLocaleLowerCase()), eq(subject.schoolId, school)),
+			)
+			.get();
+		if (existingSubject) {
+			setError(form, "code", "Subject code already exists, please use a different code");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "Subject code already exists, please use a different code",
 				},
 				form,
 			});
