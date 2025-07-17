@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit";
+import { redirect, error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 import { assignment, assignmentQuestion, submission } from "$lib/schema/db";
@@ -20,6 +20,9 @@ export const load: PageServerLoad = async (event) => {
 			.select()
 			.from(assignmentQuestion)
 			.where(eq(assignmentQuestion.assignmentId, id));
+		if (allQuestions.length === 0) {
+			return error(404, "No questions found for this assignment");
+		}
 		const currentAssignment = await db.select().from(assignment).where(eq(assignment.id, id)).get();
 		if (!currentSubmission) {
 			return redirect(302, `/subject/${subjectCode}/${chapter}/assignments/${id}/start`);
