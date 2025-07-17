@@ -188,7 +188,7 @@
 		</Dialog.Content>
 	</Dialog.Root>
 	<DataTable data={subjectList} {columns} />
-	<p class="inline-flex items-center text-base pt-1 text-muted-foreground">
+	<p class="inline-flex items-center pt-1 text-base text-muted-foreground">
 		<Lightbulb class="mr-1 size-4" />Click <Ellipsis class="mx-2 size-4" /> to add student to subject
 		(enroll)
 	</p>
