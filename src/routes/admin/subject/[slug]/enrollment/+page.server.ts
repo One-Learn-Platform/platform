@@ -20,10 +20,10 @@ export const load: PageServerLoad = async (event) => {
 			if (!schoolId) {
 				return error(400, { message: "School ID is required" });
 			}
-			const { ...rest } = getTableColumns(subject);
+			const { ...subjectColumn } = getTableColumns(subject);
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { password, ...restUser } = getTableColumns(user);
-			const { ...all } = getTableColumns(enrollment);
+			const { ...enrollmentColumn } = getTableColumns(enrollment);
 			const teacherList = await db
 				.select({ ...restUser })
 				.from(user)
@@ -40,12 +40,12 @@ export const load: PageServerLoad = async (event) => {
 				)
 				.leftJoin(grades, eq(grades.id, user.gradesId));
 			const enrolled = await db
-				.select({ ...all, fullname: user.fullname })
+				.select({ ...enrollmentColumn, fullname: user.fullname })
 				.from(enrollment)
 				.where(and(eq(enrollment.subjectId, subjectCode), eq(enrollment.schoolId, schoolId)))
 				.innerJoin(user, eq(user.id, enrollment.userId));
 			const subjectData = await db
-				.select({ ...rest, teacherName: user.fullname })
+				.select({ ...subjectColumn, teacherName: user.fullname })
 				.from(subject)
 				.where(eq(subject.id, subjectCode))
 				.leftJoin(user, eq(user.id, subject.teacher))
