@@ -28,9 +28,9 @@
 		"@internationalized/date": "^3.8.2",
 		"@lucide/svelte": "^0.525.0",
 		"@playwright/test": "^1.54.1",
-		"@sveltejs/adapter-cloudflare": "^7.0.5",
+		"@sveltejs/adapter-cloudflare": "^7.1.0",
 		"@sveltejs/enhanced-img": "^0.7.0",
-		"@sveltejs/kit": "^2.24.0",
+		"@sveltejs/kit": "^2.25.0",
 		"@sveltejs/vite-plugin-svelte": "^6.1.0",
 		"@tailwindcss/vite": "^4.1.11",
 		"@tanstack/table-core": "^8.21.3",
@@ -72,7 +72,7 @@
 		"vaul-svelte": "1.0.0-next.7",
 		"vite": "^7.0.5",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.24.4",
+		"wrangler": "^4.25.0",
 		"zod": "^4.0.5"
 	},
 	"dependencies": {
