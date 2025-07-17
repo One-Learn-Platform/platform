@@ -123,11 +123,12 @@ export const actions: Actions = {
 				score: score,
 				content: JSON.stringify(processedFormData),
 			});
-			const assignmentColumns = getTableColumns(assignment);
-			const submissionColumns = getTableColumns(submission);
+			const { ...assignmentColumns } = getTableColumns(assignment);
+			const { id: submissionId, ...submissionColumns } = getTableColumns(submission);
 			const allSubmissions = await db
 				.select({
 					...assignmentColumns,
+					submissionId,
 					...submissionColumns,
 				})
 				.from(submission)
