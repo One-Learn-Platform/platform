@@ -120,7 +120,6 @@ export const material = sqliteTable(
 		description: text("description").notNull(),
 		content: text("content").notNull(),
 		attachment: text("attachment").notNull(),
-		thumbnail: text("thumbnail").notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),

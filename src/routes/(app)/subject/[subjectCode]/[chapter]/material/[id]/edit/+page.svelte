@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { PageServerData, ActionData } from "./$types.js";
-	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { enhance as svelteEnhance } from "$app/forms";
 	import { invalidateAll } from "$app/navigation";
+	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { onMount } from "svelte";
+	import type { ActionData, PageServerData } from "./$types.js";
 
 	import { formSchemaEdit } from "$lib/schema/material/schema";
-	import { superForm, filesProxy, fileProxy } from "sveltekit-superforms";
+	import { filesProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
+	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import { Textarea } from "$lib/components/ui/textarea/index.js";
+	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 	import { toast } from "svelte-sonner";
 
 	import X from "@lucide/svelte/icons/x";
@@ -32,7 +32,6 @@
 	});
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
-	const thumbnailProxies = fileProxy(formData, "thumbnail");
 	let filesName = $state();
 
 	const attachmentList = $derived(JSON.parse(data.material?.attachment ?? "[]"));
@@ -184,26 +183,6 @@
 			<Form.FieldErrors />
 		{:else}
 			<Form.Description>Short description about the material</Form.Description>
-		{/if}
-	</Form.Field>
-
-	<Form.Field form={superform} name="thumbnail" class="">
-		<Form.Control>
-			{#snippet children({ props })}
-				<Form.Label>Thumbnail</Form.Label>
-				<Input
-					{...props}
-					type="file"
-					accept="image/*"
-					bind:files={$thumbnailProxies}
-					bind:value={filesName}
-				/>
-			{/snippet}
-		</Form.Control>
-		{#if $errors.thumbnail}
-			<Form.FieldErrors />
-		{:else}
-			<Form.Description>Attach any files up to 100MB</Form.Description>
 		{/if}
 	</Form.Field>
 

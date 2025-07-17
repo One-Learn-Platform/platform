@@ -3,13 +3,13 @@
 	import type { PageServerData } from "./$types.js";
 
 	import { formSchema } from "$lib/schema/material/schema";
-	import { superForm, filesProxy, fileProxy } from "sveltekit-superforms";
+	import { filesProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
+	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
 	import X from "@lucide/svelte/icons/x";
@@ -26,9 +26,7 @@
 	});
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
-	const thumbnailProxies = fileProxy(formData, "thumbnail");
 	let attachmentNames = $state();
-	let thumbnailNames = $state();
 
 	let quillInstance: Quill | null = null;
 	let editorElement: HTMLElement | undefined = $state();
@@ -113,26 +111,6 @@
 			<Form.FieldErrors />
 		{:else}
 			<Form.Description>Short description about the material</Form.Description>
-		{/if}
-	</Form.Field>
-
-	<Form.Field form={superform} name="thumbnail" class="">
-		<Form.Control>
-			{#snippet children({ props })}
-				<Form.Label>Thumbnail</Form.Label>
-				<Input
-					{...props}
-					type="file"
-					accept="image/*,video/*"
-					bind:files={$thumbnailProxies}
-					bind:value={thumbnailNames}
-				/>
-			{/snippet}
-		</Form.Control>
-		{#if $errors.thumbnail}
-			<Form.FieldErrors />
-		{:else}
-			<Form.Description>Attach any files up to 100MB</Form.Description>
 		{/if}
 	</Form.Field>
 

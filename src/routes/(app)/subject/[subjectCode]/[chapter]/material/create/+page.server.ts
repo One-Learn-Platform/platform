@@ -63,7 +63,6 @@ export const actions: Actions = {
 			});
 		}
 		const attachmentArray: string[] = [];
-		let uniqueThumbnailName = "";
 		try {
 			const subjectId = await db
 				.select({ id: subject.id })
@@ -79,23 +78,6 @@ export const actions: Actions = {
 					},
 					form,
 				});
-			}
-			if (form.data.thumbnail) {
-				uniqueThumbnailName = `subject/${subjectId.id}/${chapter}/thumbnail/${getFileName(form.data.thumbnail.name)}-${getTimeStamp()}.${getFileExtension(form.data.thumbnail.name)}`;
-				const fileBuffer = await form.data.thumbnail.arrayBuffer();
-				try {
-					await r2.put(uniqueThumbnailName, fileBuffer);
-				} catch (error) {
-					setError(
-						form,
-						"thumbnail",
-						error instanceof Error ? error.message : "Failed to upload thumbnail",
-					);
-					console.error(error instanceof Error ? error.message : error, form.data.thumbnail.name);
-					throw new Error(
-						`Failed to upload thumbnail: ${form.data.thumbnail.name}. Please try again.`,
-					);
-				}
 			}
 			if (form.data.attachment) {
 				const uploadPromises = form.data.attachment.map(async (file) => {
@@ -121,7 +103,6 @@ export const actions: Actions = {
 			await db.insert(material).values({
 				title: form.data.title,
 				description: form.data.description,
-				thumbnail: uniqueThumbnailName,
 				content: form.data.content,
 				attachment: JSON.stringify(attachmentArray),
 				chapter: Number(chapter),
@@ -129,7 +110,6 @@ export const actions: Actions = {
 				subjectId: subjectId?.id,
 			});
 		} catch (error) {
-			await r2.delete(uniqueThumbnailName);
 			await Promise.all(
 				attachmentArray.map(async (element) => {
 					await r2.delete(element);

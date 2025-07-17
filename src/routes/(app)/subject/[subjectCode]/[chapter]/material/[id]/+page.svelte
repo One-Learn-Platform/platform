@@ -48,15 +48,6 @@
 	{/if}
 </div>
 <div class="space-y-2">
-	{#if data.material?.thumbnail}
-		<div class="">
-			<img
-				src="{PUBLIC_R2_URL}/{data.material.thumbnail}"
-				alt="Thumbnail for {data.material.title}"
-				class=""
-			/>
-		</div>
-	{/if}
 	{#if data.material?.content}
 		{@const sanitizedContent = browser
 			? DOMpurify.sanitize(data.material.content)

@@ -78,15 +78,6 @@
 			<p class="text-sm text-muted-foreground">{firstMaterial.description}</p>
 
 			<div class="raw">
-				{#if firstMaterial.thumbnail}
-					<div class="m-1 h-auto w-full min-w-xs p-1 sm:float-right sm:w-1/3">
-						<img
-							src="{PUBLIC_R2_URL}/{firstMaterial.thumbnail}"
-							alt="Thumbnail for {firstMaterial.title}"
-							class=""
-						/>
-					</div>
-				{/if}
 				{@html sanitizedContent}
 			</div>
 

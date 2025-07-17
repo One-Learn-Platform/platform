@@ -4,9 +4,6 @@ import { createInsertSchema } from "drizzle-zod";
 
 export const formSchema = createInsertSchema(material, {
 	title: z.string().min(3, { error: "Title must be at least 3 characters long" }).max(255),
-	thumbnail: z
-		.instanceof(File, { error: "Please upload a valid file." })
-		.refine((f) => f.size < 100_000_000, { error: "Thumbnail size must be less than 100MB." }),
 	attachment: z
 		.instanceof(File, { error: "Please upload a valid file." })
 		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
