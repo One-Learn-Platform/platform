@@ -15,6 +15,7 @@
 	import { subjectColor } from "$lib/functions/subject";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
+	const urlException = [`/subject/${data.params}/people`];
 </script>
 
 <svelte:head>
@@ -43,7 +44,10 @@
 			</Badge>
 		</div>
 	</div>
-	<div class="flex flex-row gap-2 border p-2">
+	<div
+		class="flex flex-row gap-2 border p-2
+    {urlException.includes(page.url.pathname) ? ' rounded-b-xl' : ''}"
+	>
 		<Button
 			variant="outline"
 			href="/subject/{data.params}/materials"
@@ -65,7 +69,7 @@
 			<Users />People
 		</Button>
 	</div>
-	{#if page.url.pathname !== `/subject/${data.params}/people`}
+	{#if !urlException.includes(page.url.pathname)}
 		<div class="mb-2 flex w-full flex-row gap-2 overflow-x-auto rounded-b-xl border p-2">
 			{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 				<Button
