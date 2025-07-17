@@ -58,7 +58,7 @@
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"runed": "^0.31.0",
 		"simple-icons": "^15.6.0",
-		"svelte": "^5.36.5",
+		"svelte": "^5.36.6",
 		"svelte-check": "^4.2.2",
 		"svelte-sonner": "^1.0.5",
 		"svelte-turnstile": "^0.11.0",
