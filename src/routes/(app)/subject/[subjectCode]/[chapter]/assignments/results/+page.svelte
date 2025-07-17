@@ -47,7 +47,7 @@
 					{assignment.title}
 					<Button
 						variant="outline"
-						href="subject/{data.params.subjectCode}/chapter/{data.params
+						href="/subject/{data.params.subjectCode}/{data.params
 							.chapter}/assignments/{assignment.id}/details"
 					>
 						View Details
