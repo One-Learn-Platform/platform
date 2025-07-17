@@ -76,7 +76,6 @@
 		"zod": "^4.0.5"
 	},
 	"dependencies": {
-		"@inlang/paraglide-sveltekit": "^0.16.1",
 		"@libsql/client": "^0.15.10",
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
