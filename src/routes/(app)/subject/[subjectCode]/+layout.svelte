@@ -74,19 +74,21 @@
 		</Button>
 	</div>
 	{#if !urlException.has(page.url.pathname)}
-		<div class="mb-2 flex w-full flex-row gap-2 overflow-x-auto rounded-b-xl border p-2">
-			{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
-				<Button
-					variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`)
-						? "default"
-						: "outline"}
-					size="sm"
-					href="/subject/{data.params}/{i}"
-					class="w-8 font-display text-sm tracking-tight sm:w-10"
-				>
-					{i}
-				</Button>
-			{/each}
+		<div class="mb-2 overflow-x-hidden overflow-y-hidden rounded-b-xl border">
+			<div class="flex w-full flex-row gap-2 overflow-x-auto overflow-y-auto p-2">
+				{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
+					<Button
+						variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`)
+							? "default"
+							: "outline"}
+						size="sm"
+						href="/subject/{data.params}/{i}"
+						class="w-8 font-display text-sm tracking-tight sm:w-10"
+					>
+						{i}
+					</Button>
+				{/each}
+			</div>
 		</div>
 	{/if}
 </div>
