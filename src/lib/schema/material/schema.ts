@@ -5,12 +5,22 @@ import { createInsertSchema } from "drizzle-zod";
 export const formSchema = createInsertSchema(material, {
 	title: z.string().min(3, { error: "Title must be at least 3 characters long" }).max(255),
 	attachment: z
-		.instanceof(File, { error: "Please upload a valid file." })
-		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
-		.array()
+		.any()
 		.optional()
-		.or(z.literal(null))
-		.or(z.array(z.never()).length(0)),
+		.refine(
+			(files) => {
+				if (!files || files.length === 0) return true;
+				const fileArray = Array.from(files);
+				return fileArray.every((file) => {
+					if (!(file instanceof File)) return false;
+					if (file.size >= 100_000_000) return false;
+					return true;
+				});
+			},
+			{
+				message: "Each file must be less than 100MB and be a valid file",
+			},
+		),
 	content: z
 		.string()
 		.min(1, { error: "Content is required." })
