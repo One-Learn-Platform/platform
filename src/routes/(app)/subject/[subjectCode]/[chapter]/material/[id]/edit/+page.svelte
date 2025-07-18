@@ -33,6 +33,9 @@
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let filesName = $state();
+  $effect(()=>{
+    $inspect($attachmentProxies);
+  })
 
 	const attachmentList = $derived(JSON.parse(data.material?.attachment ?? "[]"));
 	let dialogOpen = $state(false);
@@ -96,9 +99,14 @@
 		if (form?.create) {
 			if (form.create?.success) {
 				toast.success(form.create.message || "Material created successfully!");
-				$formData.content = data.material?.content;
-				$formData.title = data.material?.title;
-				$formData.description = data.material?.description;
+				invalidateAll().then(() => {
+					if (quillInstance) {
+						quillInstance.clipboard.convert({ html: data.material?.content || "" });
+					}
+					$formData.content = data.material?.content;
+					$formData.title = data.material?.title;
+					$formData.description = data.material?.description;
+				});
 			} else {
 				toast.error(form.create.message || "Failed to create material.");
 			}
