@@ -1,9 +1,9 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { forum, user, subject } from "$lib/schema/db";
+import { enrollment, forum, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, getTableColumns } from "drizzle-orm";
+import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -21,9 +21,10 @@ export const load: PageServerLoad = async (event) => {
 				subjectCode: subject.code,
 			})
 			.from(forum)
-			.where(eq(forum.schoolId, schoolId))
 			.innerJoin(user, eq(forum.userId, user.id))
-			.innerJoin(subject, eq(forum.subjectId, subject.id));
+			.innerJoin(subject, eq(forum.subjectId, subject.id))
+			.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+			.where(and(eq(forum.schoolId, schoolId), eq(enrollment.userId, event.locals.user.id)));
 		return {
 			forums: allForums,
 		};

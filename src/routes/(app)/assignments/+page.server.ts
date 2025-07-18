@@ -1,9 +1,9 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, subject, subjectType, submission } from "$lib/schema/db";
+import { assignment, enrollment, subject, subjectType, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { desc, eq, getTableColumns, sql, and, exists } from "drizzle-orm";
+import { and, desc, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -52,9 +52,10 @@ export const load: PageServerLoad = async (event) => {
               END`,
 			})
 			.from(assignment)
-			.where(eq(assignment.schoolId, schoolId))
 			.innerJoin(subject, eq(assignment.subjectId, subject.id))
 			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
+			.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+			.where(and(eq(assignment.schoolId, schoolId), eq(enrollment.userId, event.locals.user.id)))
 			.orderBy(desc(assignment.createdAt));
 
 		return { assignments: allAssignments };

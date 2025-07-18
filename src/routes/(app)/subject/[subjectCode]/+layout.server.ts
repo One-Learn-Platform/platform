@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-import { subject, subjectType } from "$lib/schema/db";
+import { enrollment, subject, subjectType } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
@@ -12,6 +12,7 @@ export const load: LayoutServerLoad = async (event) => {
 			return error(403, "Forbidden");
 		}
 		const db = getDb(event);
+		const userId = event.locals.user.id;
 		const columns = getTableColumns(subject);
 		const subjectData = await db
 			.select({ ...columns, subjectTypeName: subjectType.name })
@@ -21,6 +22,14 @@ export const load: LayoutServerLoad = async (event) => {
 			.get();
 		if (!subjectData) {
 			return error(404, "Subject not found");
+		}
+		const enrollmentData = await db
+			.select()
+			.from(enrollment)
+			.where(and(eq(enrollment.userId, userId), eq(enrollment.subjectId, subjectData.id)))
+			.get();
+		if (!enrollmentData) {
+			return error(404, "Not Found");
 		}
 		return { params: subjectCode, chapter: chapter, subject: subjectData };
 	}
