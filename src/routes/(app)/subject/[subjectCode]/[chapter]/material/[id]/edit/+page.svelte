@@ -34,7 +34,7 @@
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let filesName = $state();
   $effect(()=>{
-    $inspect($attachmentProxies);
+    console.log($attachmentProxies);
   })
 
 	const attachmentList = $derived(JSON.parse(data.material?.attachment ?? "[]"));
