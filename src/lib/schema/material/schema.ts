@@ -8,7 +8,9 @@ export const formSchema = createInsertSchema(material, {
 		.instanceof(File, { error: "Please upload a valid file." })
 		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
 		.array()
-		.optional(),
+		.optional()
+		.or(z.literal(null))
+		.or(z.array(z.never()).length(0)),
 	content: z
 		.string()
 		.min(1, { error: "Content is required." })
