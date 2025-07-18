@@ -226,7 +226,7 @@
 				/>
 			{/snippet}
 		</Form.Control>
-		{#if $errors.attachment}
+		{#if $errors.attachment?._errors}
 			<Form.FieldErrors />
 		{:else}
 			<Form.Description>Attach any files up to 100MB</Form.Description>
