@@ -46,6 +46,7 @@ export const actions: Actions = {
 		const chapter = Number(event.params.chapter);
 		const materialId = Number(event.params.id);
 		const form = await superValidate(event, zod4(formSchemaEdit));
+		console.log(form);
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");
 			return fail(400, {

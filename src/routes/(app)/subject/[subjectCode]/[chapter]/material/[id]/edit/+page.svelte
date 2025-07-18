@@ -33,9 +33,6 @@
 	const { form: formData, enhance, errors } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let filesName = $state();
-  $effect(()=>{
-    console.log($attachmentProxies);
-  })
 
 	const attachmentList = $derived(JSON.parse(data.material?.attachment ?? "[]"));
 	let dialogOpen = $state(false);
