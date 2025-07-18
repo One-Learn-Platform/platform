@@ -2,12 +2,12 @@ import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "../$types";
 
 import {
-  assignment,
-  assignmentQuestion,
-  enrollment,
-  subject,
-  submission,
-  user,
+	assignment,
+	assignmentQuestion,
+	enrollment,
+	subject,
+	submission,
+	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";

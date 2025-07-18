@@ -104,7 +104,7 @@ export const actions: Actions = {
 				title: form.data.title,
 				description: form.data.description,
 				content: form.data.content,
-				attachment: JSON.stringify(attachmentArray),
+				attachment: form.data.attachment ? JSON.stringify(attachmentArray) : undefined,
 				chapter: Number(chapter),
 				schoolId: schoolId,
 				subjectId: subjectId?.id,

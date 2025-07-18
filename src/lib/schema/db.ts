@@ -119,7 +119,7 @@ export const material = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		content: text("content").notNull(),
-		attachment: text("attachment").notNull(),
+		attachment: text("attachment"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
