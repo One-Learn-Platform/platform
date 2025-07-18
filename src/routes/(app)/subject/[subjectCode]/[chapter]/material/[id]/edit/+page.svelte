@@ -95,7 +95,6 @@
 	$effect(() => {
 		if (form?.create) {
 			if (form.create?.success) {
-				invalidateAll();
 				toast.success(form.create.message || "Material created successfully!");
 				$formData.content = data.material?.content;
 				$formData.title = data.material?.title;
