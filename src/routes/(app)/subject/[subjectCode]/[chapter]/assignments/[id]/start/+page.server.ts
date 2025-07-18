@@ -164,6 +164,6 @@ export const actions: Actions = {
 				},
 			});
 		}
-		return redirect(303, `/subject/${subjectCode}/${chapter}/assignments/${assignmentId}/finish`);
+		return redirect(303, `/subject/${subjectCode}/${chapter}/assignments/${assignmentId}/result`);
 	},
 };
