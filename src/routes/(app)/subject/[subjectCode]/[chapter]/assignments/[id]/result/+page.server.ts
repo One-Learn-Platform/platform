@@ -16,6 +16,9 @@ export const load: PageServerLoad = async (event) => {
 			.from(submission)
 			.where(and(eq(submission.assignmentId, id), eq(submission.userId, event.locals.user.id)))
 			.get();
+		if (!currentSubmission) {
+			return error(404, "Not Found");
+		}
 		const allQuestions = await db
 			.select()
 			.from(assignmentQuestion)

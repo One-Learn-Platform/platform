@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
+	import { page } from "$app/state";
 	import { invalidateAll } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { untrack } from "svelte";
@@ -219,9 +220,19 @@
 	<div class="space-y-4">
 		<div class="mb-2 space-y-2">
 			<div class="mb-2">
-				<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-					{data.assignment?.title}
-				</h1>
+				<div class="flex flex-row items-end justify-between gap-2">
+					<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+						{data.assignment?.title}
+					</h1>
+					<Button
+						variant="default"
+						href="/subject/{page.params.subjectCode}/{page.params.chapter}/assignments/{data
+							.assignment.id}/details"
+						class="mb-px"
+					>
+						View Result
+					</Button>
+				</div>
 				<Separator />
 			</div>
 			<form
