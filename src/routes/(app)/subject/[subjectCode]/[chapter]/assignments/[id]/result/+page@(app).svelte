@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from "./$types";
+	import { page } from "$app/state";
 
 	import { QuestionType, type SubmissionContent } from "$lib/types/assignment";
 
@@ -17,7 +18,7 @@
 <section class="grid grid-cols-1 place-items-center rounded-xl border px-2 py-2 md:grid-cols-3">
 	<Button
 		variant="outline"
-		href={`/subject/${data.params.subjectCode}/${data.params.chapter}/assignments/${data.assignment?.id}`}
+		href={`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments/${data.assignment?.id}`}
 		class="place-self-stretch sm:place-self-start"
 	>
 		<ChevronLeft />Back to Assignment

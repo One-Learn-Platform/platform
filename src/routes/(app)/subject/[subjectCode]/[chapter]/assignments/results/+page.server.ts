@@ -62,7 +62,6 @@ export const load: PageServerLoad = async (event) => {
 				)
 				.where(and(eq(enrollment.subjectId, currentSubject.id), eq(assignment.chapter, chapter)));
 			return {
-				params: event.params,
 				subject: currentSubject,
 				assignments: assignmentsList,
 				submissions: submissionsList,

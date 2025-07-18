@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from "./$types.js";
+	import { page } from "$app/state";
 
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -47,7 +48,7 @@
 					{assignment.title}
 					<Button
 						variant="outline"
-						href="/subject/{data.params.subjectCode}/{data.params
+						href="/subject/{page.params.subjectCode}/{page.params
 							.chapter}/assignments/{assignment.id}/details"
 					>
 						View Details

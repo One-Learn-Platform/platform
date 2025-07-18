@@ -28,7 +28,6 @@ export const load: PageServerLoad = async (event) => {
 			return redirect(302, `/subject/${subjectCode}/${chapter}/assignments/${id}/start`);
 		}
 		return {
-			params: { subjectCode, chapter },
 			submission: currentSubmission,
 			questions: allQuestions,
 			assignment: currentAssignment,
