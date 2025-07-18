@@ -111,4 +111,22 @@
 	:global(.raw p) {
 		@apply text-base break-all;
 	}
+	:global(.raw em) {
+		@apply italic;
+	}
+	:global(.raw pre) {
+		@apply overflow-x-auto rounded-lg bg-gray-100 p-4 text-sm dark:bg-gray-800;
+	}
+	:global(.raw code) {
+		@apply rounded bg-gray-200 p-1 dark:bg-gray-700;
+	}
+	:global(.raw b, .raw strong) {
+		@apply font-semibold;
+	}
+	:global(.raw blockquote) {
+		@apply border-l-4 pl-2 text-gray-600 italic dark:text-gray-400;
+	}
+	:global(.raw a) {
+		@apply text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300;
+	}
 </style>
