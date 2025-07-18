@@ -1,5 +1,4 @@
 <script lang="ts" generics="TData, TValue">
-	
 	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table/index.js";
 	import * as Table from "$lib/components/ui/table/index.js";
 	import {
@@ -68,7 +67,6 @@
 			},
 		},
 	});
-
 </script>
 
 <div class="flex items-center">
