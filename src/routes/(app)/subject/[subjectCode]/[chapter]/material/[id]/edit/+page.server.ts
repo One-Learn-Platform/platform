@@ -2,7 +2,7 @@ import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { material, subject } from "$lib/schema/db";
-import { formSchema } from "$lib/schema/material/schema";
+import { formSchemaEdit } from "$lib/schema/material/schema";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 			.get();
 		return {
 			material: selectedMaterial,
-			form: await superValidate(event, zod4(formSchema)),
+			form: await superValidate(event, zod4(formSchemaEdit)),
 		};
 	}
 	return redirect(302, "/signin");
@@ -45,7 +45,7 @@ export const actions: Actions = {
 		const { subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
 		const materialId = Number(event.params.id);
-		const form = await superValidate(event, zod4(formSchema));
+		const form = await superValidate(event, zod4(formSchemaEdit));
 		if (!form.valid) {
 			setError(form, "", "Form is invalid");
 			return fail(400, {
