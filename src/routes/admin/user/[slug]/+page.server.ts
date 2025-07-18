@@ -378,9 +378,8 @@ export const actions: Actions = {
 				});
 			}
 			await db.delete(user).where(eq(user.id, numberId));
-			redirect(303, "/admin/user");
 		} catch (error) {
-			console.error(error);
+      console.error(error);
 			return fail(500, {
 				delete: {
 					success: false,
@@ -389,5 +388,6 @@ export const actions: Actions = {
 				},
 			});
 		}
+    redirect(303, "/admin/user");
 	},
 };
