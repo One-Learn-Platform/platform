@@ -380,6 +380,8 @@
 			<div class="flex w-full flex-row items-center justify-end gap-2">
 				{#if data.forum.userId === data.user.id}
 					<Button variant="outline" size="sm" onclick={() => (edit = true)}><Pencil />Edit</Button>
+				{/if}
+				{#if data.user.role === 2 || data.forum.userId === data.user.id}
 					<AlertDialog.Root bind:open={dialogForumOpen}>
 						<AlertDialog.Trigger>
 							{#snippet child({ props })}
@@ -592,6 +594,8 @@
 									>
 										<Pencil />Edit
 									</Button>
+								{/if}
+								{#if data.forum.userId === data.user.id || data.user.role === 2}
 									<AlertDialog.Root bind:open={dialogCommentOpen}>
 										<AlertDialog.Trigger>
 											{#snippet child({ props })}

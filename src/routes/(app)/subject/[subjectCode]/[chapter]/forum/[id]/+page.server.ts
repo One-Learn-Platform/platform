@@ -362,7 +362,7 @@ export const actions: Actions = {
 				},
 			});
 		}
-		if (toDeleteForum.userId !== userId) {
+		if (toDeleteForum.userId !== userId || event.locals.user.role !== 2) {
 			return fail(403, {
 				deleteforum: {
 					success: false,
@@ -410,7 +410,7 @@ export const actions: Actions = {
 				},
 			});
 		}
-		if (toDeleteComment.userId !== userId) {
+		if (toDeleteComment.userId !== userId || event.locals.user.role !== 2) {
 			return fail(403, {
 				deletecomment: {
 					success: false,
