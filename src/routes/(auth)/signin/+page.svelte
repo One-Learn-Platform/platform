@@ -17,6 +17,7 @@
 	import FormErrors from "$lib/components/error/form-errors.svelte";
 
 	import logo from "$lib/assets/logo.svg";
+	import logo_dark from "$lib/assets/logo_dark.svg";
 	import backdrop from "$lib/assets/pattern.png?enhanced";
 
 	let { form, data }: { form: ActionData; data: PageServerData } = $props();
@@ -39,7 +40,8 @@
 		class="flex h-full w-full flex-col items-center justify-start gap-3 px-8 sm:gap-4 sm:px-10 md:w-auto md:grow md:justify-center md:px-12 xl:px-20"
 		use:enhance
 	>
-		<img src={logo} alt="Logo" class="w-1/2 min-w-10 sm:w-1/3" />
+		<img src={logo} alt="Logo" class="w-1/2 min-w-10 sm:w-1/3 dark:hidden" />
+		<img src={logo_dark} alt="Logo" class="hidden w-1/2 min-w-10 sm:w-1/3 dark:block" />
 		<h1
 			class="self-start font-display text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl"
 		>
