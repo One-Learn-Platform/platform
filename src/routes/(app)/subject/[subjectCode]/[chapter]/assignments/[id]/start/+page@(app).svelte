@@ -89,14 +89,17 @@
 
 		{#if data.questions[currentQuestion].questionType === QuestionType.MULTIPLE_CHOICE && data.questions[currentQuestion].choice}
 			{@const choices = JSON.parse(data.questions[currentQuestion].choice!) as string[]}
-			<RadioGroup.Root class="flex flex-row gap-4" bind:value={answer[currentQuestion].answer}>
+			<RadioGroup.Root
+				class="flex w-full flex-col gap-4 py-4 md:flex-row"
+				bind:value={answer[currentQuestion].answer}
+			>
 				{#each choices as choice, index (choice)}
 					<Label
 						for={`q-${currentQuestion}-option-${index}`}
-						class="flex flex-col rounded-sm border p-2 duration-150 ease-out hover:bg-muted"
+						class="flex min-h-24 grow flex-col items-center justify-around rounded-sm border p-4 duration-150 ease-out hover:bg-muted"
 					>
 						<RadioGroup.Item value={choice} id={`q-${currentQuestion}-option-${index}`} />
-						<span class="leading-normal">
+						<span class="leading-normal break-words">
 							{choice}
 						</span>
 					</Label>
@@ -115,6 +118,19 @@
 		{/if}
 	</div>
 
+	<Alert.Root
+		variant="destructive"
+		class="
+      border-destructive transition duration-150 ease-out sm:hidden
+      {showError ? 'visible opacity-100' : 'invisible opacity-0'} 
+      "
+	>
+		<OctagonAlert />
+		<Alert.Title>Please fill out all questions</Alert.Title>
+		<Alert.Description>
+			Question {unansweredQuestions.map((q) => q.number).join(", ")} is not answered yet.
+		</Alert.Description>
+	</Alert.Root>
 	<div class="flex w-full flex-row items-end justify-between gap-2">
 		<Button
 			variant="outline"
@@ -129,7 +145,7 @@
 		<Alert.Root
 			variant="destructive"
 			class="
-      border-destructive transition duration-150 ease-out
+      border-destructive transition duration-150 ease-out max-sm:hidden
       {showError ? 'visible opacity-100' : 'invisible opacity-0'} 
       "
 		>
@@ -176,13 +192,13 @@
 				<AlertDialog.Content>
 					<form action="?/submit" method="POST" class="contents" use:enhance>
 						<AlertDialog.Header>
-							<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+							<AlertDialog.Title>Are you sure you want to submit?</AlertDialog.Title>
 							<AlertDialog.Description>
 								{#each answer as answer (answer.id)}
 									<input type="hidden" name={`q-${answer.id}`} bind:value={answer.answer} />
 								{/each}
-								This action cannot be undone. This will permanently delete your account and remove your
-								data from our servers.
+								The answers you provided will be submitted and cannot be changed afterwards. You will
+								see your score directly after submitting.
 							</AlertDialog.Description>
 						</AlertDialog.Header>
 						<AlertDialog.Footer>
