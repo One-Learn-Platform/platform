@@ -9,12 +9,12 @@ export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
 	const params = event.params;
 	const { slug } = params;
-	const subjectCode = parseInt(slug, 10);
+	const subjectId = parseInt(slug, 10);
 	const schoolId = event.locals.user?.school;
 
 	if (event.locals.user) {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			if (isNaN(subjectCode)) {
+			if (isNaN(subjectId)) {
 				return error(400, { message: "Invalid Subject ID" });
 			}
 			if (!schoolId) {
@@ -35,19 +35,24 @@ export const load: PageServerLoad = async (event) => {
 					and(
 						eq(user.roleId, 4),
 						eq(user.schoolId, schoolId),
-						notExists(db.select().from(enrollment).where(eq(enrollment.userId, user.id))),
+						notExists(
+							db
+								.select()
+								.from(enrollment)
+								.where(and(eq(enrollment.userId, user.id), eq(enrollment.subjectId, subjectId))),
+						),
 					),
 				)
 				.leftJoin(grades, eq(grades.id, user.gradesId));
 			const enrolled = await db
 				.select({ ...enrollmentColumn, fullname: user.fullname })
 				.from(enrollment)
-				.where(and(eq(enrollment.subjectId, subjectCode), eq(enrollment.schoolId, schoolId)))
+				.where(and(eq(enrollment.subjectId, subjectId), eq(enrollment.schoolId, schoolId)))
 				.innerJoin(user, eq(user.id, enrollment.userId));
 			const subjectData = await db
 				.select({ ...subjectColumn, teacherName: user.fullname })
 				.from(subject)
-				.where(eq(subject.id, subjectCode))
+				.where(eq(subject.id, subjectId))
 				.leftJoin(user, eq(user.id, subject.teacher))
 				.get();
 			if (subjectData) {
