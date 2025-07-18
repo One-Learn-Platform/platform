@@ -399,7 +399,7 @@
 									</AlertDialog.Description>
 								</AlertDialog.Header>
 								<AlertDialog.Footer>
-									<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+									<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
 									<AlertDialog.Action>Continue</AlertDialog.Action>
 								</AlertDialog.Footer>
 							</form>
@@ -617,7 +617,7 @@
 													</AlertDialog.Description>
 												</AlertDialog.Header>
 												<AlertDialog.Footer>
-													<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+													<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
 													<AlertDialog.Action>Continue</AlertDialog.Action>
 												</AlertDialog.Footer>
 											</form>
