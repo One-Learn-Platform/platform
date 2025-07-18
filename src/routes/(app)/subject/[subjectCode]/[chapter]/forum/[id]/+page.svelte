@@ -48,7 +48,9 @@
 		timeStyle: "medium",
 	});
 	const localeDate = $derived(new Date(data.forum.createdAt + "Z"));
-	const sanitizedDescription = $derived(Dompurify.sanitize(data.forum.description));
+	const sanitizedDescription = $derived(
+		browser ? Dompurify.sanitize(data.forum.description) : data.forum.description,
+	);
 
 	let quillInstance: Quill | null = null;
 	let editorElement: HTMLElement | undefined = $state();
