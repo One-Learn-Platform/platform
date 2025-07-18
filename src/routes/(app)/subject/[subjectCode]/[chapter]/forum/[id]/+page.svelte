@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { enhance as svelteEnhance } from "$app/forms";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
-	import type { ActionData, PageServerData } from "./$types";
+	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
+	import { formSchemaEdit } from "$lib/schema/forum/schema";
 	import Dompurify from "dompurify";
 	import type { default as Quill } from "quill";
 	import { toast } from "svelte-sonner";
@@ -17,6 +19,7 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	dayjs.extend(relativeTime);
 
+	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
@@ -32,15 +35,37 @@
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
+	import Pencil from "@lucide/svelte/icons/pencil";
+	import Trash2 from "@lucide/svelte/icons/trash-2";
 	import Wind from "@lucide/svelte/icons/wind";
 
-	let { data, form }: { data: PageServerData; form: ActionData } = $props();
+	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
+
+	let dialogForumOpen = $state(false);
+	let dialogCommentOpen = $state(false);
+	let edit = $state(false);
+	let editComment = $state(false);
+	let editId: number = $state(-1);
 
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zod4Client(formSchema),
 	});
 	const { form: formData, enhance, errors: formErrors } = superform;
+	const superformEditComment = superForm(data.formEditComment, {
+		taintedMessage: null,
+		validators: zod4Client(formSchema),
+	});
+	const {
+		form: formDataEditComment,
+		enhance: enhanceEditComment,
+		errors: formErrorsEditComment,
+	} = superform;
+	const superformEdit = superForm(data.formEditForum, {
+		taintedMessage: null,
+		validators: zod4Client(formSchemaEdit),
+	});
+	const { form: formDataEdit, enhance: enhanceEdit, errors: formErrorsEdit } = superformEdit;
 
 	const initials = acronym(data.forum.fullname ?? "ID");
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -95,16 +120,98 @@
 			}
 		};
 	});
-
+	let quillInstanceEditComment: Quill | null = null;
+	let editorElementEditComment: HTMLElement | undefined = $state();
 	$effect(() => {
-		if (form?.comment) {
-			if (form.comment.success) {
-				toast.success("Comment added successfully");
-				invalidateAll();
-				quillInstance?.setText("");
-			} else {
-				toast.error(form.comment.message ?? "Unknown error");
-			}
+		if (editComment && editorElementEditComment && !quillInstanceEditComment) {
+			const initQuill = async () => {
+				try {
+					const { default: QuillConstructor } = await import("quill");
+					await import("quill/dist/quill.snow.css");
+					if (!editorElementEditComment) {
+						console.error("Editor element not found");
+						return;
+					}
+					quillInstanceEditComment = new QuillConstructor(editorElementEditComment, {
+						theme: "snow",
+						placeholder: "Write your content here...",
+						modules: {
+							toolbar: [
+								[{ header: [1, 2, 3, 4, false] }],
+								["bold", "italic", "underline"],
+								["code-block", "link", "blockquote"],
+							],
+						},
+					});
+
+					quillInstanceEditComment.setContents(
+						quillInstanceEditComment.clipboard.convert({
+							html: data.comments.find((c) => c.id === editId)?.content || "",
+						}),
+					);
+
+					quillInstanceEditComment.on("text-change", () => {
+						if (quillInstanceEditComment) {
+							$formDataEditComment.content = quillInstanceEditComment
+								.getSemanticHTML()
+								.replaceAll(/((?:&nbsp;)*)&nbsp;/g, "$1 ");
+						}
+					});
+				} catch (error) {
+					console.error("Failed to initialize Quill:", error);
+				}
+			};
+
+			initQuill();
+		}
+		if (!editComment && quillInstanceEditComment) {
+			quillInstanceEditComment = null;
+		}
+	});
+	let quillInstanceEdit: Quill | null = null;
+	let editorElementEdit: HTMLElement | undefined = $state();
+	$effect(() => {
+		if (edit && editorElementEdit && !quillInstanceEdit) {
+			const initQuill = async () => {
+				try {
+					const { default: QuillConstructor } = await import("quill");
+					await import("quill/dist/quill.snow.css");
+					if (!editorElementEdit) {
+						console.error("Editor element not found");
+						return;
+					}
+					quillInstanceEdit = new QuillConstructor(editorElementEdit, {
+						theme: "snow",
+						placeholder: "Write your content here...",
+						modules: {
+							toolbar: [
+								[{ header: [1, 2, 3, 4, false] }],
+								["bold", "italic", "underline"],
+								["code-block", "link", "blockquote"],
+							],
+						},
+					});
+
+					quillInstanceEdit.setContents(
+						quillInstanceEdit.clipboard.convert({ html: data.forum?.description || "" }),
+					);
+
+					quillInstanceEdit.on("text-change", () => {
+						if (quillInstanceEdit) {
+							$formDataEdit.description = quillInstanceEdit
+								.getSemanticHTML()
+								.replaceAll(/((?:&nbsp;)*)&nbsp;/g, "$1 ");
+						}
+					});
+				} catch (error) {
+					console.error("Failed to initialize Quill:", error);
+				}
+			};
+
+			initQuill();
+		}
+		if (!edit && quillInstanceEdit) {
+			quillInstanceEdit = null;
 		}
 	});
 
@@ -148,6 +255,58 @@
 
 		return group;
 	});
+
+	$effect(() => {
+		if (edit) {
+			$formDataEdit.title = data.forum.title;
+			$formDataEdit.description = data.forum.description;
+		}
+	});
+
+	$effect(() => {
+		if (form) {
+			if (form.comment) {
+				if (form.comment.success) {
+					toast.success("Comment added successfully");
+					invalidateAll();
+					quillInstance?.setText("");
+				} else {
+					toast.error(form.comment.message ?? "Unknown error");
+				}
+			} else if (form.deleteforum) {
+				if (form.deleteforum.success) {
+					dialogForumOpen = false;
+					toast.success("Forum deleted successfully");
+					invalidateAll();
+				} else {
+					toast.error(form.deleteforum.message ?? "Unknown error");
+				}
+			} else if (form.deletecomment) {
+				if (form.deletecomment.success) {
+					dialogCommentOpen = false;
+					toast.success("Comment deleted successfully");
+					invalidateAll();
+				} else {
+					toast.error(form.deletecomment.message ?? "Unknown error");
+				}
+			} else if (form.editforum) {
+				if (form.editforum.success) {
+					edit = false;
+					toast.success("Forum edited successfully");
+				} else {
+					toast.error(form.editforum.message ?? "Unknown error");
+				}
+			} else if (form.editcomment) {
+				if (form.editcomment.success) {
+					editComment = false;
+					editId = -1;
+					toast.success("Comment edited successfully");
+				} else {
+					toast.error(form.editcomment.message ?? "Unknown error");
+				}
+			}
+		}
+	});
 </script>
 
 <svelte:head>
@@ -166,10 +325,87 @@
 			<Separator />
 		</Card.Title>
 	</Card.Header>
-	<Card.Content>
-		<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
-			{@html sanitizedDescription}
-		</div>
+	<Card.Content class="space-y-2">
+		{#if edit}
+			<form
+				action="?/editforum"
+				method="POST"
+				class="flex w-full grow flex-col gap-2"
+				use:enhanceEdit
+			>
+				<Form.Field form={superformEdit} name="title">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Title</Form.Label>
+							<Input {...props} bind:value={$formDataEdit.title} placeholder="John Doe" />
+						{/snippet}
+					</Form.Control>
+					{#if $formErrorsEdit.title}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>Title of the forum</Form.Description>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superformEdit} name="description" class="flex h-fit min-h-1/2 flex-col">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Content</Form.Label>
+							<div bind:this={editorElementEdit}></div>
+							<input
+								{...props}
+								type="hidden"
+								bind:value={$formDataEdit.description}
+								placeholder="Description of the forum"
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrorsEdit.description}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>Content of the forum</Form.Description>
+					{/if}
+				</Form.Field>
+				<div class="flex flex-row justify-end gap-2">
+					<Button variant="outline" type="button" onclick={() => (edit = false)} size="sm">
+						Cancel
+					</Button>
+					<Form.Button class="self-end" size="sm">Edit</Form.Button>
+				</div>
+			</form>
+		{:else}
+			<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
+				{@html sanitizedDescription}
+			</div>
+			<div class="flex w-full flex-row items-center justify-end gap-2">
+				{#if data.forum.userId === data.user.id}
+					<Button variant="outline" size="sm" onclick={() => (edit = true)}><Pencil />Edit</Button>
+					<AlertDialog.Root bind:open={dialogForumOpen}>
+						<AlertDialog.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="destructive" size="sm"><Trash2 />Delete</Button>
+							{/snippet}
+						</AlertDialog.Trigger>
+						<AlertDialog.Content>
+							<form action="?/deleteforum" method="POST" class="contents" use:svelteEnhance>
+								<AlertDialog.Header>
+									<AlertDialog.Title>Do you want to delete this forum?</AlertDialog.Title>
+									<AlertDialog.Description>
+										<input type="hidden" name="forum_id" value={data.forum.id} />
+										This will permanently delete the forum and all its comments. Make sure you want to
+										do this.
+									</AlertDialog.Description>
+								</AlertDialog.Header>
+								<AlertDialog.Footer>
+									<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+									<AlertDialog.Action>Continue</AlertDialog.Action>
+								</AlertDialog.Footer>
+							</form>
+						</AlertDialog.Content>
+					</AlertDialog.Root>
+				{/if}
+			</div>
+		{/if}
 	</Card.Content>
 	<Separator />
 	<Card.Footer class="flex items-center gap-2">
@@ -181,7 +417,7 @@
 			class="flex w-full flex-col items-start justify-between gap-0 sm:flex-row sm:items-center sm:gap-2"
 		>
 			<span class="truncate font-medium">
-				{data.forum.fullname}
+				{data.forum.fullname === data.user.fullname ? "You" : data.forum.fullname}
 			</span>
 			<span class="text-sm text-muted-foreground">
 				{dateFormatter.format(new Date(localeDate))} | {dayjs(localeDate).fromNow()}
@@ -297,10 +533,95 @@
 				: comment.content}
 			<div animate:flip={{ duration: 200, easing: cubicOut }}>
 				<Card.Root class="">
-					<Card.Content>
-						<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
-							{@html sanitizedDescription}
-						</div>
+					<Card.Content class="space-y-2">
+						{#if editComment && editId === comment.id}
+							<form
+								action="?/editcomment"
+								method="POST"
+								class="flex h-fit flex-col gap-2"
+								use:enhanceEditComment
+							>
+								<Form.Field form={superformEditComment} name="content" class="flex grow flex-col">
+									<Form.Control>
+										{#snippet children({ props })}
+											<Form.Label class="text-2xl font-medium tracking-tight">Comment</Form.Label>
+											<div bind:this={editorElementEditComment}></div>
+											<Input {...props} type="hidden" bind:value={$formDataEditComment.content} />
+										{/snippet}
+									</Form.Control>
+									{#if $formErrorsEditComment.content}
+										<Form.FieldErrors />
+									{:else}
+										<Form.Description>Write your comment here</Form.Description>
+									{/if}
+								</Form.Field>
+								<Form.Field form={superformEditComment} name="id" class="hidden">
+									<Form.Control>
+										{#snippet children({ props })}
+											<Input {...props} type="hidden" bind:value={$formDataEditComment.id} />
+										{/snippet}
+									</Form.Control>
+								</Form.Field>
+								<div class="flex flex-row justify-end gap-2">
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onclick={() => {
+											editComment = false;
+											editId = -1;
+										}}>Cancel</Button
+									>
+									<Form.Button class="self-end" size="sm">Edit Comment</Form.Button>
+								</div>
+							</form>
+						{:else}
+							<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
+								{@html sanitizedDescription}
+							</div>
+							<div class="flex w-full flex-row items-center justify-end gap-2">
+								{#if data.forum.userId === data.user.id}
+									<Button
+										variant="outline"
+										size="sm"
+										onclick={() => {
+											editComment = true;
+											editId = comment.id;
+											$formDataEditComment.id = comment.id;
+										}}
+									>
+										<Pencil />Edit
+									</Button>
+									<AlertDialog.Root bind:open={dialogCommentOpen}>
+										<AlertDialog.Trigger>
+											{#snippet child({ props })}
+												<Button {...props} variant="destructive" size="sm"><Trash2 />Delete</Button>
+											{/snippet}
+										</AlertDialog.Trigger>
+										<AlertDialog.Content>
+											<form
+												action="?/deletecomment"
+												method="POST"
+												class="contents"
+												use:svelteEnhance
+											>
+												<AlertDialog.Header>
+													<AlertDialog.Title>Do you want to delete this comment?</AlertDialog.Title>
+													<AlertDialog.Description>
+														<input type="hidden" name="comment_id" value={comment.id} />
+														This will permanently delete the comment. Make sure you want to do this.
+													</AlertDialog.Description>
+												</AlertDialog.Header>
+												<AlertDialog.Footer>
+													<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+													<AlertDialog.Action>Continue</AlertDialog.Action>
+												</AlertDialog.Footer>
+											</form>
+										</AlertDialog.Content>
+									</AlertDialog.Root>
+								{/if}
+							</div>
+						{/if}
 					</Card.Content>
 					<Separator />
 					<Card.Footer class="flex flex-row items-center gap-4 sm:gap-2">
@@ -312,7 +633,7 @@
 							class="flex w-full flex-col items-start justify-between gap-0 sm:flex-row sm:items-center sm:gap-2"
 						>
 							<span class="truncate font-medium">
-								{comment.fullname}
+								{comment.fullname === data.user.fullname ? "You" : comment.fullname}
 							</span>
 							<span class="text-sm text-muted-foreground">
 								{dateFormatter.format(new Date(comment.createdAt + "Z"))} | {dayjs(

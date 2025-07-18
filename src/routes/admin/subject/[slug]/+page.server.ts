@@ -165,7 +165,7 @@ export const actions: Actions = {
 			}
 			await db.delete(subject).where(eq(subject.id, numberId));
 		} catch (error) {
-      console.error(error);
+			console.error(error);
 			return fail(500, {
 				delete: {
 					success: false,
@@ -174,6 +174,6 @@ export const actions: Actions = {
 				},
 			});
 		}
-    redirect(303, "/admin/subject");
+		redirect(303, "/admin/subject");
 	},
 };

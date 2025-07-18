@@ -7,7 +7,13 @@ export const formSchema = createInsertSchema(comment, {
 }).omit({
 	userId: true,
 	forumId: true,
-	id: true,
 	createdAt: true,
 	schoolId: true,
 });
+
+export const formSchemaCreate = formSchema.omit({ id: true });
+
+export const formSchemaEdit = formSchema.partial();
+
+export type FormSchema = z.infer<typeof formSchemaCreate>;
+export type FormSchemaEdit = z.infer<typeof formSchemaEdit>;

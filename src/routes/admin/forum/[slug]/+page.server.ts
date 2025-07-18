@@ -63,15 +63,15 @@ export const actions: Actions = {
 			}
 			await db.delete(forum).where(eq(forum.id, numberId));
 		} catch (error) {
-      console.error(error);
+			console.error(error);
 			return fail(500, {
-        delete: {
-          success: false,
+				delete: {
+					success: false,
 					data: null,
 					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
 				},
 			});
 		}
-    redirect(303, "/admin/forum");
+		redirect(303, "/admin/forum");
 	},
 };
