@@ -39,9 +39,9 @@
 	let toDeleteAttachment = $state("");
 
 	$effect(() => {
-		$formData.content = data.material?.content ?? "";
-		$formData.title = data.material?.title ?? "";
-		$formData.description = data.material?.description ?? "";
+		$formData.content = data.material?.content;
+		$formData.title = data.material?.title;
+		$formData.description = data.material?.description;
 	});
 
 	let quillInstance: Quill | null = null;
@@ -97,6 +97,9 @@
 			if (form.create?.success) {
 				invalidateAll();
 				toast.success(form.create.message || "Material created successfully!");
+				$formData.content = data.material?.content;
+				$formData.title = data.material?.title;
+				$formData.description = data.material?.description;
 			} else {
 				toast.error(form.create.message || "Failed to create material.");
 			}
