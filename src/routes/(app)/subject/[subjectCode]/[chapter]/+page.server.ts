@@ -35,6 +35,7 @@ export const load: PageServerLoad = async (event) => {
 			return error(404, "Subject not found");
 		}
 		const assignmentColumns = getTableColumns(assignment);
+		const quiz = await db.select().from(assignment).where(eq(assignment.quiz, true));
 		const assignmentList = await db
 			.select({
 				...assignmentColumns,
@@ -81,7 +82,7 @@ export const load: PageServerLoad = async (event) => {
 					eq(material.chapter, chapter),
 				),
 			);
-		return { forum: forumList, material: materialList, assignment: assignmentList };
+		return { quiz, forum: forumList, material: materialList, assignment: assignmentList };
 	}
 	return redirect(302, "/signin");
 };

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { page } from "$app/state";
+	import { goto } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
@@ -17,6 +18,8 @@
 	import Edit from "@lucide/svelte/icons/edit";
 	import ListTodo from "@lucide/svelte/icons/list-todo";
 	import Plus from "@lucide/svelte/icons/plus";
+	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
+	import SquareArrowOutUpRight from "@lucide/svelte/icons/square-arrow-out-up-right";
 	import { toast } from "svelte-sonner";
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
@@ -40,9 +43,44 @@
 			dayjs(assignment.dueDate + "Z").isSame(dayjs().add(1, "day"), "day"),
 		),
 	);
+	$effect(() => {
+		if (data.quiz?.length > 0) {
+			for (const quiz of data.quiz) {
+				toast.info("Quiz is available", {
+					duration: 10000,
+					position: "top-center",
+					description: "Take the quiz now!",
+					action: {
+						label: "Start",
+						onClick: () =>
+							goto(
+								`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments/${quiz.id}/start`,
+							),
+					},
+				});
+			}
+		}
+	});
 </script>
 
 <section class="flex h-fit flex-col space-y-2">
+	{#if data.quiz?.length > 0}
+		{#each data.quiz as quiz (quiz.id)}
+			<Alert.Root variant="warning" fill="muted">
+				<TriangleAlert />
+				<Alert.Title>{quiz.title}</Alert.Title>
+				<Alert.Description>
+					You can take the {quiz.title} for first {quiz.limitUser} people.
+					<Button
+						variant="outline"
+						size="sm"
+						href="/subject/{page.params.subjectCode}/{page.params
+							.chapter}/assignments/{quiz.id}/start"><SquareArrowOutUpRight />Start</Button
+					>
+				</Alert.Description>
+			</Alert.Root>
+		{/each}
+	{/if}
 	{#if assignmentsDueTomorrow.length > 0}
 		<Alert.Root variant="destructive" fill="muted">
 			<ListTodo />
