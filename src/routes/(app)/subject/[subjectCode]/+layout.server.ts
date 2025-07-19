@@ -23,10 +23,18 @@ export const load: LayoutServerLoad = async (event) => {
 		if (!subjectData) {
 			return error(404, "Subject not found");
 		}
+		const isTeacher = event.locals.user.role === 3;
 		const enrollmentData = await db
 			.select()
 			.from(enrollment)
-			.where(and(eq(enrollment.userId, userId), eq(enrollment.subjectId, subjectData.id)))
+			.where(
+				and(
+					eq(enrollment.userId, userId),
+					isTeacher
+						? eq(enrollment.userId, event.locals.user.id)
+						: eq(subject.teacher, event.locals.user.id),
+				),
+			)
 			.get();
 		if (!enrollmentData) {
 			return error(404, "Not Found");

@@ -16,6 +16,7 @@ export const load: PageServerLoad = async (event) => {
 			return error(400, "Invalid school");
 		}
 		const assignmentColumns = getTableColumns(assignment);
+		const isTeacher = event.locals.user.role === 3;
 
 		const allAssignments = await db
 			.select({
@@ -55,7 +56,14 @@ export const load: PageServerLoad = async (event) => {
 			.innerJoin(subject, eq(assignment.subjectId, subject.id))
 			.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 			.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
-			.where(and(eq(assignment.schoolId, schoolId), eq(enrollment.userId, event.locals.user.id)))
+			.where(
+				and(
+					eq(assignment.schoolId, schoolId),
+					isTeacher
+						? eq(enrollment.userId, event.locals.user.id)
+						: eq(subject.teacher, event.locals.user.id),
+				),
+			)
 			.orderBy(desc(assignment.createdAt));
 
 		return { assignments: allAssignments };
