@@ -6,16 +6,16 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
-  assignment,
-  assignmentQuestion,
-  comment,
-  enrollment,
-  forum,
-  material,
-  subject,
-  subjectType,
-  submission,
-  user
+	assignment,
+	assignmentQuestion,
+	comment,
+	enrollment,
+	forum,
+	material,
+	subject,
+	subjectType,
+	submission,
+	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, getTableColumns, inArray } from "drizzle-orm";

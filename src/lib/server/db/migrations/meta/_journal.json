@@ -239,6 +239,13 @@
 			"when": 1752942559533,
 			"tag": "0033_fresh_sumo",
 			"breakpoints": true
+		},
+		{
+			"idx": 34,
+			"version": "6",
+			"when": 1752948571940,
+			"tag": "0034_complete_cannonball",
+			"breakpoints": true
 		}
 	]
 }

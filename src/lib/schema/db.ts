@@ -18,17 +18,10 @@ export const userRole = sqliteTable("user_role", {
 	name: text("role_name").notNull(),
 });
 
-export const grades = sqliteTable(
-	"grades",
-	{
-		id: integer("grades_id").primaryKey({ autoIncrement: true }),
-		level: integer("level").notNull(),
-		schoolId: integer("school_id")
-			.references(() => school.id)
-			.notNull(),
-	},
-	(table) => [index("grades_school_index").on(table.schoolId)],
-);
+export const grades = sqliteTable("grades", {
+	id: integer("grades_id").primaryKey({ autoIncrement: true }),
+	level: integer("level").notNull(),
+});
 
 export const user = sqliteTable(
 	"user",
@@ -65,6 +58,7 @@ export const subject = sqliteTable(
 	{
 		id: integer("subject_id").primaryKey({ autoIncrement: true }),
 		code: text("subject_code").notNull(),
+		// gradesId: integer("grades_id").references(() => grades.id),
 		teacher: integer("teacher_id")
 			.notNull()
 			.references(() => user.id),
@@ -80,6 +74,7 @@ export const subject = sqliteTable(
 	(table) => [
 		index("teacher_index").on(table.teacher),
 		index("subject_school_index").on(table.schoolId),
+		// index("subject_grades_index").on(table.gradesId),
 	],
 );
 

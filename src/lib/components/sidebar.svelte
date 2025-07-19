@@ -25,6 +25,7 @@
 	import School from "@lucide/svelte/icons/school";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
+	import ChartCandlestick from "@lucide/svelte/icons/chart-candlestick";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -55,6 +56,12 @@
 			title: "School",
 			href: `${prefix}/school`,
 			icon: School,
+			superadmin: true,
+		},
+		{
+			title: "Grade",
+			href: `${prefix}/grades`,
+			icon: ChartCandlestick,
 			superadmin: true,
 		},
 		{
