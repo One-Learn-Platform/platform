@@ -24,6 +24,7 @@ export const load: PageServerLoad = async (event) => {
 				subject: subject.name,
 				subjectCode: subject.code,
 				subjectType: subjectType.name,
+				teacher: subject.teacher,
 				done: sql<number>`${exists(
 					db
 						.select()
@@ -60,8 +61,8 @@ export const load: PageServerLoad = async (event) => {
 				and(
 					eq(assignment.schoolId, schoolId),
 					isTeacher
-						? eq(enrollment.userId, event.locals.user.id)
-						: eq(subject.teacher, event.locals.user.id),
+						? eq(subject.teacher, event.locals.user.id)
+						: eq(enrollment.userId, event.locals.user.id),
 				),
 			)
 			.orderBy(desc(assignment.createdAt));

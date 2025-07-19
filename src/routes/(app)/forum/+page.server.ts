@@ -30,8 +30,8 @@ export const load: PageServerLoad = async (event) => {
 				and(
 					eq(forum.schoolId, schoolId),
 					isTeacher
-						? eq(enrollment.userId, event.locals.user.id)
-						: eq(subject.teacher, event.locals.user.id),
+						? eq(subject.teacher, event.locals.user.id)
+						: eq(enrollment.userId, event.locals.user.id),
 				),
 			);
 
