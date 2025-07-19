@@ -29,9 +29,9 @@
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
-
 	const superform = superForm(data.form, {
 		validators: zod4Client(formSchema),
 	});
@@ -39,9 +39,12 @@
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let attachmentNames = $state();
 
-	let date: string = $state("");
-	let time = $state("23:59:59");
-	let value = $derived(date ? parseDate(date) : undefined);
+	let dueDate: string = $state("");
+	let dueTime = $state("23:59:59");
+	let dueValue = $derived(dueDate ? parseDate(dueDate) : undefined);
+	let startDate: string = $state("");
+	let startTime = $state("23:59:59");
+	let startValue = $derived(startDate ? parseDate(startDate) : undefined);
 	// @ts-expect-error - value is undefined so the browser default will be used
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
@@ -100,81 +103,207 @@
 				<Form.Description>Description of the material</Form.Description>
 			{/if}
 		</Form.Field>
-
-		<Form.Field form={superform} name="dueDate" class="">
+		<Form.Field form={superform} name="quiz">
 			<Form.Control>
 				{#snippet children({ props })}
-					<div class="flex flex-col items-center gap-4 sm:flex-row">
-						<div class="flex flex-col gap-1">
-							<Form.Label>Due Date</Form.Label>
-							<Popover.Root>
-								<Popover.Trigger
-									{...props}
-									class={cn(
-										buttonVariants({ variant: "outline" }),
-										" text-left font-normal",
-										!value && "text-muted-foreground",
-									)}
-								>
-									{value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date"}
-									<CalendarIcon class="ml-auto size-4 opacity-50" />
-								</Popover.Trigger>
-								<Popover.Content class="w-auto p-0" side="top">
-									<Calendar
-										captionLayout="dropdown"
-										type="single"
-										value={value as DateValue}
-										maxValue={new CalendarDate(2100, 1, 1)}
-										minValue={today(getLocalTimeZone())}
-										calendarLabel="Due date"
-										onValueChange={(v) => {
+					<Form.Label
+						class="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent/50 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950"
+					>
+						<Checkbox
+							{...props}
+							bind:checked={$formData.quiz}
+							class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+						/>
+						<div class="grid gap-1.5 font-normal">
+							<p class="text-sm leading-none font-medium">Set this as <b>Bonus Quiz</b></p>
+							<p class="text-sm text-muted-foreground">
+								Bonus quiz can be taken by students to earn extra points but only limited to number
+								of students you decide.
+							</p>
+						</div>
+					</Form.Label>
+				{/snippet}
+			</Form.Control>
+		</Form.Field>
+
+		<div class="grid gap-2 {$formData.quiz ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}">
+			{#if $formData.quiz}
+				<Form.Field
+					form={superform}
+					name="limitUser"
+					class={$formData.quiz ? "col-span-1 sm:col-span-2" : "col-span-1"}
+				>
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Limit User</Form.Label>
+							<Input
+								{...props}
+								type="number"
+								bind:value={$formData.limitUser}
+								placeholder="1"
+								min="1"
+							/>
+						{/snippet}
+					</Form.Control>
+				</Form.Field>
+
+				<Form.Field form={superform} name="startDate" class="">
+					<Form.Control>
+						{#snippet children({ props })}
+							<div class="flex flex-row items-center gap-4">
+								<div class="flex flex-col gap-1">
+									<Form.Label>Start Date</Form.Label>
+									<Popover.Root>
+										<Popover.Trigger
+											{...props}
+											class={cn(
+												buttonVariants({ variant: "outline" }),
+												" text-left font-normal",
+												!startValue && "text-muted-foreground",
+											)}
+										>
+											{startValue
+												? df.format(startValue.toDate(getLocalTimeZone()))
+												: "Pick a date"}
+											<CalendarIcon class="ml-auto size-4 opacity-50" />
+										</Popover.Trigger>
+										<Popover.Content class="w-auto p-0" side="top">
+											<Calendar
+												captionLayout="dropdown"
+												type="single"
+												value={startValue as DateValue}
+												maxValue={new CalendarDate(2100, 1, 1)}
+												minValue={today(getLocalTimeZone())}
+												calendarLabel="Start date"
+												onValueChange={(v) => {
+													if (v) {
+														const dateStr = v.toString();
+														startDate = dateStr;
+														$formData.startDate = parseZonedDateTime(
+															`${startDate}T${startTime}[${getLocalTimeZone()}]`,
+														)
+															.toAbsoluteString()
+															.slice(0, 19)
+															.replace("T", " ");
+													} else {
+														$formData.startDate = "";
+													}
+												}}
+											/>
+										</Popover.Content>
+									</Popover.Root>
+								</div>
+								<div class="flex flex-col gap-1">
+									<Label for="time" class="px-1">Time</Label>
+									<Input
+										type="time"
+										bind:value={startTime}
+										id="time"
+										step="1"
+										class="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+										onchange={(v) => {
 											if (v) {
-												const dateStr = v.toString();
-												date = dateStr;
-												$formData.dueDate = parseZonedDateTime(
-													`${date}T${time}[${getLocalTimeZone()}]`,
+												$formData.startDate = parseZonedDateTime(
+													`${startDate}T${startTime}[${getLocalTimeZone()}]`,
 												)
 													.toAbsoluteString()
 													.slice(0, 19)
 													.replace("T", " ");
 											} else {
-												$formData.dueDate = "";
+												$formData.startDate = "";
 											}
 										}}
 									/>
-								</Popover.Content>
-							</Popover.Root>
-						</div>
-						<div class="flex flex-col gap-1">
-							<Label for="time" class="px-1">Time</Label>
-							<Input
-								type="time"
-								bind:value={time}
-								id="time"
-								step="1"
-								class="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-								onchange={(v) => {
-									if (v) {
-										$formData.dueDate = parseZonedDateTime(`${date}T${time}[${getLocalTimeZone()}]`)
-											.toAbsoluteString()
-											.slice(0, 19)
-											.replace("T", " ");
-									} else {
-										$formData.dueDate = "";
-									}
-								}}
-							/>
-						</div>
-					</div>
-					<input type="hidden" hidden value={$formData.dueDate} name={props.name} />
-				{/snippet}
-			</Form.Control>
-			{#if $errors.dueDate}
-				<Form.FieldErrors />
-			{:else}
-				<Form.Description>Due date of the assignment.</Form.Description>
+								</div>
+							</div>
+							<input type="hidden" hidden value={$formData.startDate} name={props.name} />
+						{/snippet}
+					</Form.Control>
+					{#if $errors.startDate}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>Date when students can start taking the assignment.</Form.Description>
+					{/if}
+				</Form.Field>
 			{/if}
-		</Form.Field>
+
+			<Form.Field form={superform} name="dueDate" class="">
+				<Form.Control>
+					{#snippet children({ props })}
+						<div class="flex flex-row items-center gap-4">
+							<div class="flex flex-col gap-1">
+								<Form.Label>{$formData.quiz ? "End Date" : "Due Date"}</Form.Label>
+								<Popover.Root>
+									<Popover.Trigger
+										{...props}
+										class={cn(
+											buttonVariants({ variant: "outline" }),
+											" text-left font-normal",
+											!dueValue && "text-muted-foreground",
+										)}
+									>
+										{dueValue ? df.format(dueValue.toDate(getLocalTimeZone())) : "Pick a date"}
+										<CalendarIcon class="ml-auto size-4 opacity-50" />
+									</Popover.Trigger>
+									<Popover.Content class="w-auto p-0" side="top">
+										<Calendar
+											captionLayout="dropdown"
+											type="single"
+											value={dueValue as DateValue}
+											maxValue={new CalendarDate(2100, 1, 1)}
+											minValue={startValue ?? today(getLocalTimeZone())}
+											calendarLabel="Due date"
+											onValueChange={(v) => {
+												if (v) {
+													const dateStr = v.toString();
+													dueDate = dateStr;
+													$formData.dueDate = parseZonedDateTime(
+														`${dueDate}T${dueTime}[${getLocalTimeZone()}]`,
+													)
+														.toAbsoluteString()
+														.slice(0, 19)
+														.replace("T", " ");
+												} else {
+													$formData.dueDate = "";
+												}
+											}}
+										/>
+									</Popover.Content>
+								</Popover.Root>
+							</div>
+							<div class="flex flex-col gap-1">
+								<Label for="time" class="px-1">Time</Label>
+								<Input
+									type="time"
+									bind:value={dueTime}
+									id="time"
+									step="1"
+									class="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+									onchange={(v) => {
+										if (v) {
+											$formData.dueDate = parseZonedDateTime(
+												`${dueDate}T${dueTime}[${getLocalTimeZone()}]`,
+											)
+												.toAbsoluteString()
+												.slice(0, 19)
+												.replace("T", " ");
+										} else {
+											$formData.dueDate = "";
+										}
+									}}
+								/>
+							</div>
+						</div>
+						<input type="hidden" hidden value={$formData.dueDate} name={props.name} />
+					{/snippet}
+				</Form.Control>
+				{#if $errors.dueDate}
+					<Form.FieldErrors />
+				{:else}
+					<Form.Description>Due date of the assignment.</Form.Description>
+				{/if}
+			</Form.Field>
+		</div>
 
 		<Form.Field form={superform} name="attachment" class="">
 			<Form.Control>

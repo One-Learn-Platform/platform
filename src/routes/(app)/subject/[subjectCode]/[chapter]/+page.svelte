@@ -17,13 +17,16 @@
 	import Edit from "@lucide/svelte/icons/edit";
 	import ListTodo from "@lucide/svelte/icons/list-todo";
 	import Plus from "@lucide/svelte/icons/plus";
+	import { toast } from "svelte-sonner";
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 	import DOMpurify from "dompurify";
 
 	let { data }: { data: PageData } = $props();
 	const firstMaterial = $derived(data.material[0]);
-	const firstMaterialAttachment = $derived(JSON.parse(firstMaterial?.attachment));
+	const firstMaterialAttachment = $derived(
+		firstMaterial?.attachment ? JSON.parse(firstMaterial.attachment) : [],
+	);
 	const otherMaterials = $derived(data.material.slice(1));
 	const unfinishedAssignments = $derived(data.assignment.filter((a) => a.done === 0));
 
@@ -39,6 +42,20 @@
 	);
 </script>
 
+<Button
+	variant="secondary"
+	onclick={() =>
+		toast.success("Event has been created", {
+			position: "top-center",
+			description: "Sunday, December 03, 2023 at 9:00 AM",
+			action: {
+				label: "Undo",
+				onClick: () => console.info("Undo"),
+			},
+		})}
+>
+	Toast
+</Button>
 <section class="flex h-fit flex-col space-y-2">
 	{#if assignmentsDueTomorrow.length > 0}
 		<Alert.Root variant="destructive" fill="muted">

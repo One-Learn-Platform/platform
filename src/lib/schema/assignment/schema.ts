@@ -9,6 +9,9 @@ export const formSchema = createInsertSchema(assignment, {
 		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
 		.array()
 		.optional(),
+	quiz: z.boolean(),
+	limitUser: z.number().min(1, { error: "Limit user must be at least 1." }).optional(),
+	startDate: z.string().optional(),
 	description: z
 		.string()
 		.min(1, { error: "Description is required." })

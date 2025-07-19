@@ -116,6 +116,16 @@ export const actions: Actions = {
 				});
 			}
 		}
+		if (form.data.startDate && new Date(form.data.dueDate) < new Date(form.data.startDate)) {
+			setError(form, "dueDate", "Due date must be after start date");
+			return fail(400, {
+				create: {
+					success: false,
+					message: "Due date must be after start date",
+				},
+				form,
+			});
+		}
 
 		let currentAssignment;
 		try {
@@ -125,14 +135,16 @@ export const actions: Actions = {
 					title: form.data.title,
 					description: form.data.description,
 					dueDate: form.data.dueDate,
-					attachment: JSON.stringify(attachmentArray),
+					attachment: form.data.attachment ? JSON.stringify(attachmentArray) : null,
+					quiz: form.data.quiz,
+					limitUser: form.data.limitUser ? form.data.limitUser : undefined,
+					startDate: form.data.startDate ? form.data.startDate : undefined,
 					chapter: Number(chapter),
 					schoolId: schoolId,
 					subjectId: selectedSubject.id,
 				})
 				.returning()
 				.get();
-			console.log("Assignment created:", currentAssignment);
 		} catch (error) {
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");

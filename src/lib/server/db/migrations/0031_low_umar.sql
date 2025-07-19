@@ -1,0 +1,1 @@
+ALTER TABLE `assignment` ADD `quiz` integer NOT NULL;

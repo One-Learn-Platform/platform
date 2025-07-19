@@ -196,7 +196,10 @@ export const assignment = sqliteTable(
 			.notNull(),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
-		attachment: text("attachment").notNull(),
+		attachment: text("attachment"),
+		quiz: integer("quiz", { mode: "boolean" }).notNull(),
+		startDate: text("start_date"),
+		limitUser: integer("limit_user"),
 		dueDate: text("due_date").notNull(),
 		schoolId: integer("school_id")
 			.references(() => school.id)

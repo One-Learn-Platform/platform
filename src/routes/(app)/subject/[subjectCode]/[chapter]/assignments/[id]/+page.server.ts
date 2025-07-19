@@ -10,7 +10,7 @@ import { assignment, assignmentQuestion, subject, submission } from "$lib/schema
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
-import { and, count, eq, exists, getTableColumns, sql } from "drizzle-orm";
+import { and, count, eq, exists, getTableColumns, inArray, or, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const schoolId = event.locals.user?.school;
@@ -178,6 +178,16 @@ export const actions: Actions = {
 				);
 			}
 		}
+		if (form.data.startDate && new Date(form.data.dueDate) < new Date(form.data.startDate)) {
+			setError(form, "dueDate", "Due date must be after start date");
+			return fail(400, {
+				create: {
+					success: false,
+					message: "Due date must be after start date",
+				},
+				form,
+			});
+		}
 		try {
 			await db
 				.update(assignment)
@@ -185,7 +195,10 @@ export const actions: Actions = {
 					title: form.data.title,
 					description: form.data.description,
 					dueDate: form.data.dueDate,
-					attachment: attachmentArray.length > 0 ? JSON.stringify(attachmentArray) : undefined,
+					startDate: form.data.startDate || null,
+					quiz: form.data.quiz,
+					limitUser: form.data.limitUser ? form.data.limitUser : null,
+					attachment: attachmentArray.length > 0 ? JSON.stringify(attachmentArray) : null,
 				})
 				.where(eq(assignment.id, assignmentId));
 			if (form.data.attachment && oldAttachment.length > 0) {
@@ -312,6 +325,10 @@ export const actions: Actions = {
 		}
 
 		const questionAmount = Number(formData.get("questionAmount"));
+		const oldQuestions = await db
+			.select()
+			.from(assignmentQuestion)
+			.where(eq(assignmentQuestion.assignmentId, assignmentId));
 		for (let i = 0; i < questionAmount; i++) {
 			const questionType = formData.get(`question-${i}-type`) as QuestionType;
 			const question = formData.get(`question-${i}`) as string;
@@ -514,6 +531,14 @@ export const actions: Actions = {
 					});
 				}
 			}
+		}
+		if (oldQuestions.length > 0) {
+			await db.delete(assignmentQuestion).where(
+				inArray(
+					assignmentQuestion.id,
+					oldQuestions.map((q) => q.id),
+				),
+			);
 		}
 		return {
 			create: {
