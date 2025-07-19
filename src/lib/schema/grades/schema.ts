@@ -6,7 +6,6 @@ export const formSchema = createInsertSchema(grades, {
 	level: z.number(),
 }).omit({
 	id: true,
-	schoolId: true,
 });
 
 export type CreateMaterialSchema = typeof formSchema;
