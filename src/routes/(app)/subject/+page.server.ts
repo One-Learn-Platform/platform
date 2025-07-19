@@ -11,7 +11,13 @@ export const load: PageServerLoad = async (event) => {
 		const columns = getTableColumns(subject);
 		let subjectList;
 		if (event.locals.user.school) {
-			if (event.locals.user.role === 3) {
+			if (event.locals.user.role === 1 || event.locals.user.role === 2) {
+				subjectList = await db
+					.select({ ...columns, subjectTypeName: subjectType.name })
+					.from(subject)
+					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
+					.where(eq(subject.schoolId, event.locals.user.school));
+			} else if (event.locals.user.role === 3) {
 				subjectList = await db
 					.select({ ...columns, subjectTypeName: subjectType.name })
 					.from(subject)
