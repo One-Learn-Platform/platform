@@ -16,9 +16,27 @@
 	let {
 		forum,
 	}: { forum: Forum & { fullname: string; avatar: string | null; subjectCode: string } } = $props();
-	let sanitizedDescription = $state(
-		browser ? Dompurify.sanitize(forum.description) : forum.description,
-	);
+
+	const sanitizedDescription = $derived.by(() => {
+		if (!forum?.description) return "";
+
+		try {
+			let content = forum.description;
+			content = content.replace(/<a[^>]*>/gi, "<span>").replace(/<\/a>/gi, "</span>");
+			if (browser) {
+				content = Dompurify.sanitize(content, {
+					RETURN_DOM: false,
+					RETURN_DOM_FRAGMENT: false,
+				});
+			}
+
+			return content;
+		} catch (error) {
+			console.error("Error processing description:", error);
+			return "";
+		}
+	});
+
 	const initial = $derived(acronym(forum.fullname));
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
 		dateStyle: "long",
@@ -34,7 +52,9 @@
 	<div class="">
 		<h2 class="text-xl font-semibold tracking-tight">{forum.title}</h2>
 		<Separator class="w-fit" />
-		<div class="h-20 max-w-full overflow-clip bg-transparent text-muted-foreground [&_p]:truncate">
+		<div
+			class="raw h-20 max-w-full overflow-clip bg-transparent text-muted-foreground [&_p]:truncate"
+		>
 			{@html sanitizedDescription}
 		</div>
 	</div>
