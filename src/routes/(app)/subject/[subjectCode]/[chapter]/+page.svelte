@@ -48,7 +48,7 @@
 			for (const quiz of data.quiz) {
 				toast.info("Quiz is available", {
 					richColors: true,
-					duration: 10000,
+					duration: 5000,
 					position: "top-center",
 					description: "Take the quiz now! Limited to first " + quiz.limitUser + " people.",
 					action: {
