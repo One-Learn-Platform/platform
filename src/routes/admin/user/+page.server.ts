@@ -6,11 +6,21 @@ import bcryptjs from "bcryptjs";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school, user, userRole, session } from "$lib/schema/db";
+import {
+	comment,
+	enrollment,
+	forum,
+	school,
+	session,
+	subject,
+	submission,
+	user,
+	userRole,
+} from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
-import { eq, getTableColumns, or } from "drizzle-orm";
+import { eq, getTableColumns, inArray, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -203,10 +213,40 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const allForum = await db.select().from(forum).where(eq(forum.userId, numberId));
+		const allComment = await db
+			.select()
+			.from(comment)
+			.where(
+				inArray(
+					comment.forumId,
+					allForum.map((f) => f.id),
+				),
+			);
+		const isTeacher = await db.select().from(subject).where(eq(subject.teacher, numberId));
+		if (isTeacher.length > 0) {
+			return fail(400, {
+				delete: {
+					success: false,
+					data: null,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+				},
+			});
+		}
 		try {
 			const name = await db.select().from(user).where(eq(user.id, numberId));
-			await db.delete(user).where(eq(user.id, numberId));
+			await db.delete(submission).where(eq(submission.userId, numberId));
+			await db.delete(comment).where(eq(comment.userId, numberId));
+			await db.delete(comment).where(
+				inArray(
+					comment.id,
+					allComment.map((c) => c.id),
+				),
+			);
+			await db.delete(forum).where(eq(forum.userId, numberId));
+			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
+			await db.delete(user).where(eq(user.id, numberId));
 			return {
 				delete: {
 					success: true,
@@ -250,26 +290,56 @@ export const actions: Actions = {
 			.where(or(...idArray.map((id) => eq(user.id, id))));
 		const userNameArray = userArray.map((user) => user.fullname);
 
-		idArray.forEach(async (id) => {
+		for (const id of idArray) {
 			if (isNaN(id)) {
 				return fail(400, {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 				});
 			}
-			try {
-				await db.delete(user).where(eq(user.id, id));
-				await db.delete(session).where(eq(session.userId, id));
-			} catch (error) {
-				console.error(error);
-				return fail(500, {
-					delete: {
-						success: false,
-						data: null,
-						message: error instanceof Error ? error.message : "Unknown error, please try again.",
-					},
-				});
-			}
-		});
+		}
+		const isTeacher = await db.select().from(subject).where(inArray(subject.teacher, idArray));
+		if (isTeacher.length > 0) {
+			return fail(400, {
+				delete: {
+					success: false,
+					data: null,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+				},
+			});
+		}
+		const allForum = await db.select().from(forum).where(inArray(forum.userId, idArray));
+		const allComment = await db
+			.select()
+			.from(comment)
+			.where(
+				inArray(
+					comment.forumId,
+					allForum.map((f) => f.id),
+				),
+			);
+		try {
+			await db.delete(submission).where(inArray(submission.userId, idArray));
+			await db.delete(comment).where(inArray(comment.userId, idArray));
+			await db.delete(comment).where(
+				inArray(
+					comment.id,
+					allComment.map((c) => c.id),
+				),
+			);
+			await db.delete(forum).where(inArray(forum.userId, idArray));
+			await db.delete(enrollment).where(inArray(enrollment.userId, idArray));
+			await db.delete(session).where(inArray(session.userId, idArray));
+			await db.delete(user).where(inArray(user.id, idArray));
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error, please try again.",
+				},
+			});
+		}
 
 		return {
 			delete: {
