@@ -47,6 +47,7 @@
 		if (data.quiz?.length > 0) {
 			for (const quiz of data.quiz) {
 				toast.info("Quiz is available", {
+					richColors: true,
 					duration: 10000,
 					position: "top-center",
 					description: "Take the quiz now! Limited to first " + quiz.limitUser + " people.",
@@ -73,6 +74,7 @@
 					You can take the {quiz.title} for first {quiz.limitUser} people.
 					<Button
 						variant="outline"
+						class="bg-input/30 hover:bg-input/50"
 						size="sm"
 						href="/subject/{page.params.subjectCode}/{page.params
 							.chapter}/assignments/{quiz.id}/start"><SquareArrowOutUpRight />Start</Button
