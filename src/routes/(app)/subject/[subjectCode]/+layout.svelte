@@ -71,7 +71,7 @@
 		</Button>
 		<Button
 			variant="secondary"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter}/people"
+			href="/subject/{page.params.subjectCode}/people"
 			class="min-w-fit grow basis-0"
 		>
 			<Users />People
