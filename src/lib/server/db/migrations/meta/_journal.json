@@ -232,6 +232,13 @@
 			"when": 1752916451755,
 			"tag": "0032_far_maximus",
 			"breakpoints": true
+		},
+		{
+			"idx": 33,
+			"version": "6",
+			"when": 1752942559533,
+			"tag": "0033_fresh_sumo",
+			"breakpoints": true
 		}
 	]
 }
