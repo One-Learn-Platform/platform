@@ -5,9 +5,20 @@ import { formSchemaEdit } from "$lib/schema/subject/schema";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
+import {
+  assignment,
+  assignmentQuestion,
+  comment,
+  enrollment,
+  forum,
+  material,
+  subject,
+  subjectType,
+  submission,
+  user
+} from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { subject, user, subjectType } from "$lib/schema/db";
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq, getTableColumns, inArray } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -151,18 +162,40 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const subjectForum = await db.select().from(forum).where(eq(forum.subjectId, numberId));
+		const subjectAssignment = await db
+			.select()
+			.from(assignment)
+			.where(eq(assignment.subjectId, numberId));
+		const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
+		if (!name) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Subject not found. Please try again." },
+			});
+		}
 		try {
-			const selectName = await db.select().from(subject).where(eq(subject.id, numberId));
-			const name = selectName.at(0);
-			if (!name) {
-				return fail(404, {
-					delete: {
-						success: false,
-						data: null,
-						message: "Subject not found. Please try again.",
-					},
-				});
-			}
+			await db.delete(comment).where(
+				inArray(
+					comment.forumId,
+					subjectForum.map((f) => f.id),
+				),
+			);
+			await db.delete(forum).where(eq(forum.subjectId, numberId));
+			await db.delete(submission).where(
+				inArray(
+					submission.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignmentQuestion).where(
+				inArray(
+					assignmentQuestion.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignment).where(eq(assignment.subjectId, numberId));
+			await db.delete(material).where(eq(material.subjectId, numberId));
+			await db.delete(enrollment).where(eq(enrollment.subjectId, numberId));
 			await db.delete(subject).where(eq(subject.id, numberId));
 		} catch (error) {
 			console.error(error);

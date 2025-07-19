@@ -5,10 +5,21 @@ import { formSchemaCreate } from "$lib/schema/subject/schema";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school, subject, subjectType, user } from "$lib/schema/db";
+import {
+	assignment,
+	assignmentQuestion,
+	comment,
+	enrollment,
+	forum,
+	material,
+	school,
+	subject,
+	subjectType,
+	submission,
+	user,
+} from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, getTableColumns, or } from "drizzle-orm";
-import { and } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -177,19 +188,41 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const subjectForum = await db.select().from(forum).where(eq(forum.subjectId, numberId));
+		const subjectAssignment = await db
+			.select()
+			.from(assignment)
+			.where(eq(assignment.subjectId, numberId));
+		const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
+		if (!name) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Subject not found. Please try again." },
+			});
+		}
 		try {
-			const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
+			await db.delete(comment).where(
+				inArray(
+					comment.forumId,
+					subjectForum.map((f) => f.id),
+				),
+			);
+			await db.delete(forum).where(eq(forum.subjectId, numberId));
+			await db.delete(submission).where(
+				inArray(
+					submission.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignmentQuestion).where(
+				inArray(
+					assignmentQuestion.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignment).where(eq(assignment.subjectId, numberId));
+			await db.delete(material).where(eq(material.subjectId, numberId));
+			await db.delete(enrollment).where(eq(enrollment.subjectId, numberId));
 			await db.delete(subject).where(eq(subject.id, numberId));
-			return {
-				delete: {
-					success: true,
-					data: {
-						id: numberId,
-						name: name?.name,
-					},
-					message: null,
-				},
-			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
@@ -200,6 +233,16 @@ export const actions: Actions = {
 				},
 			});
 		}
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: numberId,
+					name: name?.name,
+				},
+				message: null,
+			},
+		};
 	},
 	multidelete: async (event) => {
 		const db = getDb(event);
@@ -228,19 +271,62 @@ export const actions: Actions = {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 				});
 			}
-			try {
-				await db.delete(subject).where(eq(subject.id, id));
-			} catch (error) {
-				console.error(error);
-				return fail(500, {
+			const subjectExists = subjectArray.some((subject) => subject.id === id);
+			if (!subjectExists) {
+				return fail(400, {
 					delete: {
 						success: false,
 						data: null,
-						message: error instanceof Error ? error.message : "Unknown error, please try again.",
+						message: `Subject with ID ${id} not found. Please try again.`,
 					},
 				});
 			}
 		});
+		const subjectForum = await db.select().from(forum).where(inArray(forum.subjectId, idArray));
+		const subjectAssignment = await db
+			.select()
+			.from(assignment)
+			.where(inArray(assignment.subjectId, idArray));
+		const name = await db.select().from(subject).where(inArray(subject.id, idArray)).get();
+		if (!name) {
+			return fail(400, {
+				delete: { success: false, data: null, message: "Subject not found. Please try again." },
+			});
+		}
+		try {
+			await db.delete(comment).where(
+				inArray(
+					comment.forumId,
+					subjectForum.map((f) => f.id),
+				),
+			);
+			await db.delete(forum).where(inArray(forum.subjectId, idArray));
+			await db.delete(submission).where(
+				inArray(
+					submission.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignmentQuestion).where(
+				inArray(
+					assignmentQuestion.assignmentId,
+					subjectAssignment.map((a) => a.id),
+				),
+			);
+			await db.delete(assignment).where(inArray(assignment.subjectId, idArray));
+			await db.delete(material).where(inArray(material.subjectId, idArray));
+			await db.delete(enrollment).where(inArray(enrollment.subjectId, idArray));
+			await db.delete(subject).where(inArray(subject.id, idArray));
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error, please try again.",
+				},
+			});
+		}
 
 		return {
 			delete: {

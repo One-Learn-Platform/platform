@@ -1,9 +1,9 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { forum, subject, user } from "$lib/schema/db";
+import { comment, forum, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, getTableColumns, or } from "drizzle-orm";
+import { eq, getTableColumns, inArray, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -52,19 +52,13 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const name = await db.select().from(forum).where(eq(forum.id, numberId)).get();
+		if (!name) {
+			return fail(404, { delete: { success: false, data: null, message: "Forum not found" } });
+		}
 		try {
-			const name = await db.select().from(forum).where(eq(forum.id, numberId)).get();
+			await db.delete(comment).where(eq(comment.forumId, numberId));
 			await db.delete(forum).where(eq(forum.id, numberId));
-			return {
-				delete: {
-					success: true,
-					data: {
-						id: numberId,
-						name: name?.title,
-					},
-					message: null,
-				},
-			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
@@ -75,6 +69,16 @@ export const actions: Actions = {
 				},
 			});
 		}
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: numberId,
+					name: name?.title,
+				},
+				message: null,
+			},
+		};
 	},
 	multidelete: async (event) => {
 		const db = getDb(event);
@@ -103,19 +107,31 @@ export const actions: Actions = {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 				});
 			}
-			try {
-				await db.delete(forum).where(eq(forum.id, id));
-			} catch (error) {
-				console.error(error);
-				return fail(500, {
+			const forumExists = forumArray.some((forum) => forum.id === id);
+			if (!forumExists) {
+				return fail(404, {
 					delete: {
 						success: false,
 						data: null,
-						message: error instanceof Error ? error.message : "Unknown error, please try again.",
+						message: `Forum with ID ${id} not found. Please try again.`,
 					},
 				});
 			}
 		});
+
+		try {
+			await db.delete(comment).where(inArray(comment.forumId, idArray));
+			await db.delete(forum).where(inArray(forum.id, idArray));
+		} catch (error) {
+			console.error(error);
+			return fail(500, {
+				delete: {
+					success: false,
+					data: null,
+					message: error instanceof Error ? error.message : "Unknown error, please try again.",
+				},
+			});
+		}
 
 		return {
 			delete: {

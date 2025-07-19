@@ -1,7 +1,7 @@
 import { error, redirect, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { forum, user } from "$lib/schema/db";
+import { comment, forum, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { eq, getTableColumns } from "drizzle-orm";
 
@@ -49,18 +49,18 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const name = await db.select().from(forum).where(eq(forum.id, numberId)).get();
+		if (!name) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "Forum not found. Please try again.",
+				},
+			});
+		}
 		try {
-			const selectName = await db.select().from(forum).where(eq(forum.id, numberId));
-			const name = selectName.at(0);
-			if (!name) {
-				return fail(404, {
-					delete: {
-						success: false,
-						data: null,
-						message: "Forum not found. Please try again.",
-					},
-				});
-			}
+			await db.delete(comment).where(eq(comment.forumId, numberId));
 			await db.delete(forum).where(eq(forum.id, numberId));
 		} catch (error) {
 			console.error(error);
