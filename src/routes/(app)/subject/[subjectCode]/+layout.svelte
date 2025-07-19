@@ -50,26 +50,30 @@
 	>
 		<Button
 			variant="outline"
-			href="/subject/{data.params}/{data.chapter}/materials"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter}/materials"
 			class="min-w-fit grow basis-0"
 		>
 			<BookOpenText />Materials
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{data.params}/{data.chapter}/assignments"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter}/assignments"
 			class="min-w-fit grow basis-0"
 		>
 			<ClipboardList />Assignments
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{data.params}/{data.chapter}/forum"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter}/forum"
 			class="min-w-fit grow basis-0"
 		>
 			<MessagesSquare />Forum
 		</Button>
-		<Button variant="secondary" href="/subject/{data.params}/people" class="min-w-fit grow basis-0">
+		<Button
+			variant="secondary"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter}/people"
+			class="min-w-fit grow basis-0"
+		>
 			<Users />People
 		</Button>
 	</div>
@@ -78,11 +82,11 @@
 			<div class="flex w-full flex-row gap-2 overflow-x-auto overflow-y-auto p-2">
 				{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
 					<Button
-						variant={page.url.pathname.startsWith(`/subject/${data.params}/${i}`)
+						variant={page.url.pathname.startsWith(`/subject/${page.params.subjectCode}/${i}`)
 							? "default"
 							: "outline"}
 						size="sm"
-						href="/subject/{data.params}/{i}"
+						href="/subject/{page.params.subjectCode}/{i}"
 						class="w-8 font-display text-sm tracking-tight sm:w-10"
 					>
 						{i}
