@@ -7,15 +7,15 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
-	comment,
-	enrollment,
-	forum,
-	school,
-	session,
-	subject,
-	submission,
-	user,
-	userRole,
+  comment,
+  enrollment,
+  forum,
+  school,
+  session,
+  subject,
+  submission,
+  user,
+  userRole,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -233,8 +233,17 @@ export const actions: Actions = {
 				},
 			});
 		}
+		const name = await db.select().from(user).where(eq(user.id, numberId)).get();
+		if (!name) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "User not found. Please try again.",
+				},
+			});
+		}
 		try {
-			const name = await db.select().from(user).where(eq(user.id, numberId));
 			await db.delete(submission).where(eq(submission.userId, numberId));
 			await db.delete(comment).where(eq(comment.userId, numberId));
 			await db.delete(comment).where(
@@ -247,16 +256,6 @@ export const actions: Actions = {
 			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
-			return {
-				delete: {
-					success: true,
-					data: {
-						id: numberId,
-						fullname: name[0].fullname,
-					},
-					message: null,
-				},
-			};
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
@@ -268,6 +267,16 @@ export const actions: Actions = {
 				},
 			});
 		}
+		return {
+			delete: {
+				success: true,
+				data: {
+					id: numberId,
+					fullname: name.fullname,
+				},
+				message: null,
+			},
+		};
 	},
 	multidelete: async (event) => {
 		const db = getDb(event);
@@ -291,9 +300,19 @@ export const actions: Actions = {
 		const userNameArray = userArray.map((user) => user.fullname);
 
 		for (const id of idArray) {
-			if (isNaN(id)) {
+			if (isNaN(id) || id <= 0) {
 				return fail(400, {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+				});
+			}
+			const userExists = userArray.some((user) => user.id === id);
+			if (!userExists) {
+				return fail(404, {
+					delete: {
+						success: false,
+						data: null,
+						message: `User with ID ${id} not found. Please try again.`,
+					},
 				});
 			}
 		}

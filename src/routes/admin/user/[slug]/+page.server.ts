@@ -2,11 +2,20 @@ import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaUploadImage, formSchemaWithoutPass } from "$lib/schema/user/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school, user } from "$lib/schema/db";
+import {
+  comment,
+  enrollment,
+  forum,
+  school,
+  session,
+  subject,
+  submission,
+  user,
+} from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
@@ -365,18 +374,49 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const allForum = await db.select().from(forum).where(eq(forum.userId, numberId));
+		const allComment = await db
+			.select()
+			.from(comment)
+			.where(
+				inArray(
+					comment.forumId,
+					allForum.map((f) => f.id),
+				),
+			);
+		const isTeacher = await db.select().from(subject).where(eq(subject.teacher, numberId));
+		if (isTeacher.length > 0) {
+			return fail(400, {
+				delete: {
+					success: false,
+					data: null,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+				},
+			});
+		}
+		const selectName = await db.select().from(user).where(eq(user.id, numberId));
+		const name = selectName.at(0);
+		if (!name) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "User not found. Please try again.",
+				},
+			});
+		}
 		try {
-			const selectName = await db.select().from(user).where(eq(user.id, numberId));
-			const name = selectName.at(0);
-			if (!name) {
-				return fail(404, {
-					delete: {
-						success: false,
-						data: null,
-						message: "User not found. Please try again.",
-					},
-				});
-			}
+			await db.delete(submission).where(eq(submission.userId, numberId));
+			await db.delete(comment).where(eq(comment.userId, numberId));
+			await db.delete(comment).where(
+				inArray(
+					comment.id,
+					allComment.map((c) => c.id),
+				),
+			);
+			await db.delete(forum).where(eq(forum.userId, numberId));
+			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
+			await db.delete(session).where(eq(session.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
 		} catch (error) {
 			console.error(error);
