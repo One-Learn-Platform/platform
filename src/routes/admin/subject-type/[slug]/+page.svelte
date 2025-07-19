@@ -104,7 +104,7 @@
 				<Button
 					variant="outline"
 					type="button"
-					disabled={!isChanged}
+					href="/admin/subject-type"
 					onclick={() => {
 						reset({
 							data: {

@@ -271,7 +271,7 @@
 				<Button
 					variant="outline"
 					type="button"
-					disabled={!isChanged}
+					href="/admin/announcement"
 					onclick={() => {
 						reset({
 							data: {

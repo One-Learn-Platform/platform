@@ -479,8 +479,8 @@
 				{/if}
 				<Button
 					variant="outline"
+					href="/admin/user"
 					type="button"
-					disabled={!isChanged}
 					onclick={() => {
 						reset({
 							data: {

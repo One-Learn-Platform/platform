@@ -134,7 +134,7 @@
 				<Button
 					variant="outline"
 					type="button"
-					disabled={!isChanged}
+					href="/admin/school"
 					onclick={() => {
 						reset({
 							data: {

@@ -106,7 +106,7 @@
 				<Button
 					variant="outline"
 					type="button"
-					disabled={!isChanged}
+          href="/admin/role"
 					onclick={() => {
 						reset({
 							data: {
