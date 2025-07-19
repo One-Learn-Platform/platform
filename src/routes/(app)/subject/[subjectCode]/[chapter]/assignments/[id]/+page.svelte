@@ -337,6 +337,30 @@
 									{...props}
 									bind:checked={$formData.quiz}
 									class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+									onCheckedChange={(checked) => {
+										if (checked) {
+											$formData.limitUser = data.assignment.limitUser || 1;
+											const startDateString = isQuiz
+												? data.assignment.startDate?.replace(" ", "T").concat("Z")
+												: undefined;
+											if (startDateString) {
+												const startLocalDate = parseAbsoluteToLocal(startDateString);
+												startDate = new CalendarDate(
+													startLocalDate.year,
+													startLocalDate.month,
+													startLocalDate.day,
+												).toString();
+												startTime = new Time(
+													startLocalDate.hour,
+													startLocalDate.minute,
+													startLocalDate.second,
+												).toString();
+											}
+										} else {
+											$formData.limitUser = 0;
+											startDate = "";
+										}
+									}}
 								/>
 								<div class="grid gap-1.5 font-normal">
 									<p class="text-sm leading-none font-medium">Set this as <b>Bonus Quiz</b></p>

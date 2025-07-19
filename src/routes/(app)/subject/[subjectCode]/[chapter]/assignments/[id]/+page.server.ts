@@ -10,7 +10,7 @@ import { assignment, assignmentQuestion, subject, submission } from "$lib/schema
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
-import { and, count, eq, exists, getTableColumns, inArray, or, sql } from "drizzle-orm";
+import { and, count, eq, exists, getTableColumns, inArray, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const schoolId = event.locals.user?.school;
