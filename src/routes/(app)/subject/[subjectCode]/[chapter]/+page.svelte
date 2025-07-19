@@ -49,7 +49,7 @@
 				toast.info("Quiz is available", {
 					duration: 10000,
 					position: "top-center",
-					description: "Take the quiz now!",
+					description: "Take the quiz now! Limited to first " + quiz.limitUser + " people.",
 					action: {
 						label: "Start",
 						onClick: () =>
