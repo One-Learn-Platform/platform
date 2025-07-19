@@ -10,19 +10,11 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 
 	import EyeOff from "@lucide/svelte/icons/eye-off";
-	import ChevronLeft from "@lucide/svelte/icons/chevron-left";
 
 	let { data }: { data: PageServerData } = $props();
 </script>
 
 <section class="grid grid-cols-1 place-items-center rounded-xl border px-2 py-2 md:grid-cols-3">
-	<Button
-		variant="outline"
-		href={`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments/${data.assignment?.id}`}
-		class="place-self-stretch sm:place-self-start"
-	>
-		<ChevronLeft />Back to Assignment
-	</Button>
 	<div class="w-full space-y-1 sm:w-fit">
 		<h1
 			class="text-center font-display text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl"

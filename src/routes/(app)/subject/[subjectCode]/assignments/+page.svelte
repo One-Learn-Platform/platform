@@ -2,55 +2,54 @@
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
-	import type { PageParentData, PageServerData } from "./$types";
+	import type { PageServerData, PageServerParentData } from "./$types.js";
 
 	import type { Assignment } from "$lib/schema/db";
 
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Select from "$lib/components/ui/select/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
-	import FileChartColumnIncreasing from "@lucide/svelte/icons/file-chart-column-increasing";
 	import Plus from "@lucide/svelte/icons/plus";
 
 	import AssignmentComp from "$lib/components/cards/assignment.svelte";
+	import FileChartColumnIncreasing from "@lucide/svelte/icons/file-chart-column-increasing";
 
-	type AssignmentSortKey = keyof Assignment;
-	const sortableFields: Partial<Record<AssignmentSortKey, string>> = {
+	type SortKey = keyof Assignment;
+	const sortableFields: Partial<Record<SortKey, string>> = {
 		createdAt: "Created At",
 		title: "Title",
 		dueDate: "Due Date",
 	};
 
-	let { data }: { data: PageServerData & PageParentData } = $props();
+	let { data }: { data: PageServerData & PageServerParentData } = $props();
 	let searchQuery = $state("");
 	let hideDone = $state(false);
 	let hideMissed = $state(false);
-	let sortBy = $state<AssignmentSortKey>("createdAt");
+	let sortBy = $state<SortKey>("createdAt");
 	let sortOpt = $state("desc");
 	const sortChoice = Object.entries(sortableFields).map(([key, label]) => ({
 		label: label!,
-		value: key as AssignmentSortKey,
+		value: key as SortKey,
 	}));
 
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 	const assignmentList = $derived.by(() => {
 		if (hideDone && hideMissed) {
-			return data.assignmentList.filter(
+			return data.assignments.filter(
 				(assignment) => assignment.done === 0 && assignment.missed === 0,
 			);
 		} else if (hideDone) {
-			return data.assignmentList.filter((assignment) => assignment.done === 0);
+			return data.assignments.filter((assignment) => assignment.done === 0);
 		} else if (hideMissed) {
-			return data.assignmentList.filter((assignment) => assignment.missed === 0);
+			return data.assignments.filter((assignment) => assignment.missed === 0);
 		}
-		return data.assignmentList;
+		return data.assignments;
 	});
-
 	const filteredAssignments = $derived.by(() =>
 		assignmentList
 			.filter((assignment) => assignment.title.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -74,14 +73,19 @@
 	);
 </script>
 
+<svelte:head>
+	<title>{data.subject.name} | One Learn</title>
+	<meta name="description" content={`Subject page for ${data.subject.name}.`} />
+</svelte:head>
+
 <div class="mb-4 space-y-1">
 	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
 	{#if data.user.role === 3}
 		<div class="flex w-full gap-2 *:grow *:basis-0">
-			<Button variant="default" href="/subject/{data.params}/{data.chapter}/assignments/create">
+			<Button variant="default" href="/subject/{data.params}/1/assignments/create">
 				<Plus />Add Assignment
 			</Button>
-			<Button variant="outline" href="/subject/{data.params}/{data.chapter}/assignments/results">
+			<Button variant="outline" href="/subject/{data.params}/1/assignments/results">
 				<FileChartColumnIncreasing />Results
 			</Button>
 		</div>
@@ -122,16 +126,16 @@
 		</div>
 	</div>
 </div>
-{#if filteredAssignments && filteredAssignments.length > 0}
+{#if filteredAssignments.length !== 0}
 	{#each filteredAssignments as assignment (assignment.id)}
 		<div
-			transition:fade={{ duration: 150, easing: cubicOut }}
-			animate:flip={{ duration: 200, easing: cubicOut }}
-			class="w-full"
+			animate:flip={{ duration: 300, easing: cubicOut }}
+			transition:fade={{ easing: cubicOut, duration: 200 }}
+			class="mb-4"
 		>
-			<AssignmentComp {assignment} done={assignment.done === 1} missed={assignment.missed === 1} />
+			<AssignmentComp {assignment} done={assignment.done === 1} />
 		</div>
 	{/each}
 {:else}
-	<p class="text-muted-foreground">No assignments available.</p>
+	<div class="text-center text-muted-foreground">No assignments available for this chapter.</div>
 {/if}

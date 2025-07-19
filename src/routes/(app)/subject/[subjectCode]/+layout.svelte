@@ -50,21 +50,21 @@
 	>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/materials"
+			href="/subject/{page.params.subjectCode}/materials"
 			class="min-w-fit grow basis-0"
 		>
 			<BookOpenText />Materials
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/assignments"
+			href="/subject/{page.params.subjectCode}/assignments"
 			class="min-w-fit grow basis-0"
 		>
 			<ClipboardList />Assignments
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/forum"
+			href="/subject/{page.params.subjectCode}/forum"
 			class="min-w-fit grow basis-0"
 		>
 			<MessagesSquare />Forum
@@ -81,12 +81,24 @@
 		<div class="mb-2 overflow-x-hidden overflow-y-hidden rounded-b-xl border">
 			<div class="flex w-full flex-row gap-2 overflow-x-auto overflow-y-auto p-2">
 				{#each Array.from({ length: data.subject.chapterCount }, (_, i) => i + 1) as i (i)}
+					{@const getChapterUrl = (chapterNum) => {
+						const pathSegments = page.url.pathname.split("/");
+						if (pathSegments.length >= 4) {
+							if (pathSegments.length > 4 && /^\d+$/.test(pathSegments[pathSegments.length - 1])) {
+								pathSegments.pop();
+							}
+							pathSegments[3] = chapterNum.toString();
+							return pathSegments.join("/");
+						}
+						return `/subject/${page.params.subjectCode}/${chapterNum}`;
+					}}
+					{@const href = getChapterUrl(i)}
 					<Button
 						variant={page.url.pathname.startsWith(`/subject/${page.params.subjectCode}/${i}`)
 							? "default"
 							: "outline"}
 						size="sm"
-						href="/subject/{page.params.subjectCode}/{i}"
+						{href}
 						class="w-8 font-display text-sm tracking-tight sm:w-10"
 					>
 						{i}

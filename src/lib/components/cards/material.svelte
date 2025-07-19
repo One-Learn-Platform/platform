@@ -10,8 +10,8 @@
 
 <Button
 	variant="outline"
-	class="h-fit max-w-full flex-col items-start text-left"
-	href="{page.url.pathname}/material/{material.id}"
+	class="h-fit w-full max-w-full flex-col items-start text-left"
+	href="/subject/{page.params.subjectCode}/{material.chapter}/material/{material.id}"
 >
 	<p class="text-xl font-semibold tracking-tight">{material.title}</p>
 	<p class="max-w-full text-sm whitespace-normal text-muted-foreground">
