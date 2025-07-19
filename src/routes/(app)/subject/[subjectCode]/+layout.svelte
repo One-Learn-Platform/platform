@@ -50,21 +50,21 @@
 	>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter}/materials"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/materials"
 			class="min-w-fit grow basis-0"
 		>
 			<BookOpenText />Materials
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter}/assignments"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/assignments"
 			class="min-w-fit grow basis-0"
 		>
 			<ClipboardList />Assignments
 		</Button>
 		<Button
 			variant="outline"
-			href="/subject/{page.params.subjectCode}/{page.params.chapter}/forum"
+			href="/subject/{page.params.subjectCode}/{page.params.chapter ?? 1}/forum"
 			class="min-w-fit grow basis-0"
 		>
 			<MessagesSquare />Forum
