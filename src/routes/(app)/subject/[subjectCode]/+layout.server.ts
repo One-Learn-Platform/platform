@@ -27,7 +27,7 @@ export const load: LayoutServerLoad = async (event) => {
 			if (subjectData.teacher !== userId) {
 				return error(403, "Forbidden: You are not the teacher of this subject");
 			}
-		} else if (event.locals.user.role === 2) {
+		} else if (event.locals.user.role === 4) {
 			const enrollmentData = await db
 				.select()
 				.from(enrollment)
