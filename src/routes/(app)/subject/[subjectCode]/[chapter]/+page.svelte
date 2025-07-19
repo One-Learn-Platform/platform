@@ -42,20 +42,6 @@
 	);
 </script>
 
-<Button
-	variant="secondary"
-	onclick={() =>
-		toast.success("Event has been created", {
-			position: "top-center",
-			description: "Sunday, December 03, 2023 at 9:00 AM",
-			action: {
-				label: "Undo",
-				onClick: () => console.info("Undo"),
-			},
-		})}
->
-	Toast
-</Button>
 <section class="flex h-fit flex-col space-y-2">
 	{#if assignmentsDueTomorrow.length > 0}
 		<Alert.Root variant="destructive" fill="muted">
