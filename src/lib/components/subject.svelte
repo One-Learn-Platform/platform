@@ -11,7 +11,7 @@
 		subjectIcon,
 	} from "$lib/functions/subject";
 
-	type SubjectWithName = Subject & { subjectTypeName: string; gradesLevel?: string };
+	type SubjectWithName = Subject & { subjectTypeName: string; gradeLevel?: string };
 	let { subject }: { subject: SubjectWithName } = $props();
 	const Icons = $derived(subjectIcon(subject.name));
 </script>
