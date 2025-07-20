@@ -9,12 +9,13 @@
 	import Crown from "@lucide/svelte/icons/crown";
 
 	import { acronym } from "$lib/utils";
+	import { SvelteMap } from "svelte/reactivity";
 
 	let { data }: { data: PageServerData } = $props();
 	const scoreThreshold = 50;
 
 	const groupedLeaderboard = $derived.by(() => {
-		const groupsMap = new Map<
+		const groupsMap = new SvelteMap<
 			number,
 			{
 				userId: number;
