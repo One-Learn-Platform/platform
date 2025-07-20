@@ -143,103 +143,6 @@
 						{/if}
 					</Form.Field>
 
-					<Form.Field form={superform} name="gradesId">
-						<Form.Control>
-							{#snippet children({ props })}
-								<Form.Label>Grades</Form.Label>
-								<Select.Root
-									type="single"
-									name={props.name}
-									onValueChange={(value) => {
-										$formData.gradesId = Number(value);
-									}}
-								>
-									<Select.Trigger {...props}>
-										{$formData.gradesId
-											? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
-											: "Select a grades ID"}
-									</Select.Trigger>
-									<Select.Content>
-										{#each data.gradesList as grade (grade.id)}
-											<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
-												{grade.level}
-											</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							{/snippet}
-						</Form.Control>
-						{#if $formErrors.gradesId}
-							<Form.FieldErrors />
-						{:else}
-							<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
-						{/if}
-					</Form.Field>
-
-					<Form.Field form={superform} name="dob" class="col-span-2">
-						<Form.Control>
-							{#snippet children({ props })}
-								<Form.Label>Date of birth</Form.Label>
-								<Popover.Root>
-									<Popover.Trigger
-										{...props}
-										class={cn(
-											buttonVariants({ variant: "outline" }),
-											"w-full text-left font-normal",
-											!value && "text-muted-foreground",
-										)}
-									>
-										{value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date"}
-										<CalendarIcon class="ml-auto size-4 opacity-50" />
-									</Popover.Trigger>
-									<Popover.Content class="w-auto p-0" side="top">
-										<Calendar
-											captionLayout="dropdown"
-											type="single"
-											value={value as DateValue}
-											minValue={new CalendarDate(2000, 1, 1)}
-											maxValue={today(getLocalTimeZone())}
-											calendarLabel="Date of birth"
-											onValueChange={(v) => {
-												if (v) {
-													$formData.dob = v.toString();
-												} else {
-													$formData.dob = "";
-												}
-											}}
-										/>
-									</Popover.Content>
-								</Popover.Root>
-								<input type="hidden" hidden value={$formData.dob} name={props.name} />
-							{/snippet}
-						</Form.Control>
-						{#if $formErrors.dob}
-							<Form.FieldErrors />
-						{:else}
-							<Form.Description>date of birth of the user.</Form.Description>
-						{/if}
-					</Form.Field>
-
-					<Form.Field form={superform} name="password" class="col-span-2">
-						<Form.Control>
-							{#snippet children({ props })}
-								<Form.Label>Password</Form.Label>
-								<Input
-									{...props}
-									bind:value={$formData.password}
-									placeholder="Enter your password"
-								/>
-							{/snippet}
-						</Form.Control>
-						{#if $formErrors.password}
-							<Form.FieldErrors />
-						{:else}
-							<Form.Description>
-								This a just a temporary password. Choose an easy one
-							</Form.Description>
-						{/if}
-					</Form.Field>
-
 					<Form.Field form={superform} name="roleId">
 						<Form.Control>
 							{#snippet children({ props })}
@@ -327,6 +230,104 @@
 						{:else}
 							<Form.Description>
 								This will determine the school affiliation of the user.
+							</Form.Description>
+						{/if}
+					</Form.Field>
+
+					<Form.Field form={superform} name="gradesId">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Grades</Form.Label>
+								<Select.Root
+									type="single"
+									name={props.name}
+									disabled={$formData.roleId !== Role.enum["student"]}
+									onValueChange={(value) => {
+										$formData.gradesId = Number(value);
+									}}
+								>
+									<Select.Trigger {...props}>
+										{$formData.gradesId
+											? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
+											: "Select a grades ID"}
+									</Select.Trigger>
+									<Select.Content>
+										{#each data.gradesList as grade (grade.id)}
+											<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
+												{grade.level}
+											</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.gradesId}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
+						{/if}
+					</Form.Field>
+
+					<Form.Field form={superform} name="dob" class="col-span-2">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Date of birth</Form.Label>
+								<Popover.Root>
+									<Popover.Trigger
+										{...props}
+										class={cn(
+											buttonVariants({ variant: "outline" }),
+											"w-full text-left font-normal",
+											!value && "text-muted-foreground",
+										)}
+									>
+										{value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date"}
+										<CalendarIcon class="ml-auto size-4 opacity-50" />
+									</Popover.Trigger>
+									<Popover.Content class="w-auto p-0" side="top">
+										<Calendar
+											captionLayout="dropdown"
+											type="single"
+											value={value as DateValue}
+											minValue={new CalendarDate(2000, 1, 1)}
+											maxValue={today(getLocalTimeZone())}
+											calendarLabel="Date of birth"
+											onValueChange={(v) => {
+												if (v) {
+													$formData.dob = v.toString();
+												} else {
+													$formData.dob = "";
+												}
+											}}
+										/>
+									</Popover.Content>
+								</Popover.Root>
+								<input type="hidden" hidden value={$formData.dob} name={props.name} />
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.dob}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>date of birth of the user.</Form.Description>
+						{/if}
+					</Form.Field>
+
+					<Form.Field form={superform} name="password" class="col-span-2">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Password</Form.Label>
+								<Input
+									{...props}
+									bind:value={$formData.password}
+									placeholder="Enter your password"
+								/>
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.password}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>
+								This a just a temporary password. Choose an easy one
 							</Form.Description>
 						{/if}
 					</Form.Field>
