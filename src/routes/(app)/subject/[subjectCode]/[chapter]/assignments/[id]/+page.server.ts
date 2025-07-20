@@ -85,7 +85,7 @@ export const load: PageServerLoad = async (event) => {
 			assignment: selectedAssignments,
 			questions: allQuestions,
 			questionCount: questionCount?.count ?? 0,
-			form: await superValidate(event, zod4(formSchema)),
+			form: await superValidate(zod4(formSchema)),
 		};
 	}
 	return redirect(302, "/signin");
@@ -96,7 +96,6 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return error(403, "Forbidden");
 		}
-
 		const form = await superValidate(event, zod4(formSchema));
 		const { subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
@@ -545,6 +544,102 @@ export const actions: Actions = {
 				success: true,
 				input: null,
 				message: null,
+			},
+		};
+	},
+	deleteAttachment: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		const db = getDb(event);
+		const r2 = getR2(event);
+		const formData = await event.request.formData();
+		const name = formData.get("attachment_name");
+		const schoolId = event.locals.user.school;
+		const { subjectCode } = event.params;
+		const chapter = Number(event.params.chapter);
+		if (name === null || typeof name !== "string" || name.trim() === "") {
+			return fail(400, {
+				deleteAttachment: {
+					success: false,
+					message: "Attachment name is required.",
+				},
+			});
+		}
+		if (!schoolId) {
+			return fail(400, {
+				deleteAttachment: {
+					success: false,
+					message: "School ID is required.",
+				},
+			});
+		}
+		if (isNaN(chapter)) {
+			return fail(400, {
+				deleteAttachment: {
+					success: false,
+					message: "Invalid chapter number.",
+				},
+			});
+		}
+		const subjectId = await db
+			.select({ id: subject.id })
+			.from(subject)
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
+			.get();
+		if (!subjectId) {
+			return fail(404, {
+				deleteAttachment: {
+					success: false,
+					message: "Subject not found.",
+				},
+			});
+		}
+		const oldAttachment = await db
+			.select({ attachment: assignment.attachment })
+			.from(assignment)
+			.where(and(eq(assignment.subjectId, subjectId.id), eq(assignment.chapter, chapter)))
+			.get();
+		if (!oldAttachment?.attachment) {
+			return fail(404, {
+				deleteAttachment: {
+					success: false,
+					message: "Material not found or has no attachments.",
+				},
+			});
+		}
+		const attachments = JSON.parse(oldAttachment.attachment);
+		if (!attachments.includes(name)) {
+			return fail(404, {
+				deleteAttachment: {
+					success: false,
+					message: "Attachment not found.",
+				},
+			});
+		}
+		try {
+			await r2.delete(name);
+			const updatedAttachments = attachments.filter((attachment: string) => attachment !== name);
+			await db
+				.update(assignment)
+				.set({ attachment: JSON.stringify(updatedAttachments) })
+				.where(and(eq(assignment.subjectId, subjectId.id), eq(assignment.chapter, chapter)));
+		} catch (error) {
+			console.error(error instanceof Error ? error.message : error);
+			return fail(500, {
+				deleteAttachment: {
+					success: false,
+					message:
+						error instanceof Error
+							? error.message
+							: "Failed to delete attachment. Please try again.",
+				},
+			});
+		}
+		return {
+			deleteAttachment: {
+				success: true,
+				message: "Attachment deleted successfully.",
 			},
 		};
 	},

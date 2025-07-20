@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { page } from "$app/state";
 	import { invalidateAll } from "$app/navigation";
+	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { untrack } from "svelte";
 	import { flip } from "svelte/animate";
@@ -44,22 +44,23 @@
 	import { v4 as uuidv4 } from "uuid";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
+	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
 	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import { getFileCategory, getFileIcon, getFileName } from "$lib/functions/material";
 
 	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
 	const assignmentData = $derived(data.assignment);
@@ -70,9 +71,11 @@
 	const superform = superForm(data.form, {
 		validators: zod4Client(formSchema),
 	});
-	const { form: formData, enhance, errors } = superform;
+	const { form: formData, enhance, errors, reset } = superform;
 	const attachmentProxies = filesProxy(formData, "attachment");
 	let attachmentNames = $state();
+	let dialogOpen = $state(false);
+	let toDeleteAttachment = $state("");
 
 	let dueDate: string = $state("");
 	let dueTime = $state("23:59:59");
@@ -135,10 +138,14 @@
 		if (form) {
 			if (form.create) {
 				if (form.create.success) {
-					$formData.title = data.assignment.title;
-					$formData.description = data.assignment.description;
-					$formData.dueDate = data.assignment.dueDate;
-					$formData.quiz = isQuiz;
+					reset({
+						data: {
+							title: data.assignment.title,
+							description: data.assignment.description,
+							dueDate: data.assignment.dueDate,
+							quiz: isQuiz,
+						},
+					});
 					if (data.assignment.dueDate) {
 						try {
 							const dueDateString = data.assignment.dueDate.replace(" ", "T").concat("Z");
@@ -187,9 +194,14 @@
 				if (form.edit.success) {
 					toast.success("Assignment edited successfully");
 					invalidateAll().then(() => {
-						$formData.title = assignmentData.title;
-						$formData.description = assignmentData.description;
-						$formData.dueDate = assignmentData.dueDate;
+						reset({
+							data: {
+								title: assignmentData.title,
+								description: assignmentData.description,
+								dueDate: assignmentData.dueDate,
+								quiz: isQuiz,
+							},
+						});
 						invalidateAll().then(() => {
 							// Force update after data refresh
 							const assignment = data.assignment;
@@ -219,6 +231,13 @@
 					toast.error(form.edit.message);
 				} else {
 					toast.error("Failed to edit assignment");
+				}
+			} else if (form.deleteAttachment) {
+				if (form.deleteAttachment.success) {
+					dialogOpen = false;
+					toast.success("Attachment deleted successfully");
+				} else {
+					toast.error("Failed to delete attachment");
 				}
 			}
 		}
@@ -335,7 +354,7 @@
 							>
 								<Checkbox
 									{...props}
-									bind:checked={$formData.quiz}
+									checked={$formData.quiz}
 									class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
 									onCheckedChange={(checked) => {
 										if (checked) {
@@ -356,8 +375,10 @@
 													startLocalDate.second,
 												).toString();
 											}
+											$formData.quiz = true;
 										} else {
-											$formData.limitUser = 0;
+											$formData.quiz = false;
+											$formData.limitUser = undefined;
 											startDate = "";
 										}
 									}}
@@ -372,6 +393,9 @@
 							</Form.Label>
 						{/snippet}
 					</Form.Control>
+					{#if $errors.quiz}
+						<Form.FieldErrors />
+					{/if}
 				</Form.Field>
 
 				<div class="grid gap-2 {$formData.quiz ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}">
@@ -393,6 +417,13 @@
 									/>
 								{/snippet}
 							</Form.Control>
+							{#if $errors.limitUser}
+								<Form.FieldErrors />
+							{:else}
+								<Form.Description
+									>maximum number of users that allowed to take the quiz.</Form.Description
+								>
+							{/if}
 						</Form.Field>
 
 						<Form.Field form={superform} name="startDate" class="">
@@ -612,6 +643,41 @@
 						</li>
 					{/each}
 				</ul>
+				<Table.Root>
+					<Table.Caption>Uploaded Attachment</Table.Caption>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head class="">Name</Table.Head>
+							<Table.Head>Link</Table.Head>
+							<Table.Head>Action</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each assignmentAttachment as attachment (attachment)}
+							{@const fileName = getFileName(attachment)}
+							<Table.Row>
+								<Table.Cell class="font-medium">{fileName}</Table.Cell>
+								<Table.Cell>
+									<a href="{PUBLIC_R2_URL}/{attachment}">{PUBLIC_R2_URL}/{attachment}</a
+									></Table.Cell
+								>
+								<Table.Cell class="Cell">
+									<Button
+										type="button"
+										variant="destructive"
+										outline
+										onclick={() => {
+											dialogOpen = true;
+											toDeleteAttachment = attachment;
+										}}
+									>
+										<X />
+									</Button>
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
 				{#each assignmentAttachment as attachment (attachment)}
 					{@const fileCategory = getFileCategory(attachment)}
 					{#if fileCategory === "image"}
@@ -632,14 +698,35 @@
 				{#if $errors._errors}
 					<FormErrors message={Object.values($errors._errors).join(", ")} />
 				{/if}
-				<Form.Button class="w-fit">Edit</Form.Button>
+				<Form.Button class="w-fit self-end" type="submit">Save Changes</Form.Button>
 			</form>
+
+			<AlertDialog.Root open={dialogOpen} onOpenChange={(open) => (dialogOpen = open)}>
+				<AlertDialog.Content>
+					<form action="?/deleteAttachment" method="POST" class="contents" use:svelteEnhance>
+						<input type="hidden" name="attachment_name" value={toDeleteAttachment} />
+						<AlertDialog.Header>
+							<AlertDialog.Title
+								>Are you sure you want to delete {toDeleteAttachment}?</AlertDialog.Title
+							>
+							<AlertDialog.Description>
+								This action cannot be undone. <b>{toDeleteAttachment}</b> will be permanently deleted.
+							</AlertDialog.Description>
+						</AlertDialog.Header>
+						<AlertDialog.Footer>
+							<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+							<AlertDialog.Action type="submit">Continue</AlertDialog.Action>
+						</AlertDialog.Footer>
+					</form>
+				</AlertDialog.Content>
+			</AlertDialog.Root>
+
 			<AlertDialog.Root>
 				<AlertDialog.Trigger
 					type="button"
-					class={buttonVariants({ variant: "destructive", outline: true })}
+					class={buttonVariants({ variant: "destructive", outline: true, className: "w-full" })}
 				>
-					Delete
+					Delete Assignment
 				</AlertDialog.Trigger>
 				<AlertDialog.Content>
 					<form class="contents" action="?/delete" method="POST" use:svelteEnhance>
