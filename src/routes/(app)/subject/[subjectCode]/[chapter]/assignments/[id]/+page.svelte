@@ -29,7 +29,7 @@
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
-	import { filesProxy, superForm } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
@@ -55,12 +55,11 @@
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
 	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import { getFileCategory, getFileIcon, getFileName } from "$lib/functions/material";
+	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 
 	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
 	const assignmentData = $derived(data.assignment);
@@ -72,7 +71,7 @@
 		validators: zod4Client(formSchema),
 	});
 	const { form: formData, enhance, errors, reset } = superform;
-	const attachmentProxies = filesProxy(formData, "attachment");
+	const attachmentProxies = fileProxy(formData, "attachment");
 	let attachmentNames = $state();
 	let dialogOpen = $state(false);
 	let toDeleteAttachment = $state("");
@@ -89,9 +88,7 @@
 	});
 
 	const role = $derived(data.user.role);
-	const assignmentAttachment = $derived(
-		data.assignment?.attachment ? JSON.parse(data.assignment.attachment) : undefined,
-	) as string[];
+	const assignmentAttachment = $derived(data.assignment?.attachment);
 
 	let questionsList: Question[] = $state([]);
 	$effect(() => {
@@ -605,96 +602,23 @@
 						<Form.Description>Attach any files up to 100MB</Form.Description>
 					{/if}
 				</Form.Field>
-
-				<ul class="flex flex-col gap-1">
-					{#each $attachmentProxies as file (file.name)}
-						{@const Icons = getFileIcon(file.name)}
-						<li class="flex w-fit flex-row items-center gap-1 rounded-sm border px-2 py-1">
-							<Icons class="size-5" />
-							<span class="text-sm">{file.name}</span>
-							<Tooltip.Provider delayDuration={150} disableHoverableContent>
-								<Tooltip.Root>
-									<Tooltip.Trigger>
-										{#snippet child({ props })}
-											<Button
-												{...props}
-												variant="destructive"
-												size="icon"
-												type="button"
-												class="ml-2 h-fit w-fit rounded-xs"
-												outline
-												onclick={() => {
-													const filesArray = Array.from($attachmentProxies);
-													const filteredFiles = filesArray.filter((f) => f.name !== file.name);
-													const dataTransfer = new DataTransfer();
-													filteredFiles.forEach((f) => dataTransfer.items.add(f));
-													$attachmentProxies = dataTransfer.files;
-												}}
-											>
-												<X />
-											</Button>
-										{/snippet}
-									</Tooltip.Trigger>
-									<Tooltip.Content side="right">
-										<p>Remove file</p>
-									</Tooltip.Content>
-								</Tooltip.Root>
-							</Tooltip.Provider>
-						</li>
-					{/each}
-				</ul>
-				<Table.Root>
-					<Table.Caption>Uploaded Attachment</Table.Caption>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head class="">Name</Table.Head>
-							<Table.Head>Link</Table.Head>
-							<Table.Head>Action</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each assignmentAttachment as attachment (attachment)}
-							{@const fileName = getFileName(attachment)}
-							<Table.Row>
-								<Table.Cell class="font-medium">{fileName}</Table.Cell>
-								<Table.Cell>
-									<a href="{PUBLIC_R2_URL}/{attachment}">{PUBLIC_R2_URL}/{attachment}</a
-									></Table.Cell
-								>
-								<Table.Cell class="Cell">
-									<Button
-										type="button"
-										variant="destructive"
-										outline
-										onclick={() => {
-											dialogOpen = true;
-											toDeleteAttachment = attachment;
-										}}
-									>
-										<X />
-									</Button>
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
-				{#each assignmentAttachment as attachment (attachment)}
-					{@const fileCategory = getFileCategory(attachment)}
+				{#if data.assignment?.attachment}
+					{@const fileCategory = getFileCategory(data.assignment.attachment)}
 					{#if fileCategory === "image"}
-						<img src="{PUBLIC_R2_URL}/{attachment}" class="size-20" alt="" />
+						<img src="{PUBLIC_R2_URL}/{data.assignment.attachment}" class="size-20" alt="" />
 					{:else}
-						{@const Icons = getFileIcon(attachment)}
+						{@const Icons = getFileIcon(data.assignment.attachment)}
 						<a
-							href="{PUBLIC_R2_URL}/{attachment}"
+							href="{PUBLIC_R2_URL}/{data.assignment.attachment}"
 							class="flex w-fit flex-row items-center gap-2 rounded-sm border p-2"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
 							<Icons class="size-5" />
-							<span class="text-sm">{attachment}</span>
+							<span class="text-sm">{data.assignment.attachment}</span>
 						</a>
 					{/if}
-				{/each}
+				{/if}
 				{#if $errors._errors}
 					<FormErrors message={Object.values($errors._errors).join(", ")} />
 				{/if}
@@ -1207,23 +1131,23 @@
 			<p>{data.assignment.description}</p>
 			{#if data.assignment.attachment}
 				<ul class="mt-4 flex flex-col gap-2">
-					{#each assignmentAttachment as attachment (attachment)}
-						{@const fileCategory = getFileCategory(attachment)}
+					{#if assignmentAttachment}
+						{@const fileCategory = getFileCategory(assignmentAttachment)}
 						{#if fileCategory === "image"}
-							<img src="{PUBLIC_R2_URL}/{attachment}" class="" alt="" />
+							<img src="{PUBLIC_R2_URL}/{assignmentAttachment}" class="" alt="" />
 						{:else}
-							{@const Icons = getFileIcon(attachment)}
+							{@const Icons = getFileIcon(assignmentAttachment)}
 							<a
-								href="{PUBLIC_R2_URL}/{attachment}"
+								href="{PUBLIC_R2_URL}/{assignmentAttachment}"
 								class="flex w-fit flex-row items-center gap-2 rounded-sm border p-2"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
 								<Icons class="size-5" />
-								<span class="text-sm">{attachment}</span>
+								<span class="text-sm">{assignmentAttachment}</span>
 							</a>
 						{/if}
-					{/each}
+					{/if}
 				</ul>
 			{/if}
 		</div>

@@ -25,6 +25,9 @@ export const load: PageServerLoad = async (event) => {
 			.from(material)
 			.where(and(eq(material.id, id), eq(material.chapter, chapter)))
 			.get();
+		if (!selectedMaterial) {
+			return error(404, "Material not found");
+		}
 		return {
 			material: selectedMaterial,
 			form: await superValidate(event, zod4(formSchemaEdit)),
@@ -77,7 +80,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const attachmentArray: string[] = [];
+		let attachmentName;
 		try {
 			const subjectId = await db
 				.select({ id: subject.id })
@@ -109,48 +112,32 @@ export const actions: Actions = {
 					form,
 				});
 			}
-			const existingAttachments: string[] = [];
-			if (beforeMaterial.attachment) {
-				const existing = JSON.parse(beforeMaterial.attachment);
-				existingAttachments.push(...existing);
+			try {
+				const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachmentName = uniqueFileName;
+				const fileBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, fileBuffer);
+				if (beforeMaterial.attachment) {
+					await r2.delete(beforeMaterial.attachment);
+				}
+			} catch (error) {
+				console.error("Error uploading file:", error, form.data.attachment.name);
+				return fail(500, { edit: { success: false, name: form.data.attachment.name }, form });
 			}
 
-			if (form.data.attachment) {
-				const uploadPromises = form.data.attachment.map(async (file) => {
-					try {
-						const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
-						attachmentArray.push(uniqueFileName);
-						const fileBuffer = await file.arrayBuffer();
-						await r2.put(uniqueFileName, fileBuffer);
-						return { success: true };
-					} catch (error) {
-						console.error("Error uploading file:", error, file.name);
-						return { success: false, fileName: file.name };
-					}
-				});
-				const results = await Promise.all(uploadPromises);
-				const failures = results.filter((result) => !result.success);
-				if (failures.length > 0) {
-					throw new Error(
-						`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
-					);
-				}
-			}
 			await db
 				.update(material)
 				.set({
 					title: form.data.title,
 					description: form.data.description,
 					content: form.data.content,
-					attachment: JSON.stringify(attachmentArray.concat(existingAttachments)),
+					attachment: attachmentName,
 				})
 				.where(eq(material.id, materialId));
 		} catch (error) {
-			await Promise.all(
-				attachmentArray.map(async (element) => {
-					await r2.delete(element);
-				}),
-			);
+			if (attachmentName) {
+				await r2.delete(attachmentName);
+			}
 			console.error(error);
 			setError(
 				form,
@@ -243,12 +230,7 @@ export const actions: Actions = {
 					),
 				);
 			if (toDelete.attachment) {
-				const attachments = JSON.parse(toDelete.attachment);
-				await Promise.all(
-					attachments.map(async (attachment: string) => {
-						await r2.delete(attachment);
-					}),
-				);
+				await r2.delete(toDelete.attachment);
 			}
 		} catch (error) {
 			console.error(error instanceof Error ? error.message : error);
@@ -261,101 +243,5 @@ export const actions: Actions = {
 			});
 		}
 		return redirect(302, `/subject/${subjectCode}/${chapter}`);
-	},
-	deleteAttachment: async (event) => {
-		if (!event.locals.user) {
-			return redirect(302, "/signin");
-		}
-		const db = getDb(event);
-		const r2 = getR2(event);
-		const formData = await event.request.formData();
-		const name = formData.get("attachment_name");
-		const schoolId = event.locals.user.school;
-		const { subjectCode } = event.params;
-		const chapter = Number(event.params.chapter);
-		if (name === null || typeof name !== "string" || name.trim() === "") {
-			return fail(400, {
-				deleteAttachment: {
-					success: false,
-					message: "Attachment name is required.",
-				},
-			});
-		}
-		if (!schoolId) {
-			return fail(400, {
-				deleteAttachment: {
-					success: false,
-					message: "School ID is required.",
-				},
-			});
-		}
-		if (isNaN(chapter)) {
-			return fail(400, {
-				deleteAttachment: {
-					success: false,
-					message: "Invalid chapter number.",
-				},
-			});
-		}
-		const subjectId = await db
-			.select({ id: subject.id })
-			.from(subject)
-			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
-			.get();
-		if (!subjectId) {
-			return fail(404, {
-				deleteAttachment: {
-					success: false,
-					message: "Subject not found.",
-				},
-			});
-		}
-		const oldAttachment = await db
-			.select({ attachment: material.attachment })
-			.from(material)
-			.where(and(eq(material.subjectId, subjectId.id), eq(material.chapter, chapter)))
-			.get();
-		if (!oldAttachment?.attachment) {
-			return fail(404, {
-				deleteAttachment: {
-					success: false,
-					message: "Material not found or has no attachments.",
-				},
-			});
-		}
-		const attachments = JSON.parse(oldAttachment.attachment);
-		if (!attachments.includes(name)) {
-			return fail(404, {
-				deleteAttachment: {
-					success: false,
-					message: "Attachment not found.",
-				},
-			});
-		}
-		try {
-			await r2.delete(name);
-			const updatedAttachments = attachments.filter((attachment: string) => attachment !== name);
-			await db
-				.update(material)
-				.set({ attachment: JSON.stringify(updatedAttachments) })
-				.where(and(eq(material.subjectId, subjectId.id), eq(material.chapter, chapter)));
-		} catch (error) {
-			console.error(error instanceof Error ? error.message : error);
-			return fail(500, {
-				deleteAttachment: {
-					success: false,
-					message:
-						error instanceof Error
-							? error.message
-							: "Failed to delete attachment. Please try again.",
-				},
-			});
-		}
-		return {
-			deleteAttachment: {
-				success: true,
-				message: "Attachment deleted successfully.",
-			},
-		};
 	},
 };

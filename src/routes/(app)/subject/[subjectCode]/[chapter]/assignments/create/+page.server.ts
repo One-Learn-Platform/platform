@@ -88,30 +88,21 @@ export const actions: Actions = {
 			});
 		}
 		const r2 = getR2(event);
-		const attachmentArray: string[] = [];
+		let attachment;
 		if (form.data.attachment) {
-			const uploadPromises = form.data.attachment.map(async (file) => {
-				try {
-					const uniqueFileName = `subject/${selectedSubject.code}/${chapter}/assignment/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
-					attachmentArray.push(uniqueFileName);
-					const fileBuffer = await file.arrayBuffer();
-					await r2.put(uniqueFileName, fileBuffer);
-					return { success: true };
-				} catch (error) {
-					console.error("Error uploading file:", error, file.name);
-					return { success: false, fileName: file.name };
-				}
-			});
-			const results = await Promise.all(uploadPromises);
-			const failures = results.filter((result) => !result.success);
-			if (failures.length > 0) {
-				setError(
-					form,
-					"attachment._errors",
-					`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}`,
-				);
+			try {
+				const uniqueFileName = `subject/${selectedSubject.code}/${chapter}/assignment/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachment = uniqueFileName;
+				const fileBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, fileBuffer);
+			} catch (error) {
+				console.error("Error uploading file:", error, form.data.attachment.name);
+				setError(form, "attachment", "Failed to upload file");
 				return fail(500, {
-					message: `Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
+					create: {
+						success: false,
+						message: `Failed to upload file: ${form.data.attachment.name}. Please try again.`,
+					},
 					form,
 				});
 			}
@@ -135,7 +126,7 @@ export const actions: Actions = {
 					title: form.data.title,
 					description: form.data.description,
 					dueDate: form.data.dueDate,
-					attachment: form.data.attachment ? JSON.stringify(attachmentArray) : null,
+					attachment: attachment,
 					quiz: form.data.quiz,
 					limitUser: form.data.limitUser ? form.data.limitUser : undefined,
 					startDate: form.data.startDate ? form.data.startDate : undefined,
@@ -146,6 +137,9 @@ export const actions: Actions = {
 				.returning()
 				.get();
 		} catch (error) {
+			if (attachment) {
+				await r2.delete(attachment);
+			}
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
 			return fail(500, {

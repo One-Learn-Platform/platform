@@ -11,7 +11,7 @@
 	import Dompurify from "dompurify";
 	import type { default as Quill } from "quill";
 	import { toast } from "svelte-sonner";
-	import { superForm } from "sveltekit-superforms";
+	import { superForm, fileProxy } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 	import { formSchema } from "./schema";
 
@@ -32,6 +32,7 @@
 
 	import { invalidateAll } from "$app/navigation";
 	import { acronym } from "$lib/utils";
+	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
@@ -66,6 +67,8 @@
 		validators: zod4Client(formSchemaEdit),
 	});
 	const { form: formDataEdit, enhance: enhanceEdit, errors: formErrorsEdit } = superformEdit;
+	const attachmentProxy = fileProxy(formDataEdit, "attachment");
+	let fileName = $state();
 
 	const initials = acronym(data.forum.fullname ?? "ID");
 	const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -331,6 +334,7 @@
 				action="?/editforum"
 				method="POST"
 				class="flex w-full grow flex-col gap-2"
+				enctype="multipart/form-data"
 				use:enhanceEdit
 			>
 				<Form.Field form={superformEdit} name="title">
@@ -366,6 +370,25 @@
 						<Form.Description>Content of the forum</Form.Description>
 					{/if}
 				</Form.Field>
+				<Form.Field form={superformEdit} name="attachment">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Attachment</Form.Label>
+							<Input
+								{...props}
+								type="file"
+								bind:files={$attachmentProxy}
+								bind:value={fileName}
+								placeholder="Upload your file"
+							/>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrorsEdit.attachment}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>Attach any file up to 100MB</Form.Description>
+					{/if}
+				</Form.Field>
 				<div class="flex flex-row justify-end gap-2">
 					<Button variant="outline" type="button" onclick={() => (edit = false)} size="sm">
 						Cancel
@@ -377,35 +400,54 @@
 			<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
 				{@html sanitizedDescription}
 			</div>
-			<div class="flex w-full flex-row items-center justify-end gap-2">
-				{#if data.forum.userId === data.user.id}
-					<Button variant="outline" size="sm" onclick={() => (edit = true)}><Pencil />Edit</Button>
+			<div class="flex w-full flex-row items-center justify-between gap-2">
+				{#if data.forum.attachment}
+					{@const Icons = getFileIcon(data.forum.attachment)}
+					{@const category = getFileCategory(data.forum.attachment)}
+					{#if category === "image"}
+						<img src="{PUBLIC_R2_URL}/{data.forum.attachment}" alt="" class="max-h-48 max-w-24" />
+					{:else}
+						<a
+							href={`${PUBLIC_R2_URL}/${data.forum.attachment}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Icons class="size-4" />
+							{data.forum.attachment.split("/").pop()}
+						</a>
+					{/if}
 				{/if}
-				{#if data.user.role === 2 || data.forum.userId === data.user.id}
-					<AlertDialog.Root bind:open={dialogForumOpen}>
-						<AlertDialog.Trigger>
-							{#snippet child({ props })}
-								<Button {...props} variant="destructive" size="sm"><Trash2 />Delete</Button>
-							{/snippet}
-						</AlertDialog.Trigger>
-						<AlertDialog.Content>
-							<form action="?/deleteforum" method="POST" class="contents" use:svelteEnhance>
-								<AlertDialog.Header>
-									<AlertDialog.Title>Do you want to delete this forum?</AlertDialog.Title>
-									<AlertDialog.Description>
-										<input type="hidden" name="forum_id" value={data.forum.id} />
-										This will permanently delete the forum and all its comments. Make sure you want to
-										do this.
-									</AlertDialog.Description>
-								</AlertDialog.Header>
-								<AlertDialog.Footer>
-									<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
-									<AlertDialog.Action>Continue</AlertDialog.Action>
-								</AlertDialog.Footer>
-							</form>
-						</AlertDialog.Content>
-					</AlertDialog.Root>
-				{/if}
+				<div class="space-x-2">
+					{#if data.forum.userId === data.user.id}
+						<Button variant="outline" size="sm" onclick={() => (edit = true)}><Pencil />Edit</Button
+						>
+					{/if}
+					{#if data.user.role === 2 || data.forum.userId === data.user.id}
+						<AlertDialog.Root bind:open={dialogForumOpen}>
+							<AlertDialog.Trigger>
+								{#snippet child({ props })}
+									<Button {...props} variant="destructive" size="sm"><Trash2 />Delete</Button>
+								{/snippet}
+							</AlertDialog.Trigger>
+							<AlertDialog.Content>
+								<form action="?/deleteforum" method="POST" class="contents" use:svelteEnhance>
+									<AlertDialog.Header>
+										<AlertDialog.Title>Do you want to delete this forum?</AlertDialog.Title>
+										<AlertDialog.Description>
+											<input type="hidden" name="forum_id" value={data.forum.id} />
+											This will permanently delete the forum and all its comments. Make sure you want
+											to do this.
+										</AlertDialog.Description>
+									</AlertDialog.Header>
+									<AlertDialog.Footer>
+										<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+										<AlertDialog.Action>Continue</AlertDialog.Action>
+									</AlertDialog.Footer>
+								</form>
+							</AlertDialog.Content>
+						</AlertDialog.Root>
+					{/if}
+				</div>
 			</div>
 		{/if}
 	</Card.Content>

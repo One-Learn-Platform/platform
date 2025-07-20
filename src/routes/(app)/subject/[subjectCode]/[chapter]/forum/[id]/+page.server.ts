@@ -7,8 +7,11 @@ import { formSchema, formSchemaEdit as formSchemaEditComment } from "./schema";
 import { formSchemaEdit } from "$lib/schema/forum/schema";
 
 import { getDb } from "$lib/server/db";
+import { getR2 } from "$lib/server/r2";
 import { comment, forum, user, subject } from "$lib/schema/db";
 import { and, eq, count, getTableColumns, desc } from "drizzle-orm";
+import { getFileExtension, getTimeStamp } from "$lib/utils";
+import { getFileName } from "$lib/functions/material";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -165,8 +168,18 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
 		}
+		const r2 = getR2(event);
 		const db = getDb(event);
 		const userId = event.locals.user.id;
+		const chapter = Number(event.params.chapter);
+		if (isNaN(chapter) || chapter < 1) {
+			return fail(400, {
+				editforum: {
+					success: false,
+					message: "Invalid chapter",
+				},
+			});
+		}
 		const id = Number(event.params.id);
 		const form = await superValidate(event, zod4(formSchemaEdit));
 		if (isNaN(id) || id < 1) {
@@ -207,7 +220,29 @@ export const actions: Actions = {
 				form,
 			});
 		}
+		const subjectId = await db
+			.select()
+			.from(subject)
+			.where(eq(subject.code, event.params.subjectCode))
+			.get();
+		if (!subjectId) {
+			setError(form, "", "Subject not found. Please try again.");
+			return fail(404, {
+				editforum: {
+					success: false,
+					message: "Subject not found. Please try again.",
+				},
+				form,
+			});
+		}
+		let attachment;
 		try {
+			if (form.data.attachment) {
+				const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachment = uniqueFileName;
+				const attachmentBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, attachmentBuffer);
+			}
 			await db
 				.update(forum)
 				.set({
@@ -216,6 +251,9 @@ export const actions: Actions = {
 				})
 				.where(eq(forum.id, id));
 		} catch (error) {
+			if (attachment) {
+				await r2.delete(attachment);
+			}
 			console.error("Error updating forum:", error);
 			setError(
 				form,

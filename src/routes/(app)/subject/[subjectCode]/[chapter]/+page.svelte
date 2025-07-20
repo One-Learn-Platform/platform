@@ -27,9 +27,7 @@
 
 	let { data }: { data: PageData } = $props();
 	const firstMaterial = $derived(data.material[0]);
-	const firstMaterialAttachment = $derived(
-		firstMaterial?.attachment ? JSON.parse(firstMaterial.attachment) : [],
-	);
+	const firstMaterialAttachment = $derived(firstMaterial?.attachment);
 	const otherMaterials = $derived(data.material.slice(1));
 	const unfinishedAssignments = $derived(data.assignment.filter((a) => a.done === 0));
 
@@ -136,32 +134,30 @@
 				{@html sanitizedContent}
 			</div>
 
-			{#if firstMaterialAttachment.length > 0}
+			{#if firstMaterialAttachment}
+				{@const fileCategory = getFileCategory(firstMaterialAttachment)}
+				{@const fileName = firstMaterialAttachment.split("/").pop() || firstMaterialAttachment}
 				<p class="text-sm text-muted-foreground">Attachments:</p>
 				<div class="flex flex-row flex-wrap items-start gap-2">
-					{#each firstMaterialAttachment as attachment (attachment)}
-						{@const fileCategory = getFileCategory(attachment)}
-						{@const fileName = attachment.split("/").pop() || attachment}
-						{#if fileCategory === "image"}
-							<img
-								src="{PUBLIC_R2_URL}/{attachment}"
-								alt=""
-								class="h-auto w-1/5 max-w-full min-w-xs"
-							/>
-						{:else}
-							{@const FileIcon = getFileIcon(fileCategory)}
-							<a
-								href="{PUBLIC_R2_URL}/{attachment}"
-								target="_blank"
-								class="group flex h-fit max-w-28 flex-col items-center gap-1 rounded-xs border p-2"
-							>
-								<FileIcon class="" />
-								<span class="leading-tight break-all text-informative group-hover:underline">
-									{fileName}
-								</span>
-							</a>
-						{/if}
-					{/each}
+					{#if fileCategory === "image"}
+						<img
+							src="{PUBLIC_R2_URL}/{firstMaterialAttachment}"
+							alt=""
+							class="h-auto w-1/5 max-w-full min-w-xs"
+						/>
+					{:else}
+						{@const FileIcon = getFileIcon(fileCategory)}
+						<a
+							href="{PUBLIC_R2_URL}/{firstMaterialAttachment}"
+							target="_blank"
+							class="group flex h-fit max-w-28 flex-col items-center gap-1 rounded-xs border p-2"
+						>
+							<FileIcon class="" />
+							<span class="leading-tight break-all text-informative group-hover:underline">
+								{fileName}
+							</span>
+						</a>
+					{/if}
 				</div>
 			{:else}
 				<p>No attachments available.</p>

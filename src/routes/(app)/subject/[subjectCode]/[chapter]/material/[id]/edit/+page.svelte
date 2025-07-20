@@ -1,19 +1,18 @@
 <script lang="ts">
+	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { enhance as svelteEnhance } from "$app/forms";
 	import { invalidateAll } from "$app/navigation";
-	import { PUBLIC_R2_URL } from "$env/static/public";
 	import { onMount } from "svelte";
 	import type { ActionData, PageServerData } from "./$types.js";
 
 	import { formSchemaEdit } from "$lib/schema/material/schema";
-	import { filesProxy, superForm } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 	import { toast } from "svelte-sonner";
@@ -22,7 +21,7 @@
 
 	import type { default as Quill } from "quill";
 
-	import { getFileIcon, getFileName } from "$lib/functions/material";
+	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 
 	const { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -31,10 +30,9 @@
 		validators: zod4Client(formSchemaEdit),
 	});
 	const { form: formData, enhance, errors } = superform;
-	const attachmentProxies = filesProxy(formData, "attachment");
+	const attachmentProxies = fileProxy(formData, "attachment");
 	let filesName = $state();
 
-	const attachmentList = $derived(JSON.parse(data.material?.attachment ?? "[]"));
 	let dialogOpen = $state(false);
 	let toDeleteAttachment = $state("");
 
@@ -113,14 +111,6 @@
 				toast.success(form.delete.message || "Material deleted successfully!");
 			} else {
 				toast.error(form.delete.message || "Failed to delete material.");
-			}
-		} else if (form?.deleteAttachment) {
-			if (form.deleteAttachment?.success) {
-				dialogOpen = false;
-				toast.success(form.deleteAttachment.message || "Attachment deleted successfully!");
-				invalidateAll();
-			} else {
-				toast.error(form.deleteAttachment.message || "Failed to delete attachment.");
 			}
 		}
 	});
@@ -226,7 +216,7 @@
 				/>
 			{/snippet}
 		</Form.Control>
-		{#if $errors.attachment?._errors}
+		{#if $errors.attachment}
 			<Form.FieldErrors />
 		{:else}
 			<Form.Description>Attach any files up to 100MB</Form.Description>
@@ -270,42 +260,29 @@
 			</li>
 		{/each}
 	</ul>
-
-	<Table.Root>
-		<Table.Caption>Uploaded Attachment</Table.Caption>
-		<Table.Header>
-			<Table.Row>
-				<Table.Head class="">Name</Table.Head>
-				<Table.Head>Link</Table.Head>
-				<Table.Head>Action</Table.Head>
-			</Table.Row>
-		</Table.Header>
-		<Table.Body>
-			{#each attachmentList as attachment (attachment)}
-				{@const fileName = getFileName(attachment)}
-				<Table.Row>
-					<Table.Cell class="font-medium">{fileName}</Table.Cell>
-					<Table.Cell>
-						<a href="{PUBLIC_R2_URL}/{attachment}">{PUBLIC_R2_URL}/{attachment}</a></Table.Cell
-					>
-					<Table.Cell class="Cell">
-						<Button
-							type="button"
-							variant="destructive"
-							outline
-							onclick={() => {
-								dialogOpen = true;
-								toDeleteAttachment = attachment;
-							}}
-						>
-							<X />
-						</Button>
-					</Table.Cell>
-				</Table.Row>
-			{/each}
-		</Table.Body>
-	</Table.Root>
-
+	{#if data.material?.attachment}
+		{@const fileCategory = getFileCategory(data.material.attachment)}
+		{@const fileName = data.material.attachment.split("/").pop() || data.material.attachment}
+		{#if fileCategory === "image"}
+			<img
+				src="{PUBLIC_R2_URL}/{data.material.attachment}"
+				alt=""
+				class="h-auto w-1/5 max-w-full min-w-xs"
+			/>
+		{:else}
+			{@const FileIcon = getFileIcon(fileCategory)}
+			<a
+				href="{PUBLIC_R2_URL}/{data.material.attachment}"
+				target="_blank"
+				class="group flex h-fit max-w-28 flex-col items-center gap-1 rounded-xs border p-2"
+			>
+				<FileIcon class="" />
+				<span class="leading-tight break-all text-informative group-hover:underline">
+					{fileName}
+				</span>
+			</a>
+		{/if}
+	{/if}
 	<Form.Button class="self-end">Save Edit</Form.Button>
 </form>
 

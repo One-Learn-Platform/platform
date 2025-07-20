@@ -3,10 +3,13 @@ import type { Actions, PageServerLoad } from "./$types";
 
 import { forum, subject } from "$lib/schema/db";
 import { formSchemaCreate } from "$lib/schema/forum/schema";
+import { getR2 } from "$lib/server/r2";
 import { getDb } from "$lib/server/db";
 import { and, eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import { getFileExtension, getTimeStamp } from "$lib/utils";
+import { getFileName } from "$lib/functions/material";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -24,6 +27,7 @@ export const actions: Actions = {
 		}
 
 		const db = getDb(event);
+		const r2 = getR2(event);
 		const userId = event.locals.user.id;
 		const schoolId = event.locals.user.school;
 		const { subjectCode } = event.params;
@@ -77,6 +81,9 @@ export const actions: Actions = {
 				form,
 			});
 		}
+
+		let attachment;
+		let forumId;
 		try {
 			const subjectId = await db
 				.select({ id: subject.id })
@@ -93,15 +100,29 @@ export const actions: Actions = {
 					form,
 				});
 			}
-			await db.insert(forum).values({
-				title: form.data.title,
-				description: form.data.description,
-				chapter: chapter,
-				schoolId: schoolId,
-				subjectId: subjectId?.id,
-				userId: userId,
-			});
+			if (form.data.attachment) {
+				const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachment = uniqueFileName;
+				const attachmentBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, attachmentBuffer);
+			}
+			forumId = await db
+				.insert(forum)
+				.values({
+					title: form.data.title,
+					description: form.data.description,
+					chapter: chapter,
+					schoolId: schoolId,
+					attachment: attachment,
+					subjectId: subjectId?.id,
+					userId: userId,
+				})
+				.returning()
+				.get();
 		} catch (error) {
+			if (attachment) {
+				await r2.delete(attachment);
+			}
 			console.error(error);
 			setError(
 				form,
@@ -117,6 +138,6 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		return redirect(302, `/subject/${subjectCode}/${chapter}`);
+		return redirect(302, `/subject/${subjectCode}/${chapter}/forum/${forumId.id}`);
 	},
 };

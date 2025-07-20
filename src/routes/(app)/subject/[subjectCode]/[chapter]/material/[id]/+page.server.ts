@@ -98,12 +98,7 @@ export const actions: Actions = {
 					),
 				);
 			if (toDelete.attachment) {
-				const attachments = JSON.parse(toDelete.attachment);
-				await Promise.all(
-					attachments.map(async (attachment: string) => {
-						await r2.delete(attachment);
-					}),
-				);
+				await r2.delete(toDelete.attachment);
 			}
 		} catch (error) {
 			console.error(error instanceof Error ? error.message : error);

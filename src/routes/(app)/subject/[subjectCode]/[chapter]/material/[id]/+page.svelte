@@ -20,7 +20,7 @@
 
 	const { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } =
 		$props();
-	const attachmentToArray = $derived(JSON.parse(data.material?.attachment || "[]"));
+	const attachment = data.material?.attachment;
 	let dialogOpen = $state(false);
 
 	$effect(() => {
@@ -67,27 +67,25 @@
 		</div>
 	{/if}
 
-	{#if attachmentToArray.length > 0}
+	{#if attachment}
 		<p class="text-sm text-muted-foreground">Attachments:</p>
-		{#each attachmentToArray as attachment (attachment)}
-			{@const fileCategory = getFileCategory(attachment)}
-			{@const fileName = attachment.split("/").pop() || attachment}
-			{#if fileCategory === "image"}
-				<img src="{PUBLIC_R2_URL}/{attachment}" alt="" class="h-auto w-1/5 max-w-full min-w-xs" />
-			{:else}
-				{@const FileIcon = getFileIcon(fileCategory)}
-				<a
-					href="{PUBLIC_R2_URL}/{attachment}"
-					target="_blank"
-					class="group flex h-fit max-w-28 flex-col items-center gap-1 rounded-xs border p-2"
-				>
-					<FileIcon class="" />
-					<span class="leading-tight break-all text-informative group-hover:underline">
-						{fileName}
-					</span>
-				</a>
-			{/if}
-		{/each}
+		{@const fileCategory = getFileCategory(attachment)}
+		{@const fileName = attachment.split("/").pop() || attachment}
+		{#if fileCategory === "image"}
+			<img src="{PUBLIC_R2_URL}/{attachment}" alt="" class="h-auto w-1/5 max-w-full min-w-xs" />
+		{:else}
+			{@const FileIcon = getFileIcon(fileCategory)}
+			<a
+				href="{PUBLIC_R2_URL}/{attachment}"
+				target="_blank"
+				class="group flex h-fit max-w-28 flex-col items-center gap-1 rounded-xs border p-2"
+			>
+				<FileIcon class="" />
+				<span class="leading-tight break-all text-informative group-hover:underline">
+					{fileName}
+				</span>
+			</a>
+		{/if}
 	{/if}
 </div>
 

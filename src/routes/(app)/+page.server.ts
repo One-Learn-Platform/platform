@@ -35,8 +35,8 @@ export const load: PageServerLoad = async (event) => {
 			.innerJoin(subject, eq(enrollment.subjectId, subject.id))
 			.where(and(eq(enrollment.schoolId, schoolId), eq(subject.gradesId, selectedGrade)))
 			.orderBy(desc(enrollment.createdAt));
-	
-		return {  quote: quoteData, leaderboard };
+
+		return { quote: quoteData, leaderboard };
 	}
 	return redirect(302, "/signin");
 };

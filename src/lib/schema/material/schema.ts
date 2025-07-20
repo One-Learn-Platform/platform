@@ -6,8 +6,7 @@ export const formSchema = createInsertSchema(material, {
 	title: z.string().min(3, { error: "Title must be at least 3 characters long" }).max(255),
 	attachment: z
 		.instanceof(File, { error: "Please upload a valid file." })
-		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
-		.array(),
+		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." }),
 	content: z
 		.string()
 		.min(1, { error: "Content is required." })
@@ -24,6 +23,6 @@ export const formSchema = createInsertSchema(material, {
 	subjectId: true,
 });
 
-export const formSchemaEdit = formSchema.partial();
+export const formSchemaEdit = formSchema;
 
 export type CreateMaterialSchema = typeof formSchema;

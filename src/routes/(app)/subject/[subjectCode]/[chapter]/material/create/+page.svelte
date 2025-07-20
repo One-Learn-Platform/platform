@@ -3,7 +3,7 @@
 	import type { PageServerData } from "./$types.js";
 
 	import { formSchema } from "$lib/schema/material/schema";
-	import { filesProxy, superForm } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -25,7 +25,7 @@
 		validators: zod4Client(formSchema),
 	});
 	const { form: formData, enhance, errors } = superform;
-	const attachmentProxies = filesProxy(formData, "attachment");
+	const attachmentProxies = fileProxy(formData, "attachment");
 	let attachmentNames = $state();
 
 	let quillInstance: Quill | null = null;

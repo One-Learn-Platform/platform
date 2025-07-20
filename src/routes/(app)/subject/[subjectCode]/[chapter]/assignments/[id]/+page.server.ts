@@ -152,35 +152,25 @@ export const actions: Actions = {
 			});
 		}
 		const r2 = getR2(event);
-		const attachmentArray: string[] = [];
-		const oldAttachment = oldAssignment.attachment
-			? (JSON.parse(oldAssignment.attachment) as string[])
-			: [];
+		const oldAttachment = oldAssignment.attachment;
+		let attachment;
+
 		if (form.data.attachment) {
-			const uploadPromises = form.data.attachment.map(async (file) => {
-				try {
-					const uniqueFileName = `subject/${selectedSubject.code}/${chapter}/assignment/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
-					attachmentArray.push(uniqueFileName);
-					const fileBuffer = await file.arrayBuffer();
-					await r2.put(uniqueFileName, fileBuffer);
-					return { success: true };
-				} catch (error) {
-					console.error("Error uploading file:", error, file.name);
-					return { success: false, fileName: file.name };
-				}
-			});
-			const results = await Promise.all(uploadPromises);
-			const failures = results.filter((result) => !result.success);
-			if (failures.length > 0) {
-				throw new Error(
-					`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
-				);
+			try {
+				const uniqueFileName = `subject/${selectedSubject.code}/${chapter}/assignment/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachment = uniqueFileName;
+				const fileBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, fileBuffer);
+			} catch (error) {
+				console.error("Error uploading file:", error, form.data.attachment.name);
+				setError(form, "attachment", "Failed to upload file");
+				return fail(500, { edit: { success: false, message: "Failed to upload file" }, form });
 			}
 		}
 		if (form.data.startDate && new Date(form.data.dueDate) < new Date(form.data.startDate)) {
 			setError(form, "dueDate", "Due date must be after start date");
 			return fail(400, {
-				create: {
+				edit: {
 					success: false,
 					message: "Due date must be after start date",
 				},
@@ -197,22 +187,13 @@ export const actions: Actions = {
 					startDate: form.data.startDate || null,
 					quiz: form.data.quiz,
 					limitUser: form.data.limitUser ? form.data.limitUser : null,
-					attachment: attachmentArray.length > 0 ? JSON.stringify(attachmentArray) : null,
+					attachment: attachment,
 				})
 				.where(eq(assignment.id, assignmentId));
-			if (form.data.attachment && oldAttachment.length > 0) {
-				await Promise.all(
-					oldAttachment.map(async (element) => {
-						await r2.delete(element);
-					}),
-				);
-			}
 		} catch (error) {
-			await Promise.all(
-				attachmentArray.map(async (element) => {
-					await r2.delete(element);
-				}),
-			);
+			if (attachment) {
+				await r2.delete(attachment);
+			}
 			console.error("Error inserting assignment:", error);
 			setError(form, "", error instanceof Error ? error.message : "Failed to create assignment");
 			return superFail(500, {
@@ -222,6 +203,9 @@ export const actions: Actions = {
 				},
 				form,
 			});
+		}
+		if (oldAttachment) {
+			await r2.delete(oldAttachment);
 		}
 
 		return withFiles({

@@ -1,13 +1,11 @@
 <script lang="ts">
-	import type { PageServerData, ActionData } from "./$types";
+	import type { ActionData, PageServerData } from "./$types";
 
 	import { formSchema } from "$lib/schema/assignment/schema";
-	import { filesProxy, superForm } from "sveltekit-superforms";
+	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import { invalidateAll } from "$app/navigation";
-	import { toast } from "svelte-sonner";
-	import { getFileIcon } from "$lib/functions/material";
 	import { cn } from "$lib/utils.js";
 	import {
 		CalendarDate,
@@ -19,24 +17,23 @@
 		today,
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
-	import X from "@lucide/svelte/icons/x";
+	import { toast } from "svelte-sonner";
 
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
+	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { Calendar } from "$lib/components/ui/calendar/index.js";
+	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 	import * as Form from "$lib/components/ui/form/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
-	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const superform = superForm(data.form, {
 		validators: zod4Client(formSchema),
 	});
 	const { form: formData, enhance, errors } = superform;
-	const attachmentProxies = filesProxy(formData, "attachment");
+	const attachmentProxies = fileProxy(formData, "attachment");
 	let attachmentNames = $state();
 
 	let dueDate: string = $state("");
@@ -318,52 +315,12 @@
 					/>
 				{/snippet}
 			</Form.Control>
-			{#if $errors.attachment?._errors}
+			{#if $errors.attachment}
 				<Form.FieldErrors />
 			{:else}
 				<Form.Description>Attach any files up to 100MB</Form.Description>
 			{/if}
 		</Form.Field>
-
-		{#if $attachmentProxies.length > 0}
-			<ul class="flex flex-col gap-1">
-				{#each $attachmentProxies as file (file.name)}
-					{@const Icons = getFileIcon(file.name)}
-					<li class="flex w-fit flex-row items-center gap-1 rounded-sm border px-2 py-1">
-						<Icons class="size-5" />
-						<span class="text-sm">{file.name}</span>
-						<Tooltip.Provider delayDuration={150} disableHoverableContent>
-							<Tooltip.Root>
-								<Tooltip.Trigger>
-									{#snippet child({ props })}
-										<Button
-											{...props}
-											variant="destructive"
-											size="icon"
-											type="button"
-											class="ml-2 h-fit w-fit rounded-xs"
-											outline
-											onclick={() => {
-												const filesArray = Array.from($attachmentProxies);
-												const filteredFiles = filesArray.filter((f) => f.name !== file.name);
-												const dataTransfer = new DataTransfer();
-												filteredFiles.forEach((f) => dataTransfer.items.add(f));
-												$attachmentProxies = dataTransfer.files;
-											}}
-										>
-											<X />
-										</Button>
-									{/snippet}
-								</Tooltip.Trigger>
-								<Tooltip.Content side="right">
-									<p>Remove file</p>
-								</Tooltip.Content>
-							</Tooltip.Root>
-						</Tooltip.Provider>
-					</li>
-				{/each}
-			</ul>
-		{/if}
 
 		<Form.Button class="w-fit self-end">Next</Form.Button>
 	</form>

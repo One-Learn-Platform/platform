@@ -3,7 +3,7 @@
 	import type { PageServerData } from "./$types.js";
 
 	import { formSchemaCreate } from "$lib/schema/forum/schema";
-	import { superForm } from "sveltekit-superforms";
+	import { superForm, fileProxy } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
 	import * as Form from "$lib/components/ui/form/index.js";
@@ -18,6 +18,8 @@
 		validators: zod4Client(formSchemaCreate),
 	});
 	const { form: formData, enhance, errors } = superform;
+	const attachmentProxy = fileProxy(formData, "attachment");
+	let fileName = $state();
 
 	let quillInstance: Quill | null = null;
 	let editorElement: HTMLElement | undefined = $state();
@@ -65,7 +67,13 @@
 </script>
 
 <h1 class="text-2xl font-semibold tracking-tight">Create A Forum</h1>
-<form action="?/create" method="POST" class="flex w-full grow flex-col gap-2" use:enhance>
+<form
+	action="?/create"
+	method="POST"
+	class="flex w-full grow flex-col gap-2"
+	use:enhance
+	enctype="multipart/form-data"
+>
 	<Form.Field form={superform} name="title">
 		<Form.Control>
 			{#snippet children({ props })}
@@ -97,6 +105,26 @@
 			<Form.FieldErrors />
 		{:else}
 			<Form.Description>Content of the forum</Form.Description>
+		{/if}
+	</Form.Field>
+
+	<Form.Field form={superform} name="attachment">
+		<Form.Control>
+			{#snippet children({ props })}
+				<Form.Label>Attachment</Form.Label>
+				<Input
+					{...props}
+					type="file"
+					bind:files={$attachmentProxy}
+					bind:value={fileName}
+					placeholder="Upload your file"
+				/>
+			{/snippet}
+		</Form.Control>
+		{#if $errors.title}
+			<Form.FieldErrors />
+		{:else}
+			<Form.Description>Attach any file up to 100MB</Form.Description>
 		{/if}
 	</Form.Field>
 	<Form.Button class="self-end">Create</Form.Button>

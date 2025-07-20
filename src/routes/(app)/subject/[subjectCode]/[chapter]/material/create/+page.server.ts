@@ -62,59 +62,51 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const attachmentArray: string[] = [];
+
+		const subjectId = await db
+			.select({ id: subject.id })
+			.from(subject)
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
+			.get();
+		if (!subjectId) {
+			setError(form, "", "Subject not found. Please try again.");
+			return fail(404, {
+				create: {
+					success: false,
+					message: "Subject not found. Please try again.",
+				},
+				form,
+			});
+		}
+
+		let attachmentArray;
 		try {
-			const subjectId = await db
-				.select({ id: subject.id })
-				.from(subject)
-				.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
-				.get();
-			if (!subjectId) {
-				setError(form, "", "Subject not found. Please try again.");
-				return fail(404, {
-					create: {
-						success: false,
-						message: "Subject not found. Please try again.",
-					},
+			try {
+				const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(form.data.attachment.name)}-${getTimeStamp()}.${getFileExtension(form.data.attachment.name)}`;
+				attachmentArray = uniqueFileName;
+				const fileBuffer = await form.data.attachment.arrayBuffer();
+				await r2.put(uniqueFileName, fileBuffer);
+			} catch (error) {
+				console.error("Error uploading file:", error, form.data.attachment.name);
+				return fail(500, {
+					create: { success: false, fileName: form.data.attachment.name },
 					form,
 				});
 			}
-			if (form.data.attachment) {
-				const uploadPromises = form.data.attachment.map(async (file) => {
-					try {
-						const uniqueFileName = `subject/${subjectId.id}/${chapter}/${getFileName(file.name)}-${getTimeStamp()}.${getFileExtension(file.name)}`;
-						attachmentArray.push(uniqueFileName);
-						const fileBuffer = await file.arrayBuffer();
-						await r2.put(uniqueFileName, fileBuffer);
-						return { success: true };
-					} catch (error) {
-						console.error("Error uploading file:", error, file.name);
-						return { success: false, fileName: file.name };
-					}
-				});
-				const results = await Promise.all(uploadPromises);
-				const failures = results.filter((result) => !result.success);
-				if (failures.length > 0) {
-					throw new Error(
-						`Failed to upload files: ${failures.map((f) => f.fileName).join(", ")}. Please try again.`,
-					);
-				}
-			}
+
 			await db.insert(material).values({
 				title: form.data.title,
 				description: form.data.description,
 				content: form.data.content,
-				attachment: form.data.attachment ? JSON.stringify(attachmentArray) : undefined,
+				attachment: attachmentArray,
 				chapter: Number(chapter),
 				schoolId: schoolId,
 				subjectId: subjectId?.id,
 			});
 		} catch (error) {
-			await Promise.all(
-				attachmentArray.map(async (element) => {
-					await r2.delete(element);
-				}),
-			);
+			if (attachmentArray) {
+				await r2.delete(attachmentArray);
+			}
 			console.error(error);
 			setError(
 				form,

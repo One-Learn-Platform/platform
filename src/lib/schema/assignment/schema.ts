@@ -7,7 +7,6 @@ export const formSchema = createInsertSchema(assignment, {
 	attachment: z
 		.instanceof(File, { error: "Please upload a valid file." })
 		.refine((f) => f.size < 100_000_000, { error: "File size must be less than 100MB." })
-		.array()
 		.optional(),
 	quiz: z.boolean(),
 	limitUser: z.number().min(1, { error: "Limit user must be at least 1." }).optional(),
