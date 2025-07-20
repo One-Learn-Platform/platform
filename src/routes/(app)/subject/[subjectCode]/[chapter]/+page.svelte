@@ -61,6 +61,16 @@
 				});
 			}
 		}
+		if (assignmentsDueTomorrow.length > 0) {
+			toast.warning(`You have ${assignmentsDueTomorrow.length} assignment(s) due tomorrow!`, {
+				description: "Please complete assignments immediately.",
+				action: {
+					label: "See Assignments",
+					onClick: () =>
+						goto(`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments`),
+				},
+			});
+		}
 	});
 </script>
 
