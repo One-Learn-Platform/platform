@@ -3,16 +3,22 @@ import {
 	Atom,
 	BookUser,
 	Calculator,
+	CarFront,
+	CircleDollarSign,
+	Clapperboard,
+	Computer,
 	Dna,
+	Drama,
+	Dumbbell,
 	FlaskConical,
+	HeartPulse,
+	Languages,
 	Microscope,
+	Palette,
+	PillBottle,
+	Scale,
 	Shapes,
 	UsersRound,
-	Computer,
-	Palette,
-	CircleDollarSign,
-	Dumbbell,
-	Scale,
 } from "@lucide/svelte";
 
 export function subjectIcon(name: string) {
@@ -22,6 +28,14 @@ export function subjectIcon(name: string) {
 	const physics = new Set(["physics", "physical", "phys", "fisika"]);
 	const science = new Set(["science", "scientific", "sains", "ilmu pengetahuan alam", "ipa"]);
 	const history = new Set(["history", "historical", "sejarah"]);
+	const languages = new Set([
+		"language",
+		"languages",
+		"bahasa",
+		"bahasa indonesia",
+		"english",
+		"inggris",
+	]);
 	const social = new Set([
 		"social",
 		"society",
@@ -68,6 +82,12 @@ export function subjectIcon(name: string) {
 		"pendidikan pancasila dan kewarganegaraan",
 		"pendidikan kewarganegaraan",
 	]);
+	const pharmacy = new Set(["pharmacy", "farmasi", "apotek"]);
+	const health = new Set(["health", "kesehatan", "ilmu kesehatan", "kesehatan"]);
+	const automotive = new Set(["automotive", "otomotif", "teknik otomotif"]);
+	const drama = new Set(["drama", "teater", "acting", "acting class", "theater", "kebudayaan"]);
+	const movie = new Set(["movie", "film", "cinema", "film studies", "sinema"]);
+
 	if (bio.has(nameLower)) return Dna;
 	if (math.has(nameLower)) return Calculator;
 	if (chem.has(nameLower)) return FlaskConical;
@@ -80,6 +100,12 @@ export function subjectIcon(name: string) {
 	if (economy.has(nameLower)) return CircleDollarSign;
 	if (sport.has(nameLower)) return Dumbbell;
 	if (civic.has(nameLower)) return Scale;
+	if (pharmacy.has(nameLower)) return PillBottle;
+	if (health.has(nameLower)) return HeartPulse;
+	if (automotive.has(nameLower)) return CarFront;
+	if (drama.has(nameLower)) return Drama;
+	if (movie.has(nameLower)) return Clapperboard;
+	if (languages.has(nameLower)) return Languages;
 
 	return Shapes;
 }
