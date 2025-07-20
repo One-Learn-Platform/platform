@@ -1,11 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, submission, user } from "$lib/schema/db";
+import { enrollment, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, desc, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
+	event.depends("app:selectedGrade");
 	if (event.locals.user) {
 		const db = getDb(event);
 		const schoolId = event.locals.user.school;
@@ -19,21 +20,23 @@ export const load: PageServerLoad = async (event) => {
 			},
 		});
 		const quoteData = (await quote.json()) as { advice: string };
-		const submissionsColumn = getTableColumns(submission);
+		const selectedGrade = Number(event.cookies.get("selectedGrade"));
+		const enrollmentColumn = getTableColumns(enrollment);
 		const leaderboard = await db
 			.select({
-				...submissionsColumn,
+				...enrollmentColumn,
 				userId: user.id,
-				avatar: user.avatar,
 				fullname: user.fullname,
-				assignmentId: assignment.id,
+				avatar: user.avatar,
+				subjectName: subject.name,
 			})
-			.from(submission)
-			.innerJoin(user, eq(submission.userId, user.id))
-			.innerJoin(assignment, eq(submission.assignmentId, assignment.id))
-			.where(and(eq(submission.schoolId, schoolId)))
-			.orderBy(desc(submission.score));
-		return { leaderboard, quote: quoteData };
+			.from(enrollment)
+			.innerJoin(user, eq(enrollment.userId, user.id))
+			.innerJoin(subject, eq(enrollment.subjectId, subject.id))
+			.where(and(eq(enrollment.schoolId, schoolId), eq(subject.gradesId, selectedGrade)))
+			.orderBy(desc(enrollment.createdAt));
+	
+		return {  quote: quoteData, leaderboard };
 	}
 	return redirect(302, "/signin");
 };
