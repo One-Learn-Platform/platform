@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/state";
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
@@ -65,7 +66,7 @@
 	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Materials</h1>
 	{#if data.user.role === 3}
 		<div class="flex w-full gap-2">
-			<Button variant="default" href="/subject/{data.params}/1/material/create">
+			<Button variant="default" href="/subject/{page.params.subjectCode}/1/material/create">
 				<Plus />Add Material
 			</Button>
 		</div>

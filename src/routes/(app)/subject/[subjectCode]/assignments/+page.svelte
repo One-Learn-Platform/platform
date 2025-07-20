@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/state";
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
 	import { fade } from "svelte/transition";
@@ -8,8 +9,8 @@
 
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
 	import { Label } from "$lib/components/ui/label/index.js";
+	import * as Select from "$lib/components/ui/select/index.js";
 	import { Switch } from "$lib/components/ui/switch/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
@@ -82,10 +83,10 @@
 	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Assignments</h1>
 	{#if data.user.role === 3}
 		<div class="flex w-full gap-2 *:grow *:basis-0">
-			<Button variant="default" href="/subject/{data.params}/1/assignments/create">
+			<Button variant="default" href="/subject/{page.params.subjectCode}/1/assignments/create">
 				<Plus />Add Assignment
 			</Button>
-			<Button variant="outline" href="/subject/{data.params}/1/assignments/results">
+			<Button variant="outline" href="/subject/{page.params.subjectCode}/1/assignments/results">
 				<FileChartColumnIncreasing />Results
 			</Button>
 		</div>
