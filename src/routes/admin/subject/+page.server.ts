@@ -34,17 +34,29 @@ export const load: PageServerLoad = async (event) => {
 			let subjectList;
 			if (event.locals.user.school) {
 				subjectList = await db
-					.select({ ...rest, teacherName: user.fullname, subjectTypeName: subjectType.name })
+					.select({
+						...rest,
+						teacherName: user.fullname,
+						subjectTypeName: subjectType.name,
+						gradesLevel: grades.level,
+					})
 					.from(subject)
-					.where(eq(subject.schoolId, event.locals.user.school))
 					.leftJoin(user, eq(user.id, subject.teacher))
-					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id));
+					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id))
+					.leftJoin(grades, eq(subject.gradesId, grades.id))
+					.where(eq(subject.schoolId, event.locals.user.school));
 			} else {
 				subjectList = await db
-					.select({ ...rest, teacherName: user.fullname, subjectTypeName: subjectType.name })
+					.select({
+						...rest,
+						teacherName: user.fullname,
+						subjectTypeName: subjectType.name,
+						gradesLevel: grades.level,
+					})
 					.from(subject)
 					.leftJoin(user, eq(user.id, subject.teacher))
-					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id));
+					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id))
+					.leftJoin(grades, eq(subject.gradesId, grades.id));
 			}
 			return {
 				gradesList: gradesList,

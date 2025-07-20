@@ -11,6 +11,7 @@ import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 type SubjectWithTeacher = Subject & {
 	teacherName: string | null;
 	subjectTypeName: string | null;
+	gradeLevel: number | null;
 };
 export const columns: ColumnDef<SubjectWithTeacher>[] = [
 	{
@@ -76,6 +77,24 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 				sort: column.getIsSorted(),
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
+	},
+	{
+		accessorKey: "gradeLevel",
+		header: ({ column }) =>
+			renderComponent(sortable, {
+				name: "Grade Level",
+				sort: column.getIsSorted(),
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+		cell: ({ row }) => {
+			const value = row.getValue("gradeLevel");
+			const gradeCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="text-left font-mono">${value}</div>`,
+				};
+			});
+			return renderSnippet(gradeCellSnippet, value);
+		},
 	},
 	{
 		accessorKey: "subjectTypeName",
