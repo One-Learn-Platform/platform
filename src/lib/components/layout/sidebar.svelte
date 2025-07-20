@@ -60,7 +60,7 @@
 					>
 						<DropdownMenu.Label class="text-xs text-muted-foreground">Grades</DropdownMenu.Label>
 						{#each grade as item (item.title)}
-							<DropdownMenu.Item class="gap-2 p-2" onclick={() => (selectedGrade = item)}>
+							<DropdownMenu.Item class="gap-2 p-2" onclick={() => (selectedGrade.current = item)}>
 								<div class="flex size-6 items-center justify-center rounded-md border">
 									<span
 										class="flex size-3.5 shrink-0 items-center justify-center font-mono text-sm font-extrabold tracking-tight"
