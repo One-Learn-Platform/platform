@@ -14,26 +14,35 @@ export const load: PageServerLoad = async (event) => {
 		}
 		const forumColumns = getTableColumns(forum);
 		const isTeacher = event.locals.user.role === 3;
-		const allForums = await db
-			.select({
-				...forumColumns,
-				fullname: user.fullname,
-				avatar: user.avatar,
-				subjectCode: subject.code,
-				teacher: subject.teacher,
-			})
-			.from(forum)
-			.innerJoin(user, eq(forum.userId, user.id))
-			.innerJoin(subject, eq(forum.subjectId, subject.id))
-			.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
-			.where(
-				and(
-					eq(forum.schoolId, schoolId),
-					isTeacher
-						? eq(subject.teacher, event.locals.user.id)
-						: eq(enrollment.userId, event.locals.user.id),
-				),
-			);
+		let allForums;
+		if (isTeacher) {
+			allForums = await db
+				.select({
+					...forumColumns,
+					fullname: user.fullname,
+					avatar: user.avatar,
+					subjectCode: subject.code,
+					teacher: subject.teacher,
+				})
+				.from(forum)
+				.innerJoin(user, eq(forum.userId, user.id))
+				.innerJoin(subject, eq(forum.subjectId, subject.id))
+				.where(and(eq(forum.schoolId, schoolId), eq(subject.teacher, event.locals.user.id)));
+		} else {
+			allForums = await db
+				.select({
+					...forumColumns,
+					fullname: user.fullname,
+					avatar: user.avatar,
+					subjectCode: subject.code,
+					teacher: subject.teacher,
+				})
+				.from(forum)
+				.innerJoin(user, eq(forum.userId, user.id))
+				.innerJoin(subject, eq(forum.subjectId, subject.id))
+				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+				.where(and(eq(forum.schoolId, schoolId), eq(enrollment.userId, event.locals.user.id)));
+		}
 
 		return {
 			forums: allForums,
