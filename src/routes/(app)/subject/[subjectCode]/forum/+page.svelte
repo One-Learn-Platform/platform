@@ -66,7 +66,7 @@
 	<h1 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Forum</h1>
 	{#if data.user.role === 3}
 		<div class="flex w-full gap-2">
-			<Button variant="default" href="/subject/{data.params}/{data.chapter}/assignments/create">
+			<Button variant="default" href="/subject/{data.params}/{data.chapter}/forum/create">
 				<Plus />Add Forum
 			</Button>
 		</div>
