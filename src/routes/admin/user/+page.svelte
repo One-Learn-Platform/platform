@@ -67,6 +67,9 @@
 			}
 		}
 	});
+	$effect(() => {
+		$inspect($formData);
+	});
 </script>
 
 <div class="flex flex-col gap-2">
@@ -137,6 +140,39 @@
 							<Form.FieldErrors />
 						{:else}
 							<Form.Description>Username will be used for login</Form.Description>
+						{/if}
+					</Form.Field>
+
+					<Form.Field form={superform} name="gradesId">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Grades</Form.Label>
+								<Select.Root
+									type="single"
+									name={props.name}
+									onValueChange={(value) => {
+										$formData.gradesId = Number(value);
+									}}
+								>
+									<Select.Trigger {...props}>
+										{$formData.gradesId
+											? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
+											: "Select a grades ID"}
+									</Select.Trigger>
+									<Select.Content>
+										{#each data.gradesList as grade (grade.id)}
+											<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
+												{grade.level}
+											</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.gradesId}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
 						{/if}
 					</Form.Field>
 

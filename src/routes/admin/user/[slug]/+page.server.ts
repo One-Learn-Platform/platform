@@ -10,6 +10,7 @@ import {
 	comment,
 	enrollment,
 	forum,
+	grades,
 	school,
 	session,
 	subject,
@@ -33,9 +34,11 @@ export const load: PageServerLoad = async (event) => {
 			} else {
 				const userData = await db.select().from(user).where(eq(user.id, userId)).get();
 				const schoolList = await db.select().from(school);
+				const gradesList = await db.select().from(grades);
 				if (userData) {
 					userData.password = "";
 					return {
+						gradesList: gradesList,
 						userData: userData,
 						schoolList: schoolList,
 						form: await superValidate(zod4(formSchemaWithoutPass)),
@@ -162,6 +165,7 @@ export const actions: Actions = {
 					fullname: form.data.fullname,
 					username: form.data.username,
 					schoolId: form.data.schoolId ? Number(form.data.schoolId) : undefined,
+					gradesId: form.data.gradesId ? Number(form.data.gradesId) : undefined,
 					dob: form.data.dob,
 					roleId: roleId,
 				})

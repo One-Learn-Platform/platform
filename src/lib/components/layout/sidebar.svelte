@@ -1,5 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state";
+	import { browser } from "$app/environment";
+	import { invalidate } from "$app/navigation";
+
+	import type { Grades } from "$lib/schema/db";
 
 	import { PersistedState } from "runed";
 
@@ -11,14 +15,31 @@
 	import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
 
 	import { appNav } from "$lib/assets/nav/app";
+	let { grades }: { grades: Grades[] } = $props();
+	const grade = $derived(
+		grades.map((g) => ({
+			title: `Grade ${g.level}`,
+			number: g.level.toString(),
+			id: g.id,
+		})),
+	);
 
-	const grade = [
-		{ title: "Grade 12", number: "12" },
-		{ title: "Grade 11", number: "11" },
-		{ title: "Grade 10", number: "10" },
-	];
-
-	let selectedGrade = new PersistedState("selectedGrade", grade[0]);
+	let selectedGrade = new PersistedState<{ title: string; number: string; id: number } | null>(
+		"selectedGrade",
+		null,
+	);
+	$effect(() => {
+		if (!selectedGrade.current && grade.length > 0) {
+			selectedGrade.current = grade[0];
+		}
+	});
+	const updateGrade = async (newGrade: (typeof grade)[0]) => {
+		selectedGrade.current = newGrade;
+		if (browser) {
+			document.cookie = `selectedGrade=${newGrade.number}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+			await invalidate("app:selectedGrade");
+		}
+	};
 </script>
 
 <Sidebar.Root
@@ -40,13 +61,13 @@
 									class="flex aspect-square size-6 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground duration-150 group-data-[collapsible=icon]:size-8"
 								>
 									<span
-										class="flex items-center justify-center font-mono text-sm font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-lg"
+										class="flex items-center justify-center font-display text-sm font-extrabold tabular-nums duration-150 group-data-[collapsible=icon]:text-lg"
 									>
-										{selectedGrade.current.number}
+										{selectedGrade.current?.number}
 									</span>
 								</div>
 								<div class="grid flex-1 text-left text-sm leading-tight">
-									<span class="truncate font-medium">{selectedGrade.current.title}</span>
+									<span class="truncate font-medium">{selectedGrade.current?.title}</span>
 								</div>
 								<ChevronsUpDownIcon class="ml-auto" />
 							</Sidebar.MenuButton>
@@ -60,10 +81,16 @@
 					>
 						<DropdownMenu.Label class="text-xs text-muted-foreground">Grades</DropdownMenu.Label>
 						{#each grade as item (item.title)}
-							<DropdownMenu.Item class="gap-2 p-2" onclick={() => (selectedGrade.current = item)}>
+							<DropdownMenu.Item
+								class="gap-2 p-2"
+								onclick={async () => {
+									selectedGrade.current = item;
+									await updateGrade(item);
+								}}
+							>
 								<div class="flex size-6 items-center justify-center rounded-md border">
 									<span
-										class="flex size-3.5 shrink-0 items-center justify-center font-mono text-sm font-extrabold tracking-tight"
+										class="flex size-3.5 shrink-0 items-center justify-center font-display text-sm font-extrabold tabular-nums"
 									>
 										{item.number}
 									</span>

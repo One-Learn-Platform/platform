@@ -13,7 +13,7 @@
 	<Sidebar.Provider class="flex flex-col">
 		<Topbar user={data.user} />
 		<div class="flex flex-1">
-			<AppSidebar />
+			<AppSidebar grades={data.grades} />
 			<Sidebar.Inset class="space-y-2 px-2 pt-[calc(var(--header-height)+0.5rem)] pb-2">
 				{@render children?.()}
 			</Sidebar.Inset>

@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { user } from "$lib/schema/db";
 
 // 0,1,2,3
-export const Role = z.enum(["super admin", "admin", "teacher", "student"], {
+export const Role = z.enum(["admin", "teacher", "student", "super admin"], {
 	error: "Role is required",
 });
 
@@ -35,6 +35,7 @@ export const formSchema = createInsertSchema(user, {
 			error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
 		}),
 	roleId: Role,
+	gradesId: z.number().int(),
 	schoolId: z.string().optional(),
 }).omit({
 	id: true,
@@ -72,6 +73,24 @@ export const formSchemaWithPass = formSchema
 			error: "School is required",
 			path: ["schoolId"],
 		},
+	)
+	.refine(
+		(data) => {
+			if (data.roleId === Role.enum["super admin"] && data.gradesId !== 0) {
+				return false;
+			}
+			return true;
+		},
+		{ error: "Super Admin is not allowed to have grades", path: ["gradesId"] },
+	)
+	.refine(
+		(data) => {
+			if (data.roleId === Role.enum["student"] && data.gradesId === 0) {
+				return false;
+			}
+			return true;
+		},
+		{ error: "Grades is required", path: ["gradesId"] },
 	);
 
 export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
@@ -86,7 +105,6 @@ export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 
 export const formSchemaWithoutPass = formSchema.omit({
 	password: true,
-	gradesId: true,
 });
 
 export const formSchemaProfile = formSchema.omit({

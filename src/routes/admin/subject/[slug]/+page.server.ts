@@ -11,6 +11,7 @@ import {
 	comment,
 	enrollment,
 	forum,
+	grades,
 	material,
 	subject,
 	subjectType,
@@ -31,6 +32,7 @@ export const load: PageServerLoad = async (event) => {
 			return error(400, { message: "Invalid School ID" });
 		} else {
 			const { ...rest } = getTableColumns(subject);
+			const gradesList = await db.select().from(grades);
 			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
 			const subjectData = await db
 				.select({ ...rest, teacherName: user.fullname })
@@ -41,6 +43,7 @@ export const load: PageServerLoad = async (event) => {
 			const subjectTypeList = await db.select().from(subjectType);
 			if (subjectData) {
 				return {
+					gradesList: gradesList,
 					subjectData: subjectData,
 					teacherList: teacherList,
 					subjectTypeList: subjectTypeList,
@@ -109,6 +112,7 @@ export const actions: Actions = {
 				.set({
 					name: form.data.name,
 					code: form.data.code.toLocaleLowerCase(),
+					gradesId: form.data.gradesId,
 					chapterCount: Number(form.data.chapterCount),
 					teacher: teacherId,
 					subjectType: Number(form.data.subjectType),

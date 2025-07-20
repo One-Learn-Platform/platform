@@ -10,6 +10,7 @@ import {
 	comment,
 	enrollment,
 	forum,
+	grades,
 	school,
 	session,
 	subject,
@@ -20,7 +21,7 @@ import {
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
-import { eq, getTableColumns, inArray, or } from "drizzle-orm";
+import { eq, getTableColumns, inArray, not, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -29,7 +30,17 @@ export const load: PageServerLoad = async (event) => {
 			// eslint-disable-next-line
 			const { password, ...rest } = getTableColumns(user);
 			const schoolList = await db.select().from(school);
-			const roleList = await db.select().from(userRole);
+			let roleList;
+			if (event.locals.user.role !== 1) {
+				roleList = await db
+					.select()
+					.from(userRole)
+					.where(not(eq(userRole.id, 1)));
+			} else {
+				roleList = await db.select().from(userRole);
+			}
+			const gradesList = await db.select().from(grades);
+
 			let userList;
 			if (event.locals.user.school) {
 				userList = await db
@@ -44,6 +55,7 @@ export const load: PageServerLoad = async (event) => {
 					.leftJoin(school, eq(user.schoolId, school.id));
 			}
 			return {
+				gradesList: gradesList,
 				userList: userList,
 				schoolList: schoolList,
 				roleList: roleList,
@@ -162,6 +174,7 @@ export const actions: Actions = {
 				fullname: form.data.fullname,
 				dob: form.data.dob,
 				username: form.data.username,
+				gradesId: form.data.gradesId,
 				password: passwordHash,
 				schoolId: schoolId,
 			});

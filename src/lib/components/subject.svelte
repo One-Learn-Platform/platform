@@ -11,7 +11,7 @@
 		subjectIcon,
 	} from "$lib/functions/subject";
 
-	type SubjectWithName = Subject & { subjectTypeName: string };
+	type SubjectWithName = Subject & { subjectTypeName: string; gradesLevel?: string };
 	let { subject }: { subject: SubjectWithName } = $props();
 	const Icons = $derived(subjectIcon(subject.name));
 </script>
@@ -23,28 +23,40 @@
 				<Button
 					{...props}
 					variant="outline"
-					class="group flex h-fit w-full flex-col items-stretch justify-start gap-2 overflow-hidden p-0"
+					class="group flex h-fit w-full flex-col items-stretch justify-start gap-0 overflow-hidden p-0"
 					href={`/subject/${subject.code}`}
 				>
 					<div
 						class={[
-							"w-full px-6 pt-6 pb-6 duration-150 group-hover:opacity-90",
+							"w-full px-3 py-3 duration-150 group-hover:opacity-90 sm:py-6",
 							subjectBgColor(subject.subjectTypeName),
 						]}
 					>
-						<Icons class="size-12 text-background lg:size-14 xl:size-16" />
+						<Icons class="size-10 text-background lg:size-12 xl:size-14" />
 					</div>
-					<div class="px-6 pb-6">
-						<div class="flex items-center gap-2">
-							<span class="font-mono tracking-tight text-muted-foreground">
-								{subject.code}
-							</span>
-							<Badge variant={subjectColor(subject.subjectTypeName)}>
-								{subjectAbbreviation(subject.subjectTypeName)}
-							</Badge>
-						</div>
-						<div class="truncate text-xl font-semibold lg:text-2xl">
-							{subject.name}
+					<div class="">
+						<div class="flex flex-row items-stretch justify-between gap-2">
+							<div class="w-1/2 grow px-3 pt-2 pb-3 sm:space-y-1">
+								<div class="flex items-center gap-2">
+									<span class="font-mono tracking-tight text-muted-foreground">
+										{subject.code}
+									</span>
+									<Badge variant={subjectColor(subject.subjectTypeName)}>
+										{subjectAbbreviation(subject.subjectTypeName)}
+									</Badge>
+								</div>
+								<div class="truncate text-lg font-semibold lg:text-2xl">
+									{subject.name}
+								</div>
+							</div>
+							{#if subject.gradesLevel}
+								<div
+									class="flex flex-col items-center justify-center border-l px-3 text-center text-base font-medium text-muted-foreground tabular-nums"
+								>
+									<p class="max-sm:hidden">Grade</p>
+									<p class="font-display">{subject.gradesLevel}</p>
+								</div>
+							{/if}
 						</div>
 					</div>
 				</Button>

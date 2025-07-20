@@ -6,6 +6,7 @@ import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
+	event.depends("app:selectedGrade");
 	if (event.locals.user) {
 		const db = getDb(event);
 		const schoolId = Number(event.locals.user.school);
@@ -14,6 +15,7 @@ export const load: PageServerLoad = async (event) => {
 		}
 		const forumColumns = getTableColumns(forum);
 		const isTeacher = event.locals.user.role === 3;
+		const isStudent = event.locals.user.role === 4;
 		let allForums;
 		if (isTeacher) {
 			allForums = await db
@@ -28,6 +30,27 @@ export const load: PageServerLoad = async (event) => {
 				.innerJoin(user, eq(forum.userId, user.id))
 				.innerJoin(subject, eq(forum.subjectId, subject.id))
 				.where(and(eq(forum.schoolId, schoolId), eq(subject.teacher, event.locals.user.id)));
+		} else if (isStudent) {
+			const selectedGrade = Number(event.cookies.get("selectedGrade"));
+			allForums = await db
+				.select({
+					...forumColumns,
+					fullname: user.fullname,
+					avatar: user.avatar,
+					subjectCode: subject.code,
+					teacher: subject.teacher,
+				})
+				.from(forum)
+				.innerJoin(user, eq(forum.userId, user.id))
+				.innerJoin(subject, eq(forum.subjectId, subject.id))
+				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+				.where(
+					and(
+						eq(forum.schoolId, schoolId),
+						eq(enrollment.userId, event.locals.user.id),
+						eq(subject.gradesId, selectedGrade),
+					),
+				);
 		} else {
 			allForums = await db
 				.select({

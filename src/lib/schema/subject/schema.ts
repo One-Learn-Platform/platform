@@ -10,6 +10,7 @@ const formSchema = createInsertSchema(subject, {
 	name: z.string().min(1, { error: "Subject name is required" }),
 	teacher: z.string().min(1, { error: "Teacher is required" }),
 	subjectType: z.string().min(1, { error: "Subject type is required" }),
+	gradesId: z.number().int(),
 	chapterCount: z
 		.number()
 		.int()

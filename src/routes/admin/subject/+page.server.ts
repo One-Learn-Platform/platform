@@ -17,6 +17,7 @@ import {
 	subjectType,
 	submission,
 	user,
+	grades,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns, inArray, or } from "drizzle-orm";
@@ -29,6 +30,7 @@ export const load: PageServerLoad = async (event) => {
 			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
 			const schoolList = await db.select().from(school);
 			const subjectTypeList = await db.select().from(subjectType);
+			const gradesList = await db.select().from(grades);
 			let subjectList;
 			if (event.locals.user.school) {
 				subjectList = await db
@@ -45,6 +47,7 @@ export const load: PageServerLoad = async (event) => {
 					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id));
 			}
 			return {
+				gradesList: gradesList,
 				subjectList: subjectList,
 				teacherList: teacherList,
 				schoolList: schoolList,
@@ -146,6 +149,7 @@ export const actions: Actions = {
 				code: form.data.code.toLocaleLowerCase(),
 				name: form.data.name,
 				schoolId: school,
+				gradesId: form.data.gradesId,
 				chapterCount: Number(form.data.chapterCount),
 				subjectType: Number(form.data.subjectType),
 			});

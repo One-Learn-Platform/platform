@@ -12,6 +12,7 @@
 		RoleWithoutSuperAdmin,
 		type RoleEnum,
 		type RoleWithoutSuperAdminEnum,
+		type FormSchemaWithoutPass,
 	} from "$lib/schema/user/schema";
 	import { cn } from "$lib/utils.js";
 	import {
@@ -70,13 +71,16 @@
 		data.schoolList.find((school) => school.id === userDetail.schoolId)?.id.toString() ?? "",
 	);
 
-	const changes = $state({
-		fullname: false,
-		username: false,
-		dob: false,
-		roleId: false,
-		schoolId: false,
-	});
+	const changes = $state(
+		(Object.keys(formSchemaWithoutPass.shape) as Array<keyof FormSchemaWithoutPass>).reduce(
+			(acc, field) => {
+				acc[field] = false;
+				return acc;
+			},
+			{} as Record<keyof FormSchemaWithoutPass, boolean>,
+		),
+	);
+
 	const isChanged = $derived(Object.values(changes).some((value) => value === true));
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 
@@ -103,6 +107,12 @@
 						changes.dob = true;
 					} else {
 						changes.dob = false;
+					}
+				} else if (event.paths.includes("gradesId")) {
+					if ($formData.gradesId !== userDetail.gradesId) {
+						changes.gradesId = true;
+					} else {
+						changes.gradesId = false;
 					}
 				} else if (event.paths.includes("roleId")) {
 					if ($formData.roleId !== currentRole) {
@@ -142,13 +152,7 @@
 	const df = new DateFormatter(undefined, {
 		dateStyle: "long",
 	});
-	$effect(() => {
-		$formData.fullname = userDetail.fullname ?? "";
-		$formData.dob = userDetail.dob ?? "";
-		$formData.username = userDetail?.username ?? "";
-		$formData.roleId = currentRole;
-		$formData.schoolId = currentSchool;
-	});
+
 	const initial = $derived(acronym(userDetail.fullname));
 
 	$effect(() => {
@@ -160,19 +164,47 @@
 		} else if (form?.edit) {
 			if (form.edit.success) {
 				toast.success(`User ${form.edit.data?.fullname} edited successfully`);
-				invalidateAll();
-				changes.fullname = false;
-				changes.username = false;
-				changes.dob = false;
-				changes.roleId = false;
-				changes.schoolId = false;
+				invalidateAll().then(() => {
+					for (const key in changes) {
+						changes[key as keyof typeof changes] = false;
+					}
+					reset({
+						data: {
+							fullname: userDetail.fullname,
+							dob: userDetail.dob,
+							username: userDetail.username,
+							gradesId: userDetail.gradesId ?? undefined,
+							roleId: currentRole,
+							schoolId: currentSchool,
+						},
+					});
+				});
 			} else toast.error(form.edit.message ?? "Unknown error");
 		} else if (form?.upload) {
 			if (form.upload.success) {
-				invalidateAll();
+				reset({
+					data: {
+						fullname: userDetail.fullname,
+						dob: userDetail.dob,
+						username: userDetail.username,
+						gradesId: userDetail.gradesId ?? undefined,
+						roleId: currentRole,
+						schoolId: currentSchool,
+					},
+				});
 				toast.success(`Avatar for ${userDetail.fullname} updated successfully`);
 				dialogOpen = false;
 			} else toast.error(form.upload.message ?? "Unknown error");
+		}
+	});
+	$effect(() => {
+		$formData.fullname = userDetail.fullname;
+		$formData.dob = userDetail.dob;
+		$formData.username = userDetail?.username;
+		$formData.roleId = currentRole;
+		$formData.schoolId = currentSchool;
+		if (userDetail.gradesId) {
+			$formData.gradesId = userDetail.gradesId;
 		}
 	});
 </script>
@@ -340,6 +372,39 @@
 					{/if}
 				</Form.Field>
 
+				<Form.Field form={superform} name="gradesId">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Grades</Form.Label>
+							<Select.Root
+								type="single"
+								name={props.name}
+								onValueChange={(value) => {
+									$formData.gradesId = Number(value);
+								}}
+							>
+								<Select.Trigger {...props}>
+									{$formData.gradesId
+										? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
+										: "Select grade"}
+								</Select.Trigger>
+								<Select.Content>
+									{#each data.gradesList as grade (grade.id)}
+										<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
+											{grade.level}
+										</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						{/snippet}
+					</Form.Control>
+					{#if $errors.gradesId}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
+					{/if}
+				</Form.Field>
+
 				<Form.Field form={superform} name="dob">
 					<Form.Control>
 						{#snippet children({ props })}
@@ -491,11 +556,9 @@
 								schoolId: currentSchool,
 							},
 						});
-						changes.fullname = false;
-						changes.username = false;
-						changes.dob = false;
-						changes.roleId = false;
-						changes.schoolId = false;
+						for (const key in changes) {
+							changes[key as keyof typeof changes] = false;
+						}
 					}}>Cancel</Button
 				>
 				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>

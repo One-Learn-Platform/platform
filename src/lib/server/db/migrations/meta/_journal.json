@@ -246,6 +246,20 @@
 			"when": 1752948571940,
 			"tag": "0034_complete_cannonball",
 			"breakpoints": true
+		},
+		{
+			"idx": 35,
+			"version": "6",
+			"when": 1752948771523,
+			"tag": "0035_motionless_phalanx",
+			"breakpoints": true
+		},
+		{
+			"idx": 36,
+			"version": "6",
+			"when": 1752949479790,
+			"tag": "0036_tranquil_lifeguard",
+			"breakpoints": true
 		}
 	]
 }

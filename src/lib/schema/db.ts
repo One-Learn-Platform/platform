@@ -58,7 +58,9 @@ export const subject = sqliteTable(
 	{
 		id: integer("subject_id").primaryKey({ autoIncrement: true }),
 		code: text("subject_code").notNull(),
-		// gradesId: integer("grades_id").references(() => grades.id),
+		gradesId: integer("grades_id")
+			.notNull()
+			.references(() => grades.id),
 		teacher: integer("teacher_id")
 			.notNull()
 			.references(() => user.id),
@@ -74,7 +76,7 @@ export const subject = sqliteTable(
 	(table) => [
 		index("teacher_index").on(table.teacher),
 		index("subject_school_index").on(table.schoolId),
-		// index("subject_grades_index").on(table.gradesId),
+		index("subject_grades_index").on(table.gradesId),
 	],
 );
 
