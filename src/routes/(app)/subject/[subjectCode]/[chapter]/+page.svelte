@@ -83,24 +83,26 @@
 			</Alert.Root>
 		{/each}
 	{/if}
-	{#if assignmentsDueTomorrow.length > 0}
-		<Alert.Root variant="destructive" fill="muted">
-			<ListTodo />
-			<Alert.Title>You have {assignmentsDueTomorrow.length} assignment due tomorrow!</Alert.Title>
-			<Alert.Description>Please complete assignments immediately</Alert.Description>
-		</Alert.Root>
-	{:else if assignmentsDueInWeek.length > 0}
-		<Alert.Root variant="warning" fill="muted">
-			<ListTodo />
-			<Alert.Title>You have {assignmentsDueInWeek.length} assignment(s) due tomorrow</Alert.Title>
-			<Alert.Description>Please complete all assignments before the due date</Alert.Description>
-		</Alert.Root>
-	{:else if unfinishedAssignments.length > 0}
-		<Alert.Root variant="informative" fill="muted">
-			<ListTodo />
-			<Alert.Title>You have unfinished assignments</Alert.Title>
-			<Alert.Description>Please complete all assignments before due date</Alert.Description>
-		</Alert.Root>
+	{#if data.user.role === 4}
+		{#if assignmentsDueTomorrow.length > 0}
+			<Alert.Root variant="destructive" fill="muted">
+				<ListTodo />
+				<Alert.Title>You have {assignmentsDueTomorrow.length} assignment due tomorrow!</Alert.Title>
+				<Alert.Description>Please complete assignments immediately</Alert.Description>
+			</Alert.Root>
+		{:else if assignmentsDueInWeek.length > 0}
+			<Alert.Root variant="warning" fill="muted">
+				<ListTodo />
+				<Alert.Title>You have {assignmentsDueInWeek.length} assignment(s) due tomorrow</Alert.Title>
+				<Alert.Description>Please complete all assignments before the due date</Alert.Description>
+			</Alert.Root>
+		{:else if unfinishedAssignments.length > 0}
+			<Alert.Root variant="informative" fill="muted">
+				<ListTodo />
+				<Alert.Title>You have unfinished assignments</Alert.Title>
+				<Alert.Description>Please complete all assignments before due date</Alert.Description>
+			</Alert.Root>
+		{/if}
 	{/if}
 	{#if firstMaterial}
 		{@const sanitizedContent = browser
