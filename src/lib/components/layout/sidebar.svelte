@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/state";
 
+	import { PersistedState } from "runed";
+
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
@@ -15,7 +17,8 @@
 		{ title: "Grade 11", number: "11" },
 		{ title: "Grade 10", number: "10" },
 	];
-	let selectedGrade = $state(grade[0]);
+
+	let selectedGrade = new PersistedState("selectedGrade", grade[0]);
 </script>
 
 <Sidebar.Root
@@ -39,11 +42,11 @@
 									<span
 										class="flex items-center justify-center font-mono text-sm font-extrabold tracking-tight duration-150 group-data-[collapsible=icon]:text-lg"
 									>
-										{selectedGrade.number}
+										{selectedGrade.current.number}
 									</span>
 								</div>
 								<div class="grid flex-1 text-left text-sm leading-tight">
-									<span class="truncate font-medium">{selectedGrade.title}</span>
+									<span class="truncate font-medium">{selectedGrade.current.title}</span>
 								</div>
 								<ChevronsUpDownIcon class="ml-auto" />
 							</Sidebar.MenuButton>
