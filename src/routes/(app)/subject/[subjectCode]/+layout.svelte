@@ -36,9 +36,13 @@
 		<div
 			class="flex h-fit flex-col-reverse items-start gap-px sm:flex-row sm:items-center sm:gap-1 md:gap-2"
 		>
-			<div class="font-display text-4xl font-bold sm:text-5xl md:text-6xl">
+			<Button
+				variant="ghost"
+				href="/subject/{page.params.subjectCode}"
+				class="h-auto font-display text-4xl font-bold sm:text-5xl md:text-6xl"
+			>
 				{data.subject.name}
-			</div>
+			</Button>
 			<Badge class="mt-0.5 text-xs" variant={subjectColor(data.subject.subjectTypeName, true)}>
 				{data.subject.subjectTypeName}
 			</Badge>
@@ -53,28 +57,28 @@
 			href="/subject/{page.params.subjectCode}/materials"
 			class="min-w-fit grow basis-0"
 		>
-			<BookOpenText />Materials
+			<BookOpenText /><span class="max-sm:sr-only">Materials</span>
 		</Button>
 		<Button
 			variant="outline"
 			href="/subject/{page.params.subjectCode}/assignments"
 			class="min-w-fit grow basis-0"
 		>
-			<ClipboardList />Assignments
+			<ClipboardList /><span class="max-sm:sr-only">Assignments</span>
 		</Button>
 		<Button
 			variant="outline"
 			href="/subject/{page.params.subjectCode}/forum"
 			class="min-w-fit grow basis-0"
 		>
-			<MessagesSquare />Forum
+			<MessagesSquare /><span class="max-sm:sr-only">Forum</span>
 		</Button>
 		<Button
 			variant="secondary"
 			href="/subject/{page.params.subjectCode}/people"
 			class="min-w-fit grow basis-0"
 		>
-			<Users />People
+			<Users /><span class="max-sm:sr-only">People</span>
 		</Button>
 	</div>
 	{#if !urlException.has(page.url.pathname)}
