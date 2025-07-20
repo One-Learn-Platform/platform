@@ -29,6 +29,7 @@
 		teacher: false,
 		chapterCount: false,
 		subjectType: false,
+		grades: false,
 	});
 	const isChanged = $derived(changes);
 	const changesClass = clsx("border-blue-500 bg-blue-50");
@@ -63,6 +64,7 @@
 		$formData.teacher = subjectDetail.teacher?.toString();
 		$formData.subjectType = subjectDetail.subjectType?.toString();
 		$formData.chapterCount = subjectDetail.chapterCount;
+		$formData.gradesId = subjectDetail.gradesId;
 	});
 
 	$effect(() => {
@@ -147,7 +149,7 @@
 									$formData.gradesId = Number(value);
 								}}
 							>
-								<Select.Trigger {...props}>
+								<Select.Trigger {...props} class={changes.grades ? changesClass : ""}>
 									{$formData.gradesId
 										? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
 										: "Select a grades ID"}
@@ -281,6 +283,9 @@
 						});
 						changes.name = false;
 						changes.teacher = false;
+						changes.chapterCount = false;
+						changes.subjectType = false;
+						changes.grades = false;
 					}}>Cancel</Button
 				>
 				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>
