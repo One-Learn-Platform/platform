@@ -11,7 +11,7 @@
 		subjectIcon,
 	} from "$lib/functions/subject";
 
-	type SubjectWithName = Subject & { subjectTypeName: string; gradeLevel?: string };
+	type SubjectWithName = Subject & { subjectTypeName: string; gradeLevel?: number };
 	let { subject }: { subject: SubjectWithName } = $props();
 	const Icons = $derived(subjectIcon(subject.name));
 </script>
@@ -49,12 +49,12 @@
 									{subject.name}
 								</div>
 							</div>
-							{#if subject.gradesLevel}
+							{#if subject.gradeLevel}
 								<div
 									class="flex flex-col items-center justify-center border-l px-3 text-center text-base font-medium text-muted-foreground tabular-nums"
 								>
 									<p class="max-sm:hidden">Grade</p>
-									<p class="font-display">{subject.gradesLevel}</p>
+									<p class="font-display">{subject.gradeLevel}</p>
 								</div>
 							{/if}
 						</div>

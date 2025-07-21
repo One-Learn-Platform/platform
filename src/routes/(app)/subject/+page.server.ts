@@ -19,14 +19,14 @@ export const load: PageServerLoad = async (event) => {
 		if (event.locals.user.school) {
 			if (isAdmin) {
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradesLevel: grades.level })
+					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 					.where(eq(subject.schoolId, event.locals.user.school));
 			} else if (isTeacher) {
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradesLevel: grades.level })
+					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.where(
@@ -39,7 +39,7 @@ export const load: PageServerLoad = async (event) => {
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id));
 			} else if (isStudent) {
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradesLevel: grades.level })
+					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
