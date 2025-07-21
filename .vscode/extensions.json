@@ -1,7 +1,7 @@
 {
-  "recommendations": [
-    "svelte.svelte-vscode",
-    "bradlc.vscode-tailwindcss",
-    "pkief.material-icon-theme"
-  ]
+	"recommendations": [
+		"svelte.svelte-vscode",
+		"bradlc.vscode-tailwindcss",
+		"pkief.material-icon-theme"
+	]
 }

@@ -195,45 +195,45 @@
 							</Form.Description>
 						{/if}
 					</Form.Field>
-
-					<Form.Field form={superform} name="schoolId">
-						<Form.Control>
-							{#snippet children({ props })}
-								<Form.Label>School</Form.Label>
-								<Select.Root
-									type="single"
-									value={$formData.schoolId}
-									name={props.name}
-									allowDeselect
-									disabled={$formData.roleId === Role.enum["super admin"]}
-									onValueChange={(value) => ($formData.schoolId = value)}
-								>
-									<Select.Trigger {...props}>
-										{$formData.schoolId
-											? data.schoolList.find(
-													(school) => school.id.toString() === $formData.schoolId,
-												)?.name
-											: "Select a school"}
-									</Select.Trigger>
-									<Select.Content>
-										{#each data.schoolList as school (school)}
-											<Select.Item value={school.id.toString()} label={school.name}>
-												{school.name}
-											</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							{/snippet}
-						</Form.Control>
-						{#if $formErrors.schoolId}
-							<Form.FieldErrors />
-						{:else}
-							<Form.Description>
-								This will determine the school affiliation of the user.
-							</Form.Description>
-						{/if}
-					</Form.Field>
-
+					{#if data.user.role === 1}
+						<Form.Field form={superform} name="schoolId">
+							<Form.Control>
+								{#snippet children({ props })}
+									<Form.Label>School</Form.Label>
+									<Select.Root
+										type="single"
+										value={$formData.schoolId}
+										name={props.name}
+										allowDeselect
+										disabled={$formData.roleId === Role.enum["super admin"]}
+										onValueChange={(value) => ($formData.schoolId = value)}
+									>
+										<Select.Trigger {...props}>
+											{$formData.schoolId
+												? data.schoolList.find(
+														(school) => school.id.toString() === $formData.schoolId,
+													)?.name
+												: "Select a school"}
+										</Select.Trigger>
+										<Select.Content>
+											{#each data.schoolList as school (school)}
+												<Select.Item value={school.id.toString()} label={school.name}>
+													{school.name}
+												</Select.Item>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								{/snippet}
+							</Form.Control>
+							{#if $formErrors.schoolId}
+								<Form.FieldErrors />
+							{:else}
+								<Form.Description>
+									This will determine the school affiliation of the user.
+								</Form.Description>
+							{/if}
+						</Form.Field>
+					{/if}
 					<Form.Field form={superform} name="gradesId">
 						<Form.Control>
 							{#snippet children({ props })}

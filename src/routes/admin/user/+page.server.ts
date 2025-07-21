@@ -166,7 +166,19 @@ export const actions: Actions = {
 			}
 		}
 		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
-		const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
+		const schoolId =
+			event.locals.user.role === 1 ? Number(form.data.schoolId) : Number(event.locals.user.school);
+		if (!schoolId || isNaN(schoolId) || schoolId <= 0) {
+			setError(form, "schoolId", "School is required");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "School is required",
+				},
+				form,
+			});
+		}
 		try {
 			if (roleId === 4) {
 				await db.insert(user).values({

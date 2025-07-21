@@ -57,7 +57,10 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	edit: async (event) => {
-		if (!event.locals.user || (event.locals.user.role !== 1 && event.locals.user.role !== 2)) {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
 			return error(403, { message: "You are not allowed to edit a user" });
 		}
 		const db = getDb(event);
@@ -157,6 +160,7 @@ export const actions: Actions = {
 				});
 			}
 		}
+		const targetSchoolId = form.data.schoolId ? Number(form.data.schoolId) : undefined;
 
 		try {
 			await db
@@ -164,7 +168,7 @@ export const actions: Actions = {
 				.set({
 					fullname: form.data.fullname,
 					username: form.data.username,
-					schoolId: form.data.schoolId ? Number(form.data.schoolId) : undefined,
+					schoolId: targetSchoolId,
 					gradesId: form.data.gradesId ? Number(form.data.gradesId) : undefined,
 					dob: form.data.dob,
 					roleId: roleId,
