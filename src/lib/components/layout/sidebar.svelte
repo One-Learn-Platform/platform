@@ -16,13 +16,18 @@
 
 	import { appNav } from "$lib/assets/nav/app";
 	let { grades }: { grades: Grades[] } = $props();
-	const grade = $derived(
-		grades.map((g) => ({
+	const grade = $derived([
+		...grades.map((g) => ({
 			title: `Grade ${g.level}`,
 			number: g.level.toString(),
 			id: g.id,
 		})),
-	);
+		{
+			title: "Show All",
+			number: "all",
+			id: -1,
+		},
+	]);
 
 	let selectedGrade = new PersistedState<{ title: string; number: string; id: number } | null>(
 		"selectedGrade",

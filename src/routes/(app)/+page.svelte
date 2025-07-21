@@ -3,15 +3,32 @@
 	import type { PageServerData } from "./$types";
 
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
+	import * as Table from "$lib/components/ui/table/index.js";
 
 	import Crown from "@lucide/svelte/icons/crown";
 
 	import { acronym } from "$lib/utils";
+	import { PersistedState } from "runed";
 
 	let { data }: { data: PageServerData } = $props();
 	const scoreThreshold = 50;
+
+	let selectedGrade = new PersistedState<{ title: string; number: string; id: number } | null>(
+		"selectedGrade",
+		null,
+	);
+
+	const filteredLeaderboard = $derived.by(() => {
+		if (!data.leaderboard || !selectedGrade.current) return data.leaderboard;
+		if (selectedGrade.current.number === "all") {
+			return data.leaderboard;
+		}
+		const gradeLevel = Number(selectedGrade.current.number);
+		return data.leaderboard.filter((item) => {
+			return item.gradeLevel === gradeLevel;
+		});
+	});
 </script>
 
 <h1 class="font-display text-5xl font-semibold tracking-tight">Dashboard</h1>
@@ -31,14 +48,14 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				{#if data.leaderboard && data.leaderboard.length > 0}
-					{#each data.leaderboard as item, index (item.userId)}
-						{#if item.score && item.score >= scoreThreshold}
+				{#if filteredLeaderboard && filteredLeaderboard.length > 0}
+					{#each filteredLeaderboard as item, index (item.userId + item.subjectId)}
+						{#if item.score && Number(item.score) >= scoreThreshold}
 							<Table.Row
 								class="
-          {index === 0 ? 'bg-yellow-100 dark:bg-yellow-500/10' : ''}
-          {index === 1 ? 'bg-slate-100 dark:bg-slate-500/10' : ''}
-          {index === 2 ? 'bg-amber-100 dark:bg-amber-600/10' : ''}"
+                {index === 0 ? 'bg-yellow-100 dark:bg-yellow-500/10' : ''}
+                {index === 1 ? 'bg-slate-100 dark:bg-slate-500/10' : ''}
+                {index === 2 ? 'bg-amber-100 dark:bg-amber-600/10' : ''}"
 							>
 								<Table.Cell class="text-center font-medium">
 									{#if index === 0}
