@@ -132,10 +132,10 @@ export const columns: ColumnDef<SafeUser>[] = [
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
 		cell: ({ row }) => {
-			const value = row.getValue("gradesId");
+			const value = row.getValue("gradeLevel");
 			const amountCellSnippet = createRawSnippet(() => {
 				return {
-					render: () => `<div class="font-mono">${value ?? "-"}</div>`,
+					render: () => `<div class="">${value ?? "-"}</div>`,
 				};
 			});
 			return renderSnippet(amountCellSnippet, value);
