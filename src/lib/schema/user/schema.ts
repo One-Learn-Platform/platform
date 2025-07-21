@@ -35,7 +35,7 @@ export const formSchema = createInsertSchema(user, {
 			error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
 		}),
 	roleId: Role,
-	gradesId: z.string().optional(),
+	gradesId: z.number().int().optional(),
 	schoolId: z.string().optional(),
 }).omit({
 	id: true,
