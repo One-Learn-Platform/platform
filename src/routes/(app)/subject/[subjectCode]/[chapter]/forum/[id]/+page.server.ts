@@ -400,7 +400,7 @@ export const actions: Actions = {
 				},
 			});
 		}
-		if (toDeleteForum.userId !== userId || event.locals.user.role !== 2) {
+		if (toDeleteForum.userId !== userId && event.locals.user.role !== 2) {
 			return fail(403, {
 				deleteforum: {
 					success: false,
