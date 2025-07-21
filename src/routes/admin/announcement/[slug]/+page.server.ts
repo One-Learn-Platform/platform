@@ -94,7 +94,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (event.url.searchParams.has("ref")) redirect(303, "/admin/role");
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/announcement");
 		else {
 			return {
 				edit: {
