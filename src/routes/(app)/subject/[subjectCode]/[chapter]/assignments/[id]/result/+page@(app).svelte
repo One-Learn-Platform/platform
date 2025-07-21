@@ -1,20 +1,18 @@
 <script lang="ts">
 	import type { PageServerData } from "./$types";
-	import { page } from "$app/state";
-
+	
 	import { QuestionType, type SubmissionContent } from "$lib/types/assignment";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
 
 	import EyeOff from "@lucide/svelte/icons/eye-off";
 
 	let { data }: { data: PageServerData } = $props();
 </script>
 
-<section class="grid grid-cols-1 place-items-center rounded-xl border px-2 py-2 md:grid-cols-3">
+<section class="flex items-center justify-center rounded-xl border px-2 py-2 md:grid-cols-3">
 	<div class="w-full space-y-1 sm:w-fit">
 		<h1
 			class="text-center font-display text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl"
