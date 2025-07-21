@@ -80,18 +80,18 @@
 		browser ? Dompurify.sanitize(data.forum.description) : data.forum.description,
 	);
 
-	let quillInstance: Quill | null = null;
-	let editorElement: HTMLElement | undefined = $state();
+	let quillInstanceComment: Quill | null = null;
+	let editorElementComment: HTMLElement | undefined = $state();
 	onMount(() => {
 		const initQuill = async () => {
 			try {
 				const { default: QuillConstructor } = await import("quill");
 				await import("quill/dist/quill.snow.css");
-				if (!editorElement) {
+				if (!editorElementComment) {
 					console.error("Editor element is not defined.");
 					return;
 				}
-				quillInstance = new QuillConstructor(editorElement, {
+				quillInstanceComment = new QuillConstructor(editorElementComment, {
 					theme: "snow",
 					placeholder: "Write your comment here...",
 					modules: {
@@ -103,9 +103,9 @@
 					},
 				});
 
-				quillInstance.on("text-change", () => {
-					if (quillInstance) {
-						$formData.content = quillInstance
+				quillInstanceComment.on("text-change", () => {
+					if (quillInstanceComment) {
+						$formData.content = quillInstanceComment
 							.getSemanticHTML()
 							.replaceAll(/((?:&nbsp;)*)&nbsp;/g, "$1 ");
 					}
@@ -118,8 +118,8 @@
 		initQuill();
 
 		return () => {
-			if (quillInstance) {
-				quillInstance = null;
+			if (quillInstanceComment) {
+				quillInstanceComment = null;
 			}
 		};
 	});
@@ -272,7 +272,7 @@
 				if (form.comment.success) {
 					toast.success("Comment added successfully");
 					invalidateAll();
-					quillInstance?.setText("");
+					quillInstanceComment?.setText("");
 				} else {
 					toast.error(form.comment.message ?? "Unknown error");
 				}
@@ -295,6 +295,7 @@
 			} else if (form.editforum) {
 				if (form.editforum.success) {
 					edit = false;
+					quillInstanceComment?.setText("");
 					toast.success("Forum edited successfully");
 				} else {
 					toast.error(form.editforum.message ?? "Unknown error");
@@ -476,7 +477,7 @@
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label class="text-2xl font-medium tracking-tight">Comment</Form.Label>
-				<div bind:this={editorElement}></div>
+				<div bind:this={editorElementComment}></div>
 				<Input {...props} type="hidden" bind:value={$formData.content} />
 			{/snippet}
 		</Form.Control>

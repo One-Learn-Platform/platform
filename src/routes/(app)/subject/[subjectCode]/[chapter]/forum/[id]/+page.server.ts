@@ -366,7 +366,7 @@ export const actions: Actions = {
 		const { subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
 		const formData = await event.request.formData();
-		const id = Number(formData.get("id"));
+		const id = Number(formData.get("forum_id"));
 		if (isNaN(chapter) || chapter < 1) {
 			return fail(400, {
 				deleteforum: {
@@ -448,7 +448,7 @@ export const actions: Actions = {
 				},
 			});
 		}
-		if (toDeleteComment.userId !== userId || event.locals.user.role !== 2) {
+		if (toDeleteComment.userId !== userId && event.locals.user.role !== 2) {
 			return fail(403, {
 				deletecomment: {
 					success: false,
