@@ -27,13 +27,13 @@
 		if (form?.delete) {
 			if (form.delete.success) {
 				invalidateAll();
-				toast.success(`Role ${form.delete.data?.name} successfully deleted`);
+				toast.success(`Subject Type ${form.delete.data?.name} successfully deleted`);
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
 				if (form.create.success) {
 					invalidateAll();
-					toast.success(`Role ${form.create.data?.name} successfully created`);
+					toast.success(`Subject Type ${form.create.data?.name} successfully created`);
 				} else toast.error(form.create.message ?? "Unknown error");
 			}
 		}

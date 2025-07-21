@@ -57,7 +57,7 @@
 			}
 		} else if (form?.edit) {
 			if (form.edit.success) {
-				toast.success(`User ${form.edit.data?.name} edited successfully`);
+				toast.success(`Role ${form.edit.data?.name} edited successfully`);
 				invalidateAll();
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}

@@ -111,7 +111,7 @@
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
-				toast.success(`User ${form.edit.data?.title} edited successfully`);
+				toast.success(`Announcement ${form.edit.data?.title} edited successfully`);
 				invalidateAll();
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
