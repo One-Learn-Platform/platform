@@ -61,22 +61,7 @@ export const formSchemaWithPass = formSchema
 	)
 	.refine(
 		(data) => {
-			if (
-				data.roleId !== Role.enum["super admin"] &&
-				(data.schoolId === undefined || data.schoolId === "")
-			) {
-				return false;
-			}
-			return true;
-		},
-		{
-			error: "School is required",
-			path: ["schoolId"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (data.roleId === Role.enum["super admin"] && data.gradesId === 0) {
+			if (data.roleId === Role.enum["super admin"] && data.gradesId !== 0) {
 				return false;
 			}
 			return true;
