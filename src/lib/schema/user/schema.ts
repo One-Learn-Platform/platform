@@ -88,9 +88,11 @@ export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 		}),
 });
 
-export const formSchemaWithoutPass = formSchema.omit({
-	password: true,
-});
+export const formSchemaWithoutPass = formSchema
+	.omit({
+		password: true,
+	})
+	.partial();
 
 export const formSchemaProfile = formSchema.omit({
 	password: true,

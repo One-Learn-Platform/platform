@@ -114,42 +114,33 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (roleId !== 1 && !form.data.schoolId) {
-			setError(form, "schoolId", "School is required");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "School is required",
-				},
-				form,
-			});
-		}
 
 		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();
 		if (!prevUserData) return fail(404, { message: "User not found" });
 
 		if (prevUserData.username !== form.data.username) {
-			try {
-				const existingUser = await db
-					.select()
-					.from(user)
-					.where(eq(user.username, form.data.username));
-				if (existingUser.at(0)) {
-					setError(form, "username", "Username already exists");
-					return fail(400, {
-						edit: { success: false, data: null, message: "Username already exists" },
+			if (form.data.username) {
+				try {
+					const existingUser = await db
+						.select()
+						.from(user)
+						.where(eq(user.username, form.data.username));
+					if (existingUser.at(0)) {
+						setError(form, "username", "Username already exists");
+						return fail(400, {
+							edit: { success: false, data: null, message: "Username already exists" },
+							form,
+						});
+					}
+				} catch (error) {
+					console.error(error);
+					setError(
 						form,
-					});
+						"",
+						error instanceof Error ? error.message : "Unknown error. Please try again.",
+						{ status: 500 },
+					);
 				}
-			} catch (error) {
-				console.error(error);
-				setError(
-					form,
-					"",
-					error instanceof Error ? error.message : "Unknown error. Please try again.",
-					{ status: 500 },
-				);
 				return fail(500, {
 					edit: {
 						success: false,
@@ -161,7 +152,17 @@ export const actions: Actions = {
 			}
 		}
 		const targetSchoolId = form.data.schoolId ? Number(form.data.schoolId) : undefined;
-
+		if (roleId !== 1 && !targetSchoolId) {
+			setError(form, "schoolId", "School is required");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "School is required",
+				},
+				form,
+			});
+		}
 		try {
 			await db
 				.update(user)
