@@ -7,16 +7,16 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
-	comment,
-	enrollment,
-	forum,
-	grades,
-	school,
-	session,
-	subject,
-	submission,
-	user,
-	userRole,
+  comment,
+  enrollment,
+  forum,
+  grades,
+  school,
+  session,
+  subject,
+  submission,
+  user,
+  userRole,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -44,10 +44,11 @@ export const load: PageServerLoad = async (event) => {
 			let userList;
 			if (event.locals.user.school) {
 				userList = await db
-					.select({ ...rest, schoolName: school.name })
+					.select({ ...rest, schoolName: school.name, gradeLevel: grades.level })
 					.from(user)
 					.where(eq(user.schoolId, event.locals.user.school))
-					.leftJoin(school, eq(user.schoolId, school.id));
+					.leftJoin(school, eq(user.schoolId, school.id))
+					.leftJoin(grades, eq(user.gradesId, grades.id));
 			} else {
 				userList = await db
 					.select({ ...rest, schoolName: school.name })

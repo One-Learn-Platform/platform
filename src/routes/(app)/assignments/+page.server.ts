@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, enrollment, subject, subjectType, submission } from "$lib/schema/db";
+import { assignment, enrollment, grades, subject, subjectType, submission } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, desc, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
@@ -103,11 +103,12 @@ export const load: PageServerLoad = async (event) => {
 				.innerJoin(subject, eq(assignment.subjectId, subject.id))
 				.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+				.innerJoin(grades, eq(subject.gradesId, grades.id))
 				.where(
 					and(
 						eq(assignment.schoolId, schoolId),
 						eq(enrollment.userId, event.locals.user.id),
-						eq(subject.gradesId, selectedGrade),
+						eq(grades.level, selectedGrade),
 					),
 				)
 				.orderBy(desc(assignment.createdAt));

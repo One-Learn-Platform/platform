@@ -14,7 +14,9 @@ export const load: PageServerLoad = async (event) => {
 		const isTeacher = event.locals.user.role === 3;
 		const isStudent = event.locals.user.role === 4;
 		let subjectList;
-		const selectedGrade = Number(event.cookies.get("selectedGrade"));
+
+		const selectedGrade = event.cookies.get("selectedGrade");
+		const grade = selectedGrade === "all" ? "all" : Number(selectedGrade);
 
 		if (event.locals.user.school) {
 			if (isAdmin) {
@@ -25,26 +27,34 @@ export const load: PageServerLoad = async (event) => {
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 					.where(eq(subject.schoolId, event.locals.user.school));
 			} else if (isTeacher) {
+				const conditions = [
+					eq(subject.schoolId, event.locals.user.school),
+					eq(subject.teacher, event.locals.user.id),
+				];
+				if (grade !== "all") {
+					conditions.push(eq(grades.level, grade));
+				}
 				subjectList = await db
 					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
-					.where(
-						and(
-							eq(subject.schoolId, event.locals.user.school),
-							eq(subject.teacher, event.locals.user.id),
-							eq(grades.level, selectedGrade),
-						),
-					)
+					.where(and(...conditions))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id));
 			} else if (isStudent) {
+				const conditions = [
+					eq(subject.schoolId, event.locals.user.school),
+					eq(enrollment.userId, event.locals.user.id),
+				];
+				if (grade !== "all") {
+					conditions.push(eq(grades.level, grade));
+				}
 				subjectList = await db
 					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
-					.where(and(eq(enrollment.userId, event.locals.user.id), eq(grades.level, selectedGrade)));
+					.where(and(...conditions));
 			}
 		}
 		return {
