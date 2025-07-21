@@ -152,17 +152,6 @@ export const actions: Actions = {
 			}
 		}
 		const targetSchoolId = form.data.schoolId ? Number(form.data.schoolId) : undefined;
-		if (roleId !== 1 && !targetSchoolId) {
-			setError(form, "schoolId", "School is required");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "School is required",
-				},
-				form,
-			});
-		}
 		try {
 			await db
 				.update(user)
