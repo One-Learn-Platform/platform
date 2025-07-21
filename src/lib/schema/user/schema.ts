@@ -35,7 +35,7 @@ export const formSchema = createInsertSchema(user, {
 			error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
 		}),
 	roleId: Role,
-	gradesId: z.number().int(),
+	gradesId: z.string().optional(),
 	schoolId: z.string().optional(),
 }).omit({
 	id: true,
@@ -76,7 +76,7 @@ export const formSchemaWithPass = formSchema
 	)
 	.refine(
 		(data) => {
-			if (data.roleId === Role.enum["super admin"] && data.gradesId !== 0) {
+			if (data.roleId === Role.enum["super admin"] && data.gradesId === "0") {
 				return false;
 			}
 			return true;
@@ -85,7 +85,7 @@ export const formSchemaWithPass = formSchema
 	)
 	.refine(
 		(data) => {
-			if (data.roleId === Role.enum["student"] && data.gradesId === 0) {
+			if (data.roleId === Role.enum["student"] && data.gradesId === "0") {
 				return false;
 			}
 			return true;
