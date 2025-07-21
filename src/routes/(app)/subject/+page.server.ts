@@ -14,6 +14,8 @@ export const load: PageServerLoad = async (event) => {
 		const isTeacher = event.locals.user.role === 3;
 		const isStudent = event.locals.user.role === 4;
 		let subjectList;
+		const selectedGrade = Number(event.cookies.get("selectedGrade"));
+
 		if (event.locals.user.school) {
 			if (isAdmin) {
 				subjectList = await db
@@ -31,11 +33,11 @@ export const load: PageServerLoad = async (event) => {
 						and(
 							eq(subject.schoolId, event.locals.user.school),
 							eq(subject.teacher, event.locals.user.id),
+							eq(grades.level, selectedGrade),
 						),
 					)
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id));
 			} else if (isStudent) {
-				const selectedGrade = Number(event.cookies.get("selectedGrade"));
 				subjectList = await db
 					.select({ ...columns, subjectTypeName: subjectType.name, gradesLevel: grades.level })
 					.from(subject)
