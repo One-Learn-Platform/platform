@@ -21,7 +21,16 @@ export const load: PageServerLoad = async (event) => {
 		const isStudent = event.locals.user.role === 4;
 
 		let allAssignments;
+		const selectedGrade = event.cookies.get("selectedGrade");
+		const grade = selectedGrade === "all" ? "all" : Number(selectedGrade);
 		if (isTeacher) {
+			const condition = [
+				eq(assignment.schoolId, schoolId),
+				eq(subject.teacher, event.locals.user.id),
+			];
+			if (grade !== "all") {
+				condition.push(eq(grades.level, grade));
+			}
 			allAssignments = await db
 				.select({
 					...assignmentColumns,
@@ -29,6 +38,7 @@ export const load: PageServerLoad = async (event) => {
 					subjectCode: subject.code,
 					subjectType: subjectType.name,
 					teacher: subject.teacher,
+					gradeLevel: grades.level,
 					done: sql<number>`${exists(
 						db
 							.select()
@@ -60,10 +70,17 @@ export const load: PageServerLoad = async (event) => {
 				.from(assignment)
 				.innerJoin(subject, eq(assignment.subjectId, subject.id))
 				.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
-				.where(and(eq(assignment.schoolId, schoolId), eq(subject.teacher, event.locals.user.id)))
+				.innerJoin(grades, eq(subject.gradesId, grades.id))
+				.where(and(...condition))
 				.orderBy(desc(assignment.createdAt));
 		} else if (isStudent) {
-			const selectedGrade = Number(event.cookies.get("selectedGrade"));
+			const condition = [
+				eq(assignment.schoolId, schoolId),
+				eq(enrollment.userId, event.locals.user.id),
+			];
+			if (grade !== "all") {
+				condition.push(eq(grades.level, grade));
+			}
 			allAssignments = await db
 				.select({
 					...assignmentColumns,
@@ -104,13 +121,7 @@ export const load: PageServerLoad = async (event) => {
 				.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
 				.innerJoin(grades, eq(subject.gradesId, grades.id))
-				.where(
-					and(
-						eq(assignment.schoolId, schoolId),
-						eq(enrollment.userId, event.locals.user.id),
-						eq(grades.level, selectedGrade),
-					),
-				)
+				.where(and(...condition))
 				.orderBy(desc(assignment.createdAt));
 		} else {
 			allAssignments = await db
