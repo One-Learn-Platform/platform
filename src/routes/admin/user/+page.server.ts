@@ -168,16 +168,28 @@ export const actions: Actions = {
 		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
 		const schoolId = form.data.schoolId ? Number(form.data.schoolId) : null;
 		try {
-			await db.insert(user).values({
-				roleId: roleId,
-				avatar: imageUrl,
-				fullname: form.data.fullname,
-				dob: form.data.dob,
-				username: form.data.username,
-				gradesId: form.data.gradesId,
-				password: passwordHash,
-				schoolId: schoolId,
-			});
+			if (roleId === 4) {
+				await db.insert(user).values({
+					roleId: roleId,
+					avatar: imageUrl,
+					fullname: form.data.fullname,
+					dob: form.data.dob,
+					username: form.data.username,
+					gradesId: form.data.gradesId,
+					password: passwordHash,
+					schoolId: schoolId,
+				});
+			} else {
+				await db.insert(user).values({
+					roleId: roleId,
+					avatar: imageUrl,
+					fullname: form.data.fullname,
+					dob: form.data.dob,
+					username: form.data.username,
+					password: passwordHash,
+					schoolId: schoolId,
+				});
+			}
 		} catch (error) {
 			await getR2(event).delete(uniqueFileName);
 			console.error(error);
