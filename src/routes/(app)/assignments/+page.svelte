@@ -22,6 +22,8 @@
 		subjectTextColor,
 	} from "$lib/functions/subject";
 
+	import { SvelteMap } from "svelte/reactivity";
+
 	const { data }: { data: PageServerData } = $props();
 	let hideDone = $state(false);
 	let hideMissed = $state(false);
@@ -58,7 +60,7 @@
 			}),
 	);
 	const groupedAssignments = $derived.by(() => {
-		const groupsMap = new Map<string, typeof filteredAssignments>();
+		const groupsMap = new SvelteMap<string, typeof filteredAssignments>();
 
 		filteredAssignments.forEach((assignment) => {
 			const key = JSON.stringify({
