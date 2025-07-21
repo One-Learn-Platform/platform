@@ -132,17 +132,6 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		if (roleId !== 1 && !form.data.schoolId) {
-			setError(form, "schoolId", "School is required");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "School is required",
-				},
-				form,
-			});
-		}
 
 		const uniqueFileName = `user/avatar/${getFileName(form.data.username)}-${getTimeStamp()}.png`;
 		if (form.data.avatar) {
@@ -169,6 +158,17 @@ export const actions: Actions = {
 		const imageUrl = (await getR2(event).get(uniqueFileName))?.key;
 		const schoolId =
 			event.locals.user.role === 1 ? Number(form.data.schoolId) : Number(event.locals.user.school);
+		if (roleId !== 1 && !schoolId) {
+			setError(form, "schoolId", "School is required");
+			return fail(400, {
+				create: {
+					success: false,
+					data: null,
+					message: "School is required",
+				},
+				form,
+			});
+		}
 		if (!schoolId || isNaN(schoolId) || schoolId <= 0) {
 			setError(form, "schoolId", "School is required");
 			return fail(400, {
