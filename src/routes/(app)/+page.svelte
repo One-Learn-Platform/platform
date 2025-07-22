@@ -49,7 +49,7 @@
 			</Table.Header>
 			<Table.Body>
 				{#if filteredLeaderboard && filteredLeaderboard.length > 0}
-					{#each filteredLeaderboard as item, index (item.userId + item.subjectId)}
+					{#each filteredLeaderboard as item, index (item.userId)}
 						{#if item.score && Number(item.score) >= scoreThreshold}
 							<Table.Row
 								class="

@@ -3,7 +3,7 @@ import type { PageServerLoad } from "./$types";
 
 import { enrollment, grades, subject, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { avg, desc, eq, getTableColumns, sql } from "drizzle-orm";
+import { avg, desc, eq, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -20,24 +20,22 @@ export const load: PageServerLoad = async (event) => {
 		});
 
 		const quoteData = (await quote.json()) as { advice: string };
-		const enrollmentColumn = getTableColumns(enrollment);
 		const leaderboard = await db
 			.select({
-				...enrollmentColumn,
 				userId: user.id,
 				fullname: user.fullname,
 				score: avg(enrollment.score),
 				avatar: user.avatar,
-				subjectName: subject.name,
 				gradeLevel: grades.level,
-				totalSubjects: sql<number>`COUNT(DISTINCT ${subject.id})`, // Number of subjects enrolled
+				totalSubjects: sql<number>`COUNT(DISTINCT ${subject.id})`, // Total subjects enrolled
 			})
 			.from(enrollment)
 			.innerJoin(user, eq(enrollment.userId, user.id))
 			.innerJoin(subject, eq(enrollment.subjectId, subject.id))
 			.innerJoin(grades, eq(subject.gradesId, grades.id))
+			.groupBy(user.id, user.fullname, user.avatar, grades.level) // Group by user only
 			.where(eq(enrollment.schoolId, schoolId))
-			.orderBy(desc(enrollment.createdAt));
+			.orderBy(desc(avg(enrollment.score)));
 
 		return { quote: quoteData, leaderboard };
 	}
