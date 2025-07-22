@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from "./$types";
-	
+
 	import { QuestionType, type SubmissionContent } from "$lib/types/assignment";
 
 	import * as Alert from "$lib/components/ui/alert/index.js";

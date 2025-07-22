@@ -1082,8 +1082,8 @@
 											question.choices.push({ key: key, value: "" });
 											if (!question.correctChoice || question.correctChoice === "") {
 												question.correctChoice = key;
+												question.answer = "";
 											}
-											question.answer = "";
 										}}
 									>
 										<Plus />
