@@ -67,9 +67,6 @@
 			}
 		}
 	});
-	$effect(() => {
-		$inspect($formData);
-	});
 </script>
 
 <div class="flex flex-col gap-2">
