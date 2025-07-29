@@ -1,8 +1,8 @@
-import { redirect } from "@sveltejs/kit";
+import { redirect, error } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
 import { getDb } from "$lib/server/db";
-import { grades, user } from "$lib/schema/db";
+import { grades, user, school } from "$lib/schema/db";
 import { eq, inArray } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {
@@ -13,6 +13,9 @@ export const load: LayoutServerLoad = async (event) => {
 		const currentUser = await db.select().from(user).where(eq(user.id, event.locals.user.id)).get();
 		if (!currentUser) {
 			return redirect(302, "/signin");
+		}
+		if (currentUser.roleId === 1) {
+			return error(403, { message: "Super Admin is not allowed to view app" });
 		}
 		let gradesList;
 		if (currentUser.gradesId !== null) {
@@ -35,11 +38,23 @@ export const load: LayoutServerLoad = async (event) => {
 		} else {
 			gradesList = await db.select().from(grades);
 		}
+		if (currentUser.schoolId === null) {
+			return redirect(302, "/signin");
+		}
+		const currentSchool = await db
+			.select()
+			.from(school)
+			.where(eq(school.id, currentUser.schoolId))
+			.get();
+		if (!currentSchool) {
+			return redirect(302, "/signin");
+		}
 		return {
 			user: event.locals.user,
 			session: event.locals.session,
 			selectedGrade,
 			grades: gradesList,
+			school: currentSchool,
 		};
 	}
 	return redirect(302, "/signin");

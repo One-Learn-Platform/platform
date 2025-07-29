@@ -67,7 +67,7 @@
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label>School Name</Form.Label>
-							<Input {...props} bind:value={$formData.name} />
+							<Input {...props} bind:value={$formData.name} placeholder="School Name" />
 						{/snippet}
 					</Form.Control>
 					{#if $formErrors.name}
@@ -95,7 +95,15 @@
 					{#if $formErrors.logo}
 						<Form.FieldErrors />
 					{:else}
-						<Form.Description>This is the Logo that will be displayed..</Form.Description>
+						<Form.Description>Square logo recommended (aspect ratio 1:1).</Form.Description>
+					{/if}
+					{#if $proxy.length > 0}
+						{#each $proxy as file (file.name)}
+							<figure class="p-1 text-sm text-muted-foreground">
+								<img src={URL.createObjectURL(file)} class="max-w-1/2" alt="New Logo" />
+								<figcaption>Preview</figcaption>
+							</figure>
+						{/each}
 					{/if}
 				</Form.Field>
 
@@ -105,7 +113,7 @@
 						type="reset"
 						onclick={() => reset()}
 					>
-						Cancel
+						Close
 					</Dialog.Close>
 
 					{#if $formErrors._errors}

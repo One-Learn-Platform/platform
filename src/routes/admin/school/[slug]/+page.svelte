@@ -3,6 +3,7 @@
 	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/state";
 	import type { PageProps } from "./$types";
+	import { PUBLIC_R2_URL } from "$env/static/public";
 
 	import { formSchemaEdit } from "$lib/schema/school/schema";
 	import { clsx } from "clsx";
@@ -122,9 +123,27 @@
 					{#if $formErrors.logo}
 						<Form.FieldErrors />
 					{:else}
-						<Form.Description>This is the Logo that will be displayed..</Form.Description>
+						<Form.Description>Square logo recommended (aspect ratio 1:1)</Form.Description>
 					{/if}
 				</Form.Field>
+				<div class="grid grid-cols-2 items-end gap-4 text-sm text-muted-foreground">
+					<figure class="p-1">
+						<img
+							src="{PUBLIC_R2_URL}/{data.schoolData.logo}"
+							class="max-w-1/2"
+							alt="Current Logo"
+						/>
+						<figcaption>Current Logo</figcaption>
+					</figure>
+					{#if $proxy.length > 0}
+						{#each $proxy as file (file.name)}
+							<figure class="p-1">
+								<img src={URL.createObjectURL(file)} class="max-w-1/2" alt="New Logo" />
+								<figcaption>New Logo</figcaption>
+							</figure>
+						{/each}
+					{/if}
+				</div>
 			</Card.Content>
 
 			<Card.Footer class="justify-end gap-4">

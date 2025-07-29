@@ -139,7 +139,7 @@ export const actions: Actions = {
 			});
 		}
 
-		if (event.url.searchParams.has("ref")) redirect(303, "/admin/user");
+		if (event.url.searchParams.has("ref")) redirect(303, "/admin/school");
 		else {
 			return withFiles({
 				edit: {
