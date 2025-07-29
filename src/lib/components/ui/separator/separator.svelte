@@ -11,7 +11,7 @@
 
 <SeparatorPrimitive.Root
 	bind:ref
-	data-slot="separator-root"
+	data-slot="separator"
 	class={cn(
 		"shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
 		className,
