@@ -101,7 +101,7 @@ importers:
         version: 0.31.4
       drizzle-zod:
         specifier: ^0.8.2
-        version: 0.8.2(drizzle-orm@0.44.3(@cloudflare/workers-types@4.20250726.0)(@libsql/client@0.15.10))(zod@4.0.11)
+        version: 0.8.2(drizzle-orm@0.44.3(@cloudflare/workers-types@4.20250726.0)(@libsql/client@0.15.10))(zod@4.0.10)
       embla-carousel-svelte:
         specifier: ^8.6.0
         version: 8.6.0(svelte@5.37.1)
@@ -193,8 +193,8 @@ importers:
         specifier: ^4.26.0
         version: 4.26.0(@cloudflare/workers-types@4.20250726.0)
       zod:
-        specifier: ^4.0.11
-        version: 4.0.11
+        specifier: 4.0.10
+        version: 4.0.10
 
 packages:
 
@@ -3499,8 +3499,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.0.11:
-    resolution: {integrity: sha512-LVrgstTaQJek72n6ZGxhAhH/Q24PhGx4lIAcgBmjtvjRq0qYjiH9U0o3hfuC2vfExsnpoHElc4XOJjMKQjUQxg==}
+  zod@4.0.10:
+    resolution: {integrity: sha512-3vB+UU3/VmLL2lvwcY/4RV2i9z/YU0DTV/tDuYjrwmx5WeJ7hwy+rGEEx8glHp6Yxw7ibRbKSaIFBgReRPe5KA==}
 
 snapshots:
 
@@ -5028,10 +5028,10 @@ snapshots:
       '@cloudflare/workers-types': 4.20250726.0
       '@libsql/client': 0.15.10
 
-  drizzle-zod@0.8.2(drizzle-orm@0.44.3(@cloudflare/workers-types@4.20250726.0)(@libsql/client@0.15.10))(zod@4.0.11):
+  drizzle-zod@0.8.2(drizzle-orm@0.44.3(@cloudflare/workers-types@4.20250726.0)(@libsql/client@0.15.10))(zod@4.0.10):
     dependencies:
       drizzle-orm: 0.44.3(@cloudflare/workers-types@4.20250726.0)(@libsql/client@0.15.10)
-      zod: 4.0.11
+      zod: 4.0.10
 
   effect@3.16.16:
     dependencies:
@@ -6419,4 +6419,4 @@ snapshots:
   zod@3.25.76:
     optional: true
 
-  zod@4.0.11: {}
+  zod@4.0.10: {}
