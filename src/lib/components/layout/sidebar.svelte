@@ -55,43 +55,22 @@
 	<Sidebar.Header class="bg-background">
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
-				<Sidebar.MenuButton class="data-[slot=sidebar-menu-button]:!p-1.5">
+				<Sidebar.MenuButton class="h-16 data-[slot=sidebar-menu-button]:!p-1.5">
 					{#snippet child({ props })}
 						<a href="/" {...props}>
-							<img src="{PUBLIC_R2_URL}/{school.logo}" alt="" class="size-5 object-contain" />
-							<span class="text-sm font-medium tracking-tight text-primary">{school.name}</span>
+							<img
+								src="{PUBLIC_R2_URL}/{school.logo}"
+								alt=""
+								class="size-12 object-contain p-1 transition-all duration-200 ease-linear group-data-[collapsible=icon]:p-0"
+							/>
+							<div class="font-display text-xl font-semibold tracking-tight text-primary">
+								{school.name}
+							</div>
 						</a>
 					{/snippet}
 				</Sidebar.MenuButton>
 			</Sidebar.MenuItem>
 		</Sidebar.Menu>
-	</Sidebar.Header>
-	<Sidebar.Content class="bg-background">
-		<Sidebar.Group>
-			<Sidebar.GroupContent>
-				<Sidebar.Menu>
-					{#each appNav as item (item.title)}
-						<Sidebar.MenuItem>
-							<Sidebar.MenuButton
-								class="h-10"
-								isActive={item.title === "Dashboard"
-									? page.url.pathname === item.href
-									: page.url.pathname.startsWith(item.href)}
-							>
-								{#snippet child({ props })}
-									<a href={item.href} {...props}>
-										<item.icon />
-										<span>{item.title}</span>
-									</a>
-								{/snippet}
-							</Sidebar.MenuButton>
-						</Sidebar.MenuItem>
-					{/each}
-				</Sidebar.Menu>
-			</Sidebar.GroupContent>
-		</Sidebar.Group>
-	</Sidebar.Content>
-	<Sidebar.Footer class="bg-background">
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
 				<DropdownMenu.Root>
@@ -147,5 +126,30 @@
 				</DropdownMenu.Root>
 			</Sidebar.MenuItem>
 		</Sidebar.Menu>
-	</Sidebar.Footer>
+	</Sidebar.Header>
+	<Sidebar.Content class="bg-background">
+		<Sidebar.Group>
+			<Sidebar.GroupContent>
+				<Sidebar.Menu>
+					{#each appNav as item (item.title)}
+						<Sidebar.MenuItem>
+							<Sidebar.MenuButton
+								class="h-10"
+								isActive={item.title === "Dashboard"
+									? page.url.pathname === item.href
+									: page.url.pathname.startsWith(item.href)}
+							>
+								{#snippet child({ props })}
+									<a href={item.href} {...props}>
+										<item.icon />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</Sidebar.MenuButton>
+						</Sidebar.MenuItem>
+					{/each}
+				</Sidebar.Menu>
+			</Sidebar.GroupContent>
+		</Sidebar.Group>
+	</Sidebar.Content>
 </Sidebar.Root>
