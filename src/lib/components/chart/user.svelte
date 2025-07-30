@@ -12,7 +12,7 @@
 
 	import { groupUsers } from "$lib/functions/db";
 
-	let { userList }: { userList: Omit<User, "password">[] } = $props();
+	let { userList, role }: { userList: Omit<User, "password">[]; role?: number } = $props();
 
 	let groupBy: "month" | "date" | "year" = $state("month");
 	const groupedUsers = $derived.by(() => {
