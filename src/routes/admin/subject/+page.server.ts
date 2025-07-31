@@ -204,11 +204,11 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
-		const subjectForum = await db.select().from(forum).where(eq(forum.subjectId, numberId));
+		const subjectForum = await db.select().from(forum).where(eq(forum.classroomId, numberId));
 		const subjectAssignment = await db
 			.select()
 			.from(assignment)
-			.where(eq(assignment.subjectId, numberId));
+			.where(eq(assignment.classroomId, numberId));
 		const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
 		if (!name) {
 			return fail(400, {
@@ -222,7 +222,7 @@ export const actions: Actions = {
 					subjectForum.map((f) => f.id),
 				),
 			);
-			await db.delete(forum).where(eq(forum.subjectId, numberId));
+			await db.delete(forum).where(eq(forum.classroomId, numberId));
 			await db.delete(submission).where(
 				inArray(
 					submission.assignmentId,
@@ -235,9 +235,9 @@ export const actions: Actions = {
 					subjectAssignment.map((a) => a.id),
 				),
 			);
-			await db.delete(assignment).where(eq(assignment.subjectId, numberId));
-			await db.delete(material).where(eq(material.subjectId, numberId));
-			await db.delete(enrollment).where(eq(enrollment.subjectId, numberId));
+			await db.delete(assignment).where(eq(assignment.classroomId, numberId));
+			await db.delete(material).where(eq(material.classroomId, numberId));
+			await db.delete(enrollment).where(eq(enrollment.classroomId, numberId));
 			await db.delete(subject).where(eq(subject.id, numberId));
 		} catch (error) {
 			console.error(error);
@@ -298,11 +298,11 @@ export const actions: Actions = {
 				});
 			}
 		});
-		const subjectForum = await db.select().from(forum).where(inArray(forum.subjectId, idArray));
+		const subjectForum = await db.select().from(forum).where(inArray(forum.classroomId, idArray));
 		const subjectAssignment = await db
 			.select()
 			.from(assignment)
-			.where(inArray(assignment.subjectId, idArray));
+			.where(inArray(assignment.classroomId, idArray));
 		const name = await db.select().from(subject).where(inArray(subject.id, idArray)).get();
 		if (!name) {
 			return fail(400, {
@@ -316,7 +316,7 @@ export const actions: Actions = {
 					subjectForum.map((f) => f.id),
 				),
 			);
-			await db.delete(forum).where(inArray(forum.subjectId, idArray));
+			await db.delete(forum).where(inArray(forum.classroomId, idArray));
 			await db.delete(submission).where(
 				inArray(
 					submission.assignmentId,
@@ -329,9 +329,9 @@ export const actions: Actions = {
 					subjectAssignment.map((a) => a.id),
 				),
 			);
-			await db.delete(assignment).where(inArray(assignment.subjectId, idArray));
-			await db.delete(material).where(inArray(material.subjectId, idArray));
-			await db.delete(enrollment).where(inArray(enrollment.subjectId, idArray));
+			await db.delete(assignment).where(inArray(assignment.classroomId, idArray));
+			await db.delete(material).where(inArray(material.classroomId, idArray));
+			await db.delete(enrollment).where(inArray(enrollment.classroomId, idArray));
 			await db.delete(subject).where(inArray(subject.id, idArray));
 		} catch (error) {
 			console.error(error);

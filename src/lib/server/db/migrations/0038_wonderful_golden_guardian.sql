@@ -1,0 +1,1 @@
+ALTER TABLE `classroom` ADD `class_code` text NOT NULL;

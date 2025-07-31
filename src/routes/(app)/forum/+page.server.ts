@@ -28,7 +28,7 @@ export const load: PageServerLoad = async (event) => {
 				})
 				.from(forum)
 				.innerJoin(user, eq(forum.userId, user.id))
-				.innerJoin(subject, eq(forum.subjectId, subject.id))
+				.innerJoin(subject, eq(forum.classroomId, subject.id))
 				.where(and(eq(forum.schoolId, schoolId), eq(subject.teacher, event.locals.user.id)));
 		} else if (isStudent) {
 			const conditions = [
@@ -50,8 +50,8 @@ export const load: PageServerLoad = async (event) => {
 				})
 				.from(forum)
 				.innerJoin(user, eq(forum.userId, user.id))
-				.innerJoin(subject, eq(forum.subjectId, subject.id))
-				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+				.innerJoin(subject, eq(forum.classroomId, subject.id))
+				.innerJoin(enrollment, eq(enrollment.classroomId, subject.id))
 				.innerJoin(grades, eq(subject.gradesId, grades.id))
 				.where(and(...conditions));
 		} else {
@@ -65,8 +65,8 @@ export const load: PageServerLoad = async (event) => {
 				})
 				.from(forum)
 				.innerJoin(user, eq(forum.userId, user.id))
-				.innerJoin(subject, eq(forum.subjectId, subject.id))
-				.innerJoin(enrollment, eq(enrollment.subjectId, subject.id))
+				.innerJoin(subject, eq(forum.classroomId, subject.id))
+				.innerJoin(enrollment, eq(enrollment.classroomId, subject.id))
 				.where(and(eq(forum.schoolId, schoolId), eq(enrollment.userId, event.locals.user.id)));
 		}
 

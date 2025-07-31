@@ -1,33 +1,29 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { enrollment, grades, subject, user } from "$lib/schema/db";
+import { enrollment, grades, user, classroom } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns, notExists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-	const params = event.params;
-	const { slug } = params;
-	const subjectId = parseInt(slug, 10);
-	const schoolId = event.locals.user?.school;
-
 	if (event.locals.user) {
+		const db = getDb(event);
+		const params = event.params;
+		const { slug } = params;
+		const classroomId = Number(slug);
+		if (isNaN(classroomId) || classroomId <= 0) {
+			return error(400, { message: "Invalid Classroom ID" });
+		}
+		const schoolId = event.locals.user.school;
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			if (isNaN(subjectId)) {
+			if (isNaN(classroomId)) {
 				return error(400, { message: "Invalid Subject ID" });
 			}
 			if (!schoolId) {
 				return error(400, { message: "School ID is required" });
 			}
-			const { ...subjectColumn } = getTableColumns(subject);
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { password, ...restUser } = getTableColumns(user);
-			const { ...enrollmentColumn } = getTableColumns(enrollment);
-			const teacherList = await db
-				.select({ ...restUser })
-				.from(user)
-				.where(and(eq(user.roleId, 3), eq(user.schoolId, schoolId)));
 			const studentList = await db
 				.select({ ...restUser, grades: grades.level })
 				.from(user)
@@ -39,31 +35,32 @@ export const load: PageServerLoad = async (event) => {
 							db
 								.select()
 								.from(enrollment)
-								.where(and(eq(enrollment.userId, user.id), eq(enrollment.subjectId, subjectId))),
+								.where(
+									and(eq(enrollment.userId, user.id), eq(enrollment.classroomId, classroomId)),
+								),
 						),
 					),
 				)
 				.leftJoin(grades, eq(grades.id, user.gradesId));
 			const enrolled = await db
-				.select({ ...enrollmentColumn, fullname: user.fullname })
+				.select({ ...getTableColumns(enrollment), fullname: user.fullname })
 				.from(enrollment)
-				.where(and(eq(enrollment.subjectId, subjectId), eq(enrollment.schoolId, schoolId)))
+				.where(and(eq(enrollment.classroomId, classroomId), eq(enrollment.schoolId, schoolId)))
 				.innerJoin(user, eq(user.id, enrollment.userId));
-			const subjectData = await db
-				.select({ ...subjectColumn, teacherName: user.fullname })
-				.from(subject)
-				.where(eq(subject.id, subjectId))
-				.leftJoin(user, eq(user.id, subject.teacher))
+			const classData = await db
+				.select({ ...getTableColumns(classroom), gradesLevel: grades.level })
+				.from(classroom)
+				.innerJoin(grades, eq(classroom.gradesId, grades.id))
+				.where(and(eq(classroom.id, classroomId), eq(classroom.schoolId, schoolId)))
 				.get();
-			if (subjectData) {
+			if (classData) {
 				return {
 					studentList: studentList,
-					subjectData: subjectData,
+					classData: classData,
 					enrolled: enrolled,
-					teacherList: teacherList,
 				};
 			} else {
-				return error(404, { message: "Subject Not Found" });
+				return error(404, { message: "Class Not Found" });
 			}
 		}
 	}
@@ -93,13 +90,13 @@ export const actions: Actions = {
 		const db = getDb(event);
 		const form = await event.request.formData();
 		const type = form.get("type");
-		const subject = form.get("subjectId");
-		if (!subject || typeof subject !== "string") {
-			return fail(400, { enroll: { success: false, message: "Invalid Subject ID" } });
+		const classroomForm = form.get("classId");
+		if (!classroomForm || typeof classroomForm !== "string") {
+			return fail(400, { enroll: { success: false, message: "Invalid Class ID" } });
 		}
-		const subjectId = parseInt(subject, 10);
-		if (isNaN(subjectId) || subjectId <= 0) {
-			return fail(400, { enroll: { success: false, message: "Invalid Subject ID" } });
+		const classroomId = parseInt(classroomForm, 10);
+		if (isNaN(classroomId) || classroomId <= 0) {
+			return fail(400, { enroll: { success: false, message: "Invalid Class ID" } });
 		}
 
 		if (type === "single") {
@@ -118,23 +115,23 @@ export const actions: Actions = {
 			const existingEnrollment = await db
 				.select()
 				.from(enrollment)
-				.where(and(eq(enrollment.userId, userId), eq(enrollment.subjectId, subjectId)))
+				.where(and(eq(enrollment.userId, userId), eq(enrollment.classroomId, classroomId)))
 				.get();
 			if (existingEnrollment) {
 				return fail(400, {
-					enroll: { success: false, message: "User already enrolled in this subject" },
+					enroll: { success: false, message: "User already enrolled in this class" },
 				});
 			}
 			try {
 				await db.insert(enrollment).values({
 					userId: userId,
-					subjectId: subjectId,
+					classroomId: classroomId,
 					schoolId: schoolId,
 				});
 			} catch (error) {
 				console.error("Enrollment Error:", error);
 				return fail(500, {
-					enroll: { success: false, message: "Failed to enroll user in subject" },
+					enroll: { success: false, message: "Failed to enroll user in class" },
 				});
 			}
 		} else if (type === "multiple") {
@@ -154,14 +151,14 @@ export const actions: Actions = {
 				await db.insert(enrollment).values(
 					usersList.map((userId) => ({
 						userId: userId,
-						subjectId: subjectId,
+						classroomId: classroomId,
 						schoolId: schoolId,
 					})),
 				);
 			} catch (error) {
 				console.error("Enrollment Error:", error);
 				return fail(500, {
-					enroll: { success: false, message: "Failed to enroll users in subject" },
+					enroll: { success: false, message: "Failed to enroll users in class" },
 				});
 			}
 		}
@@ -176,7 +173,7 @@ export const actions: Actions = {
 		}
 		const db = getDb(event);
 		const form = await event.request.formData();
-		const subject = form.get("subject");
+		const classroomForm = form.get("classId");
 		const id = form.get("id");
 		const schoolId = event.locals.user.school;
 		if (!schoolId) {
@@ -184,9 +181,9 @@ export const actions: Actions = {
 				unenroll: { success: false, message: "You are not enrolled in any school" },
 			});
 		}
-		if (!subject || typeof subject !== "string") {
+		if (!classroomForm || typeof classroomForm !== "string") {
 			return fail(400, {
-				unenroll: { success: false, message: "Invalid Subject ID. Please try again" },
+				unenroll: { success: false, message: "Invalid Class ID. Please try again" },
 			});
 		}
 		if (!id || typeof id !== "string") {
@@ -200,10 +197,10 @@ export const actions: Actions = {
 				unenroll: { success: false, message: "User Not Found. Please try again" },
 			});
 		}
-		const subjectId = Number(subject);
-		if (isNaN(subjectId) || subjectId <= 0) {
+		const classroomId = Number(classroomForm);
+		if (isNaN(classroomId) || classroomId <= 0) {
 			return fail(400, {
-				unenroll: { success: false, message: "Invalid Subject ID. Please try again" },
+				unenroll: { success: false, message: "Invalid Class ID. Please try again" },
 			});
 		}
 		try {
@@ -212,7 +209,7 @@ export const actions: Actions = {
 				.where(
 					and(
 						eq(enrollment.userId, userId),
-						eq(enrollment.subjectId, subjectId),
+						eq(enrollment.classroomId, classroomId),
 						eq(enrollment.schoolId, schoolId),
 					),
 				);

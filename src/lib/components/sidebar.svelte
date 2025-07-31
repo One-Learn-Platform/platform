@@ -65,6 +65,12 @@
 			superadmin: true,
 		},
 		{
+			title: "Classroom",
+			href: `${prefix}/classroom`,
+			icon: School,
+			superadmin: false,
+		},
+		{
 			title: "Subject",
 			href: `${prefix}/subject`,
 			icon: BookMarked,

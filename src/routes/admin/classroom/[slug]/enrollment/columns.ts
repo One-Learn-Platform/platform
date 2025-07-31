@@ -1,4 +1,4 @@
-import type { Subject } from "$lib/schema/db";
+import type { Classroom } from "$lib/schema/db";
 import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 
@@ -8,11 +8,7 @@ import DataTableActions from "$lib/components/table/enrollment-table-actions.sve
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-type SubjectWithTeacher = Subject & {
-	teacherName: string | null;
-	subjectTypeName: string | null;
-};
-export const columns: ColumnDef<SubjectWithTeacher>[] = [
+export const columns: ColumnDef<Classroom>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>
@@ -51,7 +47,7 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 		},
 	},
 	{
-		accessorKey: "code",
+		accessorKey: "name",
 		header: ({ column }) =>
 			renderComponent(sortable, {
 				name: "Code",
@@ -59,7 +55,7 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 			}),
 		cell: ({ row }) => {
-			const value = row.getValue("code");
+			const value = row.getValue("name");
 			const codeCellSnippet = createRawSnippet(() => {
 				return {
 					render: () => `<div class="text-left font-mono">${value}</div>`,
@@ -67,42 +63,6 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 			});
 			return renderSnippet(codeCellSnippet, value);
 		},
-	},
-	{
-		accessorKey: "name",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Name",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-	},
-	{
-		accessorKey: "subjectTypeName",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Subject Type",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-		cell: ({ row }) => {
-			const value = row.getValue("subjectTypeName");
-			const typeCellSnippet = createRawSnippet(() => {
-				return {
-					render: () => `<div class="">${value}</div>`,
-				};
-			});
-			return renderSnippet(typeCellSnippet, value);
-		},
-	},
-	{
-		accessorKey: "teacherName",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Teacher Name",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
 	},
 	{
 		id: "actions",

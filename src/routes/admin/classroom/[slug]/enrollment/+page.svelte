@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-	<title>Edit Subject | OneLearn</title>
+	<title>Edit Class | OneLearn</title>
 </svelte:head>
 
 <div class="space-y-2 pr-2 pb-2">
@@ -76,7 +76,7 @@
 		<Dialog.Content>
 			<form method="POST" action="?/enroll" class="contents" use:enhance>
 				<input type="hidden" name="type" value={tabsType} />
-				<input type="hidden" name="subjectId" value={data.subjectData.id} />
+				<input type="hidden" name="classId" value={data.classData.id} />
 				<Dialog.Header>
 					<Dialog.Title>Add Student</Dialog.Title>
 					<Dialog.Description>
@@ -138,7 +138,11 @@
 					</Dialog.Description>
 				</Dialog.Header>
 				<Dialog.Footer>
-					<Button type="reset" variant="outline">Cancel</Button>
+					<Dialog.Close>
+						{#snippet child({ props })}
+							<Button {...props} type="reset" variant="outline">Close</Button>
+						{/snippet}
+					</Dialog.Close>
 					<Button type="submit" variant="default">Save changes</Button>
 				</Dialog.Footer>
 			</form>
@@ -159,7 +163,7 @@
 			{#if data.enrolled.length === 0}
 				<Table.Row>
 					<Table.Cell colspan={3} class="text-center">
-						No students enrolled in this subject.
+						No students enrolled in this class.
 					</Table.Cell>
 				</Table.Row>
 			{:else}
@@ -190,9 +194,9 @@
 			<AlertDialog.Header>
 				<AlertDialog.Title>Do you want to remove {toBeDeleted?.fullname}?</AlertDialog.Title>
 				<AlertDialog.Description>
-					<input type="hidden" name="subject" value={data.subjectData.id} />
+					<input type="hidden" name="classId" value={data.classData.id} />
 					<input type="hidden" name="id" value={toBeDeleted?.userId} />
-					This action cannot be undone. This will remove the student from this subject.
+					This action cannot be undone. This will remove the student from this class.
 				</AlertDialog.Description>
 			</AlertDialog.Header>
 			<AlertDialog.Footer>
