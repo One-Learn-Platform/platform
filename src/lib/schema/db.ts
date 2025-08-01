@@ -150,11 +150,11 @@ export const schedule = sqliteTable(
 		classroomId: integer("classroom_id")
 			.notNull()
 			.references(() => classroom.id),
-		periodStart: integer("period_start").notNull(),
-		periodEnd: integer("period_end").notNull(),
-		dayOfWeek: text("day_of_week").notNull(),
-		startTime: text("start_time").notNull(),
-		endTime: text("end_time").notNull(),
+		periodStart: integer("period_start"),
+		periodEnd: integer("period_end"),
+		dayOfWeek: text("day_of_week"),
+		startTime: text("start_time"),
+		endTime: text("end_time"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
 			.notNull(),
