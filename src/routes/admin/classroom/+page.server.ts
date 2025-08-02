@@ -7,7 +7,7 @@ import { zod4 } from "sveltekit-superforms/adapters";
 
 import { classroom, grades } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, or, inArray } from "drizzle-orm";
+import { eq, or, inArray, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -16,11 +16,15 @@ export const load: PageServerLoad = async (event) => {
 			let classroomList;
 			if (event.locals.user.school) {
 				classroomList = await db
-					.select()
+					.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
 					.from(classroom)
+					.innerJoin(grades, eq(classroom.gradesId, grades.id))
 					.where(eq(classroom.schoolId, event.locals.user.school));
 			} else {
-				classroomList = await db.select().from(classroom);
+				classroomList = await db
+					.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+					.from(classroom)
+					.innerJoin(grades, eq(classroom.gradesId, grades.id));
 			}
 			const gradesList = await db.select().from(grades);
 			return {

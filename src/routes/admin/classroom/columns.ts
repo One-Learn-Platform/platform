@@ -8,7 +8,11 @@ import DataTableActions from "./data-table-actions.svelte";
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-export const columns: ColumnDef<Classroom>[] = [
+type ClassroomWithGrades = Classroom & {
+	gradeLevel: string;
+};
+
+export const columns: ColumnDef<ClassroomWithGrades>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>
@@ -44,6 +48,24 @@ export const columns: ColumnDef<Classroom>[] = [
 				};
 			});
 			return renderSnippet(amountCellSnippet, value);
+		},
+	},
+	{
+		accessorKey: "gradeLevel",
+		header: ({ column }) =>
+			renderComponent(sortable, {
+				name: "Grade Level",
+				sort: column.getIsSorted(),
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+		cell: ({ row }) => {
+			const value = row.getValue("gradeLevel");
+			const levelCellSnippet = createRawSnippet(() => {
+				return {
+					render: () => `<div class="text-left">${value}</div>`,
+				};
+			});
+			return renderSnippet(levelCellSnippet, value);
 		},
 	},
 	{

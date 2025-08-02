@@ -2,8 +2,6 @@
 	import { invalidateAll } from "$app/navigation";
 	import type { ActionData, PageServerData } from "./$types";
 
-	import Ellipsis from "@lucide/svelte/icons/ellipsis";
-	import Lightbulb from "@lucide/svelte/icons/lightbulb";
 	import Plus from "@lucide/svelte/icons/plus";
 
 	import { formSchemaCreate } from "$lib/schema/subject/schema";
@@ -224,8 +222,4 @@
 		</Dialog.Content>
 	</Dialog.Root>
 	<DataTable data={subjectList} {columns} />
-	<p class="inline-flex items-center pt-1 text-base text-muted-foreground">
-		<Lightbulb class="mr-1 size-4" />Click <Ellipsis class="mx-2 size-4" /> to add student to subject
-		(enroll)
-	</p>
 </div>

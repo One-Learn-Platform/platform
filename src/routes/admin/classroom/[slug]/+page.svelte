@@ -157,7 +157,7 @@
 				<Button
 					variant="outline"
 					type="button"
-					href="/admin/role"
+					href="/admin/classroom"
 					onclick={() => {
 						reset({
 							data: {

@@ -30,6 +30,14 @@
 				<DropdownMenu.Separator />
 				<DropdownMenu.Item class="font-medium">
 					{#snippet child({ props })}
+						<a {...props} href="{href}/{id}/schedule">
+							<UserRoundPlus class="mr-2 size-4" strokeWidth={2.5} />
+							<span>Arrange Schedule</span>
+						</a>
+					{/snippet}
+				</DropdownMenu.Item>
+				<DropdownMenu.Item class="font-medium">
+					{#snippet child({ props })}
 						<a {...props} href="{href}/{id}/enrollment">
 							<UserRoundPlus class="mr-2 size-4" strokeWidth={2.5} />
 							<span>Enrollment</span>

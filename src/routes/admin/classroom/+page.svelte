@@ -3,6 +3,9 @@
 	import { invalidateAll } from "$app/navigation";
 
 	import Plus from "@lucide/svelte/icons/plus";
+	import Lightbulb from "@lucide/svelte/icons/lightbulb";
+	import Ellipsis from "@lucide/svelte/icons/ellipsis";
+
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 	import { formSchema } from "$lib/schema/classroom/schema";
@@ -111,4 +114,8 @@
 		</Dialog.Content>
 	</Dialog.Root>
 	<DataTable data={classroom_data} {columns} />
+	<p class="inline-flex items-center pt-1 text-base text-muted-foreground">
+		<Lightbulb class="mr-1 size-4" />Click <Ellipsis class="mx-2 size-4" /> to add student to class (enroll)
+		or add subject to class (arrange schedule).
+	</p>
 </div>

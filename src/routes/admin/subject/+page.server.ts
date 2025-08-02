@@ -51,7 +51,7 @@ export const load: PageServerLoad = async (event) => {
 						...rest,
 						teacherName: user.fullname,
 						subjectTypeName: subjectType.name,
-						gradesLevel: grades.level,
+						gradeLevel: grades.level,
 					})
 					.from(subject)
 					.leftJoin(user, eq(user.id, subject.teacher))
