@@ -9,7 +9,7 @@ import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type ClassroomWithGrades = Classroom & {
-	gradeLevel: string;
+	gradeLevel: number;
 };
 
 export const columns: ColumnDef<ClassroomWithGrades>[] = [

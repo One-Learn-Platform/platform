@@ -44,8 +44,6 @@
 			}
 		}
 	});
-
-	let classroom_data = $derived(data.classroomList);
 </script>
 
 <div class="flex flex-col gap-2">
@@ -113,7 +111,7 @@
 			</form>
 		</Dialog.Content>
 	</Dialog.Root>
-	<DataTable data={classroom_data} {columns} />
+	<DataTable data={data.classroomList} {columns} />
 	<p class="inline-flex items-center pt-1 text-base text-muted-foreground">
 		<Lightbulb class="mr-1 size-4" />Click <Ellipsis class="mx-2 size-4" /> to add student to class (enroll)
 		or add subject to class (arrange schedule).
