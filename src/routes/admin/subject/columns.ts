@@ -3,13 +3,12 @@ import type { ColumnDef } from "@tanstack/table-core";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
-import DataTableActions from "$lib/components/table/data-table-actions.svelte";
+import DataTableActions from "./data-table-actions.svelte";
 
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type SubjectWithTeacher = Subject & {
-	teacherName: string | null;
 	subjectTypeName: string | null;
 	gradeLevel: number | null;
 };
@@ -113,15 +112,6 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 			});
 			return renderSnippet(typeCellSnippet, value);
 		},
-	},
-	{
-		accessorKey: "teacherName",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Teacher Name",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
 	},
 	{
 		id: "actions",

@@ -9,15 +9,16 @@ import {
 	assignment,
 	assignmentQuestion,
 	comment,
-	enrollment,
 	forum,
+	grades,
 	material,
+	schedule,
 	school,
 	subject,
 	subjectType,
 	submission,
+	teacherAssign,
 	user,
-	grades,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns, inArray, or } from "drizzle-orm";
@@ -36,12 +37,10 @@ export const load: PageServerLoad = async (event) => {
 				subjectList = await db
 					.select({
 						...rest,
-						teacherName: user.fullname,
 						subjectTypeName: subjectType.name,
 						gradeLevel: grades.level,
 					})
 					.from(subject)
-					.leftJoin(user, eq(user.id, subject.teacher))
 					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id))
 					.leftJoin(grades, eq(subject.gradesId, grades.id))
 					.where(eq(subject.schoolId, event.locals.user.school));
@@ -49,12 +48,10 @@ export const load: PageServerLoad = async (event) => {
 				subjectList = await db
 					.select({
 						...rest,
-						teacherName: user.fullname,
 						subjectTypeName: subjectType.name,
 						gradeLevel: grades.level,
 					})
 					.from(subject)
-					.leftJoin(user, eq(user.id, subject.teacher))
 					.leftJoin(subjectType, eq(subject.subjectType, subjectType.id))
 					.leftJoin(grades, eq(subject.gradesId, grades.id));
 			}
@@ -77,7 +74,6 @@ export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaCreate));
-		const teacherId = Number(form.data.teacher);
 		const school = event.locals.user?.school;
 
 		if (event.locals.user?.role === 1) {
@@ -111,31 +107,6 @@ export const actions: Actions = {
 			});
 		}
 
-		if (isNaN(teacherId) || teacherId <= 0) {
-			setError(form, "teacher", "Invalid teacher ID, please select a valid teacher");
-			return fail(400, {
-				create: {
-					success: false,
-					data: null,
-					message: "Invalid teacher ID, please select a valid teacher",
-				},
-				form,
-			});
-		}
-
-		const teacher = await db.select().from(user).where(eq(user.id, teacherId)).get();
-		if (!teacher) {
-			setError(form, "teacher", "Teacher not found, please select a valid teacher");
-			return fail(404, {
-				create: {
-					success: false,
-					data: null,
-					message: "Teacher not found, please select a valid teacher",
-				},
-				form,
-			});
-		}
-
 		const existingSubject = await db
 			.select()
 			.from(subject)
@@ -157,7 +128,6 @@ export const actions: Actions = {
 
 		try {
 			await db.insert(subject).values({
-				teacher: teacher.id,
 				code: form.data.code.toLocaleLowerCase(),
 				name: form.data.name,
 				schoolId: school,
@@ -198,31 +168,35 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "Failed to get ID. Please try again." },
 			});
 		}
-		const numberId = Number(id);
-		if (isNaN(numberId)) {
+		const subjectId = Number(id);
+		if (isNaN(subjectId)) {
 			return fail(400, {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
-		const subjectForum = await db.select().from(forum).where(eq(forum.classroomId, numberId));
+		const subjectForum = await db
+			.select()
+			.from(forum)
+			.where(and(eq(forum.subjectId, subjectId)));
 		const subjectAssignment = await db
 			.select()
 			.from(assignment)
-			.where(eq(assignment.classroomId, numberId));
-		const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
+			.where(eq(assignment.subjectId, subjectId));
+		const name = await db.select().from(subject).where(eq(subject.id, subjectId)).get();
 		if (!name) {
 			return fail(400, {
 				delete: { success: false, data: null, message: "Subject not found. Please try again." },
 			});
 		}
 		try {
+			await db.delete(teacherAssign).where(eq(teacherAssign.subjectId, subjectId));
 			await db.delete(comment).where(
 				inArray(
 					comment.forumId,
 					subjectForum.map((f) => f.id),
 				),
 			);
-			await db.delete(forum).where(eq(forum.classroomId, numberId));
+			await db.delete(forum).where(eq(forum.subjectId, subjectId));
 			await db.delete(submission).where(
 				inArray(
 					submission.assignmentId,
@@ -235,10 +209,10 @@ export const actions: Actions = {
 					subjectAssignment.map((a) => a.id),
 				),
 			);
-			await db.delete(assignment).where(eq(assignment.classroomId, numberId));
-			await db.delete(material).where(eq(material.classroomId, numberId));
-			await db.delete(enrollment).where(eq(enrollment.classroomId, numberId));
-			await db.delete(subject).where(eq(subject.id, numberId));
+			await db.delete(assignment).where(eq(assignment.subjectId, subjectId));
+			await db.delete(material).where(eq(material.subjectId, subjectId));
+			await db.delete(schedule).where(eq(schedule.subjectId, subjectId));
+			await db.delete(subject).where(eq(subject.id, subjectId));
 		} catch (error) {
 			console.error(error);
 			return fail(500, {
@@ -253,7 +227,7 @@ export const actions: Actions = {
 			delete: {
 				success: true,
 				data: {
-					id: numberId,
+					id: subjectId,
 					name: name?.name,
 				},
 				message: null,
@@ -298,11 +272,11 @@ export const actions: Actions = {
 				});
 			}
 		});
-		const subjectForum = await db.select().from(forum).where(inArray(forum.classroomId, idArray));
+		const subjectForum = await db.select().from(forum).where(inArray(forum.subjectId, idArray));
 		const subjectAssignment = await db
 			.select()
 			.from(assignment)
-			.where(inArray(assignment.classroomId, idArray));
+			.where(inArray(assignment.subjectId, idArray));
 		const name = await db.select().from(subject).where(inArray(subject.id, idArray)).get();
 		if (!name) {
 			return fail(400, {
@@ -310,13 +284,14 @@ export const actions: Actions = {
 			});
 		}
 		try {
+			await db.delete(teacherAssign).where(inArray(teacherAssign.subjectId, idArray));
 			await db.delete(comment).where(
 				inArray(
 					comment.forumId,
 					subjectForum.map((f) => f.id),
 				),
 			);
-			await db.delete(forum).where(inArray(forum.classroomId, idArray));
+			await db.delete(forum).where(inArray(forum.subjectId, idArray));
 			await db.delete(submission).where(
 				inArray(
 					submission.assignmentId,
@@ -329,9 +304,9 @@ export const actions: Actions = {
 					subjectAssignment.map((a) => a.id),
 				),
 			);
-			await db.delete(assignment).where(inArray(assignment.classroomId, idArray));
-			await db.delete(material).where(inArray(material.classroomId, idArray));
-			await db.delete(enrollment).where(inArray(enrollment.classroomId, idArray));
+			await db.delete(assignment).where(inArray(assignment.subjectId, idArray));
+			await db.delete(material).where(inArray(material.subjectId, idArray));
+			await db.delete(schedule).where(inArray(schedule.subjectId, idArray));
 			await db.delete(subject).where(inArray(subject.id, idArray));
 		} catch (error) {
 			console.error(error);

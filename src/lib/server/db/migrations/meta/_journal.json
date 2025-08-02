@@ -288,6 +288,34 @@
 			"when": 1753940965863,
 			"tag": "0040_flimsy_colonel_america",
 			"breakpoints": true
+		},
+		{
+			"idx": 41,
+			"version": "6",
+			"when": 1754120665985,
+			"tag": "0041_crazy_nebula",
+			"breakpoints": true
+		},
+		{
+			"idx": 42,
+			"version": "6",
+			"when": 1754120707283,
+			"tag": "0042_bitter_ken_ellis",
+			"breakpoints": true
+		},
+		{
+			"idx": 43,
+			"version": "6",
+			"when": 1754121104789,
+			"tag": "0043_strong_the_phantom",
+			"breakpoints": true
+		},
+		{
+			"idx": 44,
+			"version": "6",
+			"when": 1754124465174,
+			"tag": "0044_lyrical_maverick",
+			"breakpoints": true
 		}
 	]
 }

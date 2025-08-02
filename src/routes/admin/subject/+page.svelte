@@ -3,6 +3,8 @@
 	import type { ActionData, PageServerData } from "./$types";
 
 	import Plus from "@lucide/svelte/icons/plus";
+	import Lightbulb from "@lucide/svelte/icons/lightbulb";
+	import Ellipsis from "@lucide/svelte/icons/ellipsis";
 
 	import { formSchemaCreate } from "$lib/schema/subject/schema";
 	import { superForm } from "sveltekit-superforms";
@@ -177,41 +179,6 @@
 					{/if}
 				</Form.Field>
 
-				<Form.Field form={superform} name="teacher">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>Teacher</Form.Label>
-							<Select.Root
-								type="single"
-								value={$formData.teacher}
-								name={props.name}
-								allowDeselect
-								onValueChange={(value) => ($formData.teacher = value)}
-							>
-								<Select.Trigger {...props}>
-									{$formData.teacher
-										? data.teacherList.find((t) => t.id.toString() === $formData.teacher)?.fullname
-										: "Select a teacher"}
-								</Select.Trigger>
-								<Select.Content>
-									{#each data.teacherList as teacher (teacher.id)}
-										<Select.Item value={teacher.id.toString()} label={teacher.fullname}>
-											{teacher.fullname}
-										</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						{/snippet}
-					</Form.Control>
-					{#if $formErrors.teacher}
-						<Form.FieldErrors />
-					{:else}
-						<Form.Description>
-							This will determine the teacher assigned to the subject.
-						</Form.Description>
-					{/if}
-				</Form.Field>
-
 				<Dialog.Footer class="items-center">
 					{#if $formErrors._errors}
 						<FormErrors message={Object.values($formErrors._errors).join(", ")} />
@@ -222,4 +189,8 @@
 		</Dialog.Content>
 	</Dialog.Root>
 	<DataTable data={subjectList} {columns} />
+	<p class="inline-flex items-center pt-1 text-base text-muted-foreground">
+		<Lightbulb class="mr-1 size-4" />Click <Ellipsis class="mx-2 size-4" /> to add teacher to subject
+		(assign)
+	</p>
 </div>
