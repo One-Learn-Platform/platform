@@ -87,7 +87,7 @@
 </script>
 
 <section class="flex h-fit flex-col space-y-2">
-	{#if data.quiz && data.questions}
+	{#if data.user.role === 4 && data.quiz && data.questions}
 		<Dialog.Root bind:open={dialogQuizOpen}>
 			<Dialog.Content class="sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
 				<Dialog.Header>
