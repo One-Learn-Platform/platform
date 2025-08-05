@@ -31,7 +31,7 @@
 	]);
 
 	let selectedGrade = new PersistedState<{ title: string; number: string; id: number } | null>(
-		"selectedGrade",
+		"app_selectedGrade",
 		null,
 	);
 	$effect(() => {
