@@ -9,7 +9,7 @@
 			variant: {
 				default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
 				destructive:
-					"bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:hover:bg-destructive/50 dark:focus-visible:ring-destructive/40",
+					"bg-destructive shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:hover:bg-destructive/50 dark:focus-visible:ring-destructive/40",
 				outline:
 					"border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
 				secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
@@ -34,6 +34,11 @@
 				variant: "default",
 				outline: true,
 				class: "border-input text-primary hover:bg-accent hover:text-accent-foreground",
+			},
+			{
+				variant: "destructive",
+				outline: false,
+				class: "text-white",
 			},
 			{
 				variant: "destructive",
