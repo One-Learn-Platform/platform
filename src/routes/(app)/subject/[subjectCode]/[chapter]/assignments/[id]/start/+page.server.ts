@@ -116,6 +116,24 @@ export const actions: Actions = {
 		}
 
 		try {
+			const { id: submissionId, ...submissionColumns } = getTableColumns(submission);
+			const beforeSubmissions = await db
+				.select({
+					...getTableColumns(assignment),
+					submissionId,
+					...submissionColumns,
+				})
+				.from(submission)
+				.innerJoin(assignment, eq(submission.assignmentId, assignment.id))
+				.where(
+					and(
+						eq(assignment.subjectId, selectedSubject.id),
+						eq(submission.userId, event.locals.user.id),
+					),
+				);
+			const beforeOvrScore = beforeSubmissions.reduce((acc, sub) => acc + (sub.score ?? 0), 0);
+			const beforeAvgScore =
+				beforeSubmissions.length > 0 ? beforeOvrScore / beforeSubmissions.length : 0;
 			await db.insert(submission).values({
 				userId: event.locals.user.id,
 				assignmentId: assignmentId,
@@ -123,11 +141,10 @@ export const actions: Actions = {
 				score: score,
 				content: JSON.stringify(processedFormData),
 			});
-			const { ...assignmentColumns } = getTableColumns(assignment);
-			const { id: submissionId, ...submissionColumns } = getTableColumns(submission);
+
 			const allSubmissions = await db
 				.select({
-					...assignmentColumns,
+					...getTableColumns(assignment),
 					submissionId,
 					...submissionColumns,
 				})
@@ -141,17 +158,19 @@ export const actions: Actions = {
 				);
 			const overallScore = allSubmissions.reduce((acc, sub) => acc + (sub.score ?? 0), 0);
 			const averageScore = allSubmissions.length > 0 ? overallScore / allSubmissions.length : 0;
-			await db
-				.update(enrollment)
-				.set({
-					score: averageScore,
-				})
-				.where(
-					and(
-						eq(enrollment.userId, event.locals.user.id),
-						eq(enrollment.subjectId, selectedSubject.id),
-					),
-				);
+			if (assignmentData.quiz && averageScore > beforeAvgScore) {
+				await db
+					.update(enrollment)
+					.set({
+						score: averageScore,
+					})
+					.where(
+						and(
+							eq(enrollment.userId, event.locals.user.id),
+							eq(enrollment.subjectId, selectedSubject.id),
+						),
+					);
+			}
 		} catch (error) {
 			console.error("Error inserting submission:", error);
 			return fail(500, {
