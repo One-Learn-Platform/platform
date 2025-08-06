@@ -52,8 +52,9 @@ export const actions: Actions = {
 				create: {
 					success: false,
 					data: null,
-					message: "you must be associated with a school to create a class.",
+					message: "You must be associated with a school to create a class.",
 				},
+				form,
 			});
 		}
 		if (!form.valid) {
