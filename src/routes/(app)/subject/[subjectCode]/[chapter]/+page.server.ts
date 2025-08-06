@@ -165,7 +165,6 @@ export const actions: Actions = {
 			}
 		}
 		score = Math.round((score / questions.length) * 100);
-		console.log(`Total score: ${score}`);
 		const processedFormData = Object.fromEntries(
 			Array.from(formData.entries()).map(([key, value]) => [Number(key.replace("q-", "")), value]),
 		);

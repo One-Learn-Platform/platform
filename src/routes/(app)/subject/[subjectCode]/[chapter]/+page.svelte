@@ -93,8 +93,7 @@
 				<Dialog.Header>
 					<Dialog.Title>Quick Quiz</Dialog.Title>
 					<Dialog.Description>
-						This action cannot be undone. This will permanently delete your account and remove your
-						data from our servers.
+						Answer the following quiz to get bonus grade. Limited to first {data.quiz.limitUser} student(s).
 					</Dialog.Description>
 				</Dialog.Header>
 				<section class="flex h-full w-full flex-col items-center justify-between gap-2">
