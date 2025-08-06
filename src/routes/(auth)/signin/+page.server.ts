@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from "./$types";
 
 import { redirect } from "@sveltejs/kit";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -119,7 +119,7 @@ export const actions: Actions = {
 				});
 			}
 
-			const validPassword = await bcryptjs.compare(password, existingUser.password);
+			const validPassword = await bcrypt.compare(password, existingUser.password);
 			if (!validPassword) {
 				setError(form, "", "Incorrect username or password");
 				return fail(400, {

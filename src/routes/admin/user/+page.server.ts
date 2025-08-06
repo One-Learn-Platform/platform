@@ -2,7 +2,7 @@ import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaWithPass } from "$lib/schema/user/schema";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
@@ -96,7 +96,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const passwordHash = await bcryptjs.hash(form.data.password, 10);
+		const passwordHash = await bcrypt.hash(form.data.password, 12);
 		let roleId = 0;
 		switch (form.data.roleId) {
 			case "super admin":

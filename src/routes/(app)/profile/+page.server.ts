@@ -6,7 +6,7 @@ import {
 	formSchemaUploadImage,
 	formSchemaProfile,
 } from "$lib/schema/user/schema";
-import bcryptjs from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { eq, getTableColumns } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -252,7 +252,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const validPassword = await bcryptjs.compare(form.data.passwordOld, user.password);
+		const validPassword = await bcrypt.compare(form.data.passwordOld, user.password);
 		if (!validPassword) {
 			setError(form, "passwordOld", "Incorrect password");
 			return fail(400, {
@@ -302,7 +302,7 @@ export const actions: Actions = {
 			await db
 				.update(table.user)
 				.set({
-					password: await bcryptjs.hash(form.data.password, 10),
+					password: await bcrypt.hash(form.data.password, 12),
 				})
 				.where(eq(table.user.id, event.locals.user.id));
 		} catch (error) {
