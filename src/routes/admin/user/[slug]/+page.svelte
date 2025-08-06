@@ -127,11 +127,9 @@
 						changes.schoolId = false;
 					}
 				} else {
-					changes.dob = false;
-					changes.fullname = false;
-					changes.username = false;
-					changes.roleId = false;
-					changes.schoolId = false;
+					for (const key in changes) {
+						changes[key as keyof typeof changes] = false;
+					}
 				}
 			}
 		},
@@ -144,7 +142,7 @@
 	let avatarName = $state();
 	const avatarUrl = $derived(URL.createObjectURL($avatarProxy?.[0] ?? new Blob()));
 
-	const { form: formData, enhance, errors, reset } = superform;
+	const { form: formData, enhance, errors: formErrors, reset } = superform;
 	const { enhance: enhanceUpload, errors: errorsUpload } = superformUpload;
 
 	let value = $derived($formData.dob ? parseDate($formData.dob) : undefined);
@@ -330,10 +328,9 @@
 			action="?/edit{page.url.searchParams.get('ref')
 				? '&ref=' + page.url.searchParams.get('ref')
 				: ''}"
-			class="space-y-2"
 			use:enhance
 		>
-			<Card.Content>
+			<Card.Content class="space-y-2">
 				<Form.Field form={superform} name="fullname">
 					<Form.Control>
 						{#snippet children({ props })}
@@ -346,7 +343,7 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if $errors.fullname}
+					{#if $formErrors.fullname}
 						<Form.FieldErrors />
 					{:else}
 						<Form.Description>The fullname of the user.</Form.Description>
@@ -365,12 +362,106 @@
 							/>
 						{/snippet}
 					</Form.Control>
-					{#if $errors.username}
+					{#if $formErrors.username}
 						<Form.FieldErrors />
 					{:else}
 						<Form.Description>Username will be used for login</Form.Description>
 					{/if}
 				</Form.Field>
+
+				<Form.Field form={superform} name="roleId">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Role</Form.Label>
+							<Select.Root
+								type="single"
+								value={$formData.roleId}
+								onValueChange={(value) => {
+									const roleValue = value as RoleEnum | RoleWithoutSuperAdminEnum;
+									$formData.roleId = roleValue;
+									// set timeout to allow the role value to be registered before changing the school value
+									setTimeout(() => {
+										if (value === Role.enum["super admin"]) {
+											$formData.schoolId = "";
+										}
+									}, 10);
+								}}
+								name={props.name}
+							>
+								<Select.Trigger {...props} class={["w-full", changes.roleId ? changesClass : ""]}>
+									{$formData.roleId
+										? $formData.roleId.replace(
+												/\w\S*/g,
+												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
+											)
+										: "Select a role"}
+								</Select.Trigger>
+								<Select.Content>
+									<Select.Group>
+										<Select.Label>Role</Select.Label>
+										{#each Object.values(roleList.options) as role (role)}
+											{@const roleTitleCase = role.replace(
+												/\w\S*/g,
+												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
+											)}
+											<Select.Item value={role} label={roleTitleCase}>{roleTitleCase}</Select.Item>
+										{/each}
+									</Select.Group>
+								</Select.Content>
+							</Select.Root>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.roleId}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>
+							Select a role for the user. This will determine their access level.
+						</Form.Description>
+					{/if}
+				</Form.Field>
+
+				{#if data.user.role === 1}
+					<Form.Field form={superform} name="schoolId">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>School</Form.Label>
+								<Select.Root
+									type="single"
+									value={$formData.schoolId}
+									name={props.name}
+									allowDeselect
+									disabled={$formData.roleId === Role.enum["super admin"]}
+									onValueChange={(value) => ($formData.schoolId = value)}
+								>
+									<Select.Trigger
+										{...props}
+										class={["w-full", changes.schoolId ? changesClass : ""]}
+									>
+										{$formData.schoolId
+											? data.schoolList.find(
+													(school) => school.id.toString() === $formData.schoolId,
+												)?.name
+											: "Select a school"}
+									</Select.Trigger>
+									<Select.Content>
+										{#each data.schoolList as school (school)}
+											<Select.Item value={school.id.toString()} label={school.name}>
+												{school.name}
+											</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.schoolId}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>
+								This will determine the school affiliation of the user.
+							</Form.Description>
+						{/if}
+					</Form.Field>
+				{/if}
 
 				<Form.Field form={superform} name="gradesId">
 					<Form.Control>
@@ -379,14 +470,16 @@
 							<Select.Root
 								type="single"
 								name={props.name}
+								disabled={$formData.roleId !== Role.enum["student"]}
+								value={$formData.gradesId?.toString()}
 								onValueChange={(value) => {
 									$formData.gradesId = Number(value);
 								}}
 							>
-								<Select.Trigger {...props}>
+								<Select.Trigger {...props} class={["w-full", changes.gradesId ? changesClass : ""]}>
 									{$formData.gradesId
 										? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
-										: "Select grade"}
+										: "Select a grades"}
 								</Select.Trigger>
 								<Select.Content>
 									{#each data.gradesList as grade (grade.id)}
@@ -398,10 +491,52 @@
 							</Select.Root>
 						{/snippet}
 					</Form.Control>
-					{#if $errors.gradesId}
+					{#if $formErrors.gradesId}
 						<Form.FieldErrors />
 					{:else}
-						<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
+						<Form.Description
+							>This is the Grades that will be assigned to student only.</Form.Description
+						>
+					{/if}
+				</Form.Field>
+
+				<Form.Field form={superform} name="classroomId">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>Class</Form.Label>
+							<Select.Root
+								type="single"
+								name={props.name}
+								disabled={$formData.roleId !== Role.enum["student"]}
+								onValueChange={(value) => {
+									$formData.classroomId = Number(value);
+								}}
+							>
+								<Select.Trigger
+									{...props}
+									class={["w-full", changes.classroomId ? changesClass : ""]}
+								>
+									{$formData.classroomId
+										? (() => {
+												const c = data.classroomList.find((c) => c.id === $formData.classroomId);
+												return c ? `${c.name} - ${c.gradeLevel}` : "Select a class";
+											})()
+										: "Select a class"}
+								</Select.Trigger>
+								<Select.Content>
+									{#each data.classroomList as classroom (classroom.id)}
+										<Select.Item value={classroom.id.toString()} label={classroom.name}>
+											{classroom.gradeLevel} - {classroom.name}
+										</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						{/snippet}
+					</Form.Control>
+					{#if $formErrors.classroomId}
+						<Form.FieldErrors />
+					{:else}
+						<Form.Description>This is the Classroom that will be assigned.</Form.Description>
 					{/if}
 				</Form.Field>
 
@@ -443,107 +578,16 @@
 							<input type="hidden" hidden value={$formData.dob} name={props.name} />
 						{/snippet}
 					</Form.Control>
-					{#if $errors.dob}
+					{#if $formErrors.dob}
 						<Form.FieldErrors />
 					{:else}
 						<Form.Description>The date of birth of the user.</Form.Description>
 					{/if}
 				</Form.Field>
-
-				<Form.Field form={superform} name="roleId">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>Role</Form.Label>
-							<Select.Root
-								type="single"
-								value={$formData.roleId}
-								onValueChange={(value) => {
-									const roleValue = value as RoleEnum | RoleWithoutSuperAdminEnum;
-									$formData.roleId = roleValue;
-									// set timeout to allow the role value to be registered before changing the school value
-									setTimeout(() => {
-										if (value === Role.enum["super admin"]) {
-											$formData.schoolId = "";
-										}
-									}, 10);
-								}}
-								name={props.name}
-							>
-								<Select.Trigger {...props} class={changes.roleId ? changesClass : ""}>
-									{$formData.roleId
-										? $formData.roleId.replace(
-												/\w\S*/g,
-												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-											)
-										: "Select a role"}
-								</Select.Trigger>
-								<Select.Content>
-									<Select.Group>
-										<Select.Label>Role</Select.Label>
-										{#each Object.values(roleList.options) as role (role)}
-											{@const roleTitleCase = role.replace(
-												/\w\S*/g,
-												(text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase(),
-											)}
-											<Select.Item value={role} label={roleTitleCase}>{roleTitleCase}</Select.Item>
-										{/each}
-									</Select.Group>
-								</Select.Content>
-							</Select.Root>
-						{/snippet}
-					</Form.Control>
-					{#if $errors.roleId}
-						<Form.FieldErrors />
-					{:else}
-						<Form.Description>
-							Select a role for the user. This will determine their access level.
-						</Form.Description>
-					{/if}
-				</Form.Field>
-
-				{#if data.user.role === 1}
-					<Form.Field form={superform} name="schoolId">
-						<Form.Control>
-							{#snippet children({ props })}
-								<Form.Label>School</Form.Label>
-								<Select.Root
-									type="single"
-									value={$formData.schoolId}
-									name={props.name}
-									allowDeselect
-									disabled={$formData.roleId === Role.enum["super admin"]}
-									onValueChange={(value) => ($formData.schoolId = value)}
-								>
-									<Select.Trigger {...props}>
-										{$formData.schoolId
-											? data.schoolList.find(
-													(school) => school.id.toString() === $formData.schoolId,
-												)?.name
-											: "Select a school"}
-									</Select.Trigger>
-									<Select.Content>
-										{#each data.schoolList as school (school)}
-											<Select.Item value={school.id.toString()} label={school.name}>
-												{school.name}
-											</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							{/snippet}
-						</Form.Control>
-						{#if $errors.schoolId}
-							<Form.FieldErrors />
-						{:else}
-							<Form.Description>
-								This will determine the school affiliation of the user.
-							</Form.Description>
-						{/if}
-					</Form.Field>
-				{/if}
 			</Card.Content>
 			<Card.Footer class="justify-end gap-4">
-				{#if $errors._errors}
-					<FormErrors message={Object.values($errors._errors).join(", ")} />
+				{#if $formErrors._errors}
+					<FormErrors message={Object.values($formErrors._errors).join(", ")} />
 				{/if}
 				<Button
 					variant="outline"
@@ -557,6 +601,8 @@
 								username: userDetail.username,
 								roleId: currentRole,
 								schoolId: currentSchool,
+								gradesId: userDetail.gradesId ?? undefined,
+								classroomId: userDetail.classroomId ?? undefined,
 							},
 						});
 						for (const key in changes) {

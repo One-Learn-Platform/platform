@@ -140,7 +140,7 @@
 						{/if}
 					</Form.Field>
 
-					<Form.Field form={superform} name="roleId">
+					<Form.Field form={superform} name="roleId" class="col-span-2">
 						<Form.Control>
 							{#snippet children({ props })}
 								<Form.Label>Role</Form.Label>
@@ -160,7 +160,7 @@
 									}}
 									name={props.name}
 								>
-									<Select.Trigger {...props}>
+									<Select.Trigger {...props} class="w-full">
 										{$formData.roleId
 											? $formData.roleId.replace(
 													/\w\S*/g,
@@ -193,7 +193,7 @@
 						{/if}
 					</Form.Field>
 					{#if data.user.role === 1}
-						<Form.Field form={superform} name="schoolId">
+						<Form.Field form={superform} name="schoolId" class="col-span-2">
 							<Form.Control>
 								{#snippet children({ props })}
 									<Form.Label>School</Form.Label>
@@ -205,7 +205,7 @@
 										disabled={$formData.roleId === Role.enum["super admin"]}
 										onValueChange={(value) => ($formData.schoolId = value)}
 									>
-										<Select.Trigger {...props}>
+										<Select.Trigger {...props} class="w-full">
 											{$formData.schoolId
 												? data.schoolList.find(
 														(school) => school.id.toString() === $formData.schoolId,
@@ -246,7 +246,7 @@
 									<Select.Trigger {...props}>
 										{$formData.gradesId
 											? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
-											: "Select a grades ID"}
+											: "Select a grades"}
 									</Select.Trigger>
 									<Select.Content>
 										{#each data.gradesList as grade (grade.id)}
@@ -261,7 +261,46 @@
 						{#if $formErrors.gradesId}
 							<Form.FieldErrors />
 						{:else}
-							<Form.Description>This is the Grades ID that will be displayed.</Form.Description>
+							<Form.Description
+								>This is the Grades that will be assigned to student only.</Form.Description
+							>
+						{/if}
+					</Form.Field>
+
+					<Form.Field form={superform} name="classroomId">
+						<Form.Control>
+							{#snippet children({ props })}
+								<Form.Label>Class</Form.Label>
+								<Select.Root
+									type="single"
+									name={props.name}
+									disabled={$formData.roleId !== Role.enum["student"]}
+									onValueChange={(value) => {
+										$formData.classroomId = Number(value);
+									}}
+								>
+									<Select.Trigger {...props}>
+										{$formData.classroomId
+											? (() => {
+													const c = data.classroomList.find((c) => c.id === $formData.classroomId);
+													return c ? `${c.gradeLevel} - ${c.name}` : "Select a class";
+												})()
+											: "Select a class"}
+									</Select.Trigger>
+									<Select.Content>
+										{#each data.classroomList as classroom (classroom.id)}
+											<Select.Item value={classroom.id.toString()} label={classroom.name}>
+												{classroom.gradeLevel} - {classroom.name}
+											</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							{/snippet}
+						</Form.Control>
+						{#if $formErrors.classroomId}
+							<Form.FieldErrors />
+						{:else}
+							<Form.Description>This is the Classroom that will be assigned.</Form.Description>
 						{/if}
 					</Form.Field>
 

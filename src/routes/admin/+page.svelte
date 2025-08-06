@@ -46,10 +46,6 @@
 				title: "Comment Count",
 				number: data.commentList?.length,
 			},
-			{
-				title: "Enrollment Count",
-				number: data.enrollmentList?.length,
-			},
 		];
 	});
 	const userFiltered = $derived.by(() => {

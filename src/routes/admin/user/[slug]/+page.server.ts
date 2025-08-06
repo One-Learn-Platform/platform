@@ -2,19 +2,20 @@ import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaUploadImage, formSchemaWithoutPass } from "$lib/schema/user/schema";
-import { eq, inArray } from "drizzle-orm";
+import { asc, eq, getTableColumns, inArray } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
+	classroom,
 	comment,
-	enrollment,
 	forum,
 	grades,
 	school,
 	session,
 	subject,
 	submission,
+	teacherAssign,
 	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
@@ -22,31 +23,45 @@ import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
-	const db = getDb(event);
-	const params = event.params;
-	const { slug } = params;
-	const userId = parseInt(slug, 10);
-
 	if (event.locals.user) {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			if (isNaN(userId)) {
+			const db = getDb(event);
+			const params = event.params;
+			const { slug } = params;
+			const userId = parseInt(slug, 10);
+			if (isNaN(userId) || userId <= 0) {
 				return error(400, { message: "Invalid User ID" });
 			} else {
 				const userData = await db.select().from(user).where(eq(user.id, userId)).get();
 				const schoolList = await db.select().from(school);
 				const gradesList = await db.select().from(grades);
-				if (userData) {
-					userData.password = "";
-					return {
-						gradesList: gradesList,
-						userData: userData,
-						schoolList: schoolList,
-						form: await superValidate(zod4(formSchemaWithoutPass)),
-						uploadForm: await superValidate(zod4(formSchemaUploadImage)),
-					};
+				let classroomList;
+				if (event.locals.user.school) {
+					classroomList = await db
+						.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+						.from(classroom)
+						.innerJoin(grades, eq(grades.id, classroom.gradesId))
+						.where(eq(classroom.schoolId, event.locals.user.school))
+						.orderBy(asc(grades.level), asc(classroom.name));
 				} else {
+					classroomList = await db
+						.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+						.from(classroom)
+						.innerJoin(grades, eq(grades.id, classroom.gradesId))
+						.orderBy(asc(grades.level), asc(classroom.name));
+				}
+				if (!userData) {
 					return error(404, { message: "User Not Found" });
 				}
+				userData.password = "";
+				return {
+					gradesList: gradesList,
+					classroomList,
+					userData: userData,
+					schoolList: schoolList,
+					form: await superValidate(zod4(formSchemaWithoutPass)),
+					uploadForm: await superValidate(zod4(formSchemaUploadImage)),
+				};
 			}
 		} else {
 			return error(404, { message: "Not Found" });
@@ -160,6 +175,7 @@ export const actions: Actions = {
 					username: form.data.username,
 					schoolId: targetSchoolId,
 					gradesId: form.data.gradesId ? Number(form.data.gradesId) : undefined,
+					classroomId: form.data.classroomId ? Number(form.data.classroomId) : undefined,
 					dob: form.data.dob,
 					roleId: roleId,
 				})
@@ -382,13 +398,17 @@ export const actions: Actions = {
 					allForum.map((f) => f.id),
 				),
 			);
-		const isTeacher = await db.select().from(subject).where(eq(subject.teacher, numberId));
+		const isTeacher = await db
+			.select({ ...getTableColumns(teacherAssign), subjectName: subject.name })
+			.from(teacherAssign)
+			.innerJoin(subject, eq(teacherAssign.subjectId, subject.id))
+			.where(eq(teacherAssign.userId, numberId));
 		if (isTeacher.length > 0) {
 			return fail(400, {
 				delete: {
 					success: false,
 					data: null,
-					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.subjectName).join(", ")}. Please remove the teacher from the subject first.`,
 				},
 			});
 		}
@@ -413,7 +433,6 @@ export const actions: Actions = {
 				),
 			);
 			await db.delete(forum).where(eq(forum.userId, numberId));
-			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
 		} catch (error) {

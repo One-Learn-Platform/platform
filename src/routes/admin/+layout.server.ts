@@ -2,29 +2,27 @@ import { error, redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
 import {
-	announcement,
-	assignment,
-	comment,
-	enrollment,
-	forum,
-	material,
-	school,
-	subject,
-	submission,
-	user,
-	type Announcement,
-	type Assignment,
-	type Comment,
-	type Enrollment,
-	type Forum,
-	type Material,
-	type School,
-	type Subject,
-	type Submission,
-	type User,
+  announcement,
+  assignment,
+  comment,
+  forum,
+  material,
+  school,
+  subject,
+  submission,
+  user,
+  type Announcement,
+  type Assignment,
+  type Comment,
+  type Forum,
+  type Material,
+  type School,
+  type Subject,
+  type Submission,
+  type User,
 } from "$lib/schema/db";
-import { and, asc, eq, getTableColumns, ne } from "drizzle-orm";
 import { getDb } from "$lib/server/db";
+import { and, asc, eq, getTableColumns, ne } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {
 	const db = getDb(event);
@@ -69,9 +67,6 @@ export const load: LayoutServerLoad = async (event) => {
 				isSuperadmin
 					? db.select().from(comment)
 					: db.select().from(comment).where(eq(comment.schoolId, schoolId)),
-				isSuperadmin
-					? db.select().from(enrollment)
-					: db.select().from(enrollment).where(eq(enrollment.schoolId, schoolId)),
 			];
 
 			const [
@@ -84,7 +79,6 @@ export const load: LayoutServerLoad = async (event) => {
 				submissionList,
 				announcementList,
 				commentList,
-				enrollmentList,
 			] = await Promise.all(queries);
 
 			return {
@@ -99,7 +93,6 @@ export const load: LayoutServerLoad = async (event) => {
 				submissionList: submissionList as Submission[],
 				announcementList: announcementList as Announcement[],
 				commentList: commentList as Comment[],
-				enrollmentList: enrollmentList as Enrollment[],
 				allUsers: allUsers,
 			};
 		} else {

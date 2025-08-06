@@ -7,22 +7,22 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
+	classroom,
 	comment,
-	enrollment,
 	forum,
 	grades,
 	school,
 	session,
 	subject,
 	submission,
+	teacherAssign,
 	user,
 	userRole,
-	teacherAssign,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
-import { eq, getTableColumns, inArray, not, or } from "drizzle-orm";
+import { asc, eq, getTableColumns, inArray, not, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -43,17 +43,30 @@ export const load: PageServerLoad = async (event) => {
 			const gradesList = await db.select().from(grades);
 
 			let userList;
+			let classroomList;
 			if (event.locals.user.school) {
 				userList = await db
 					.select({ ...rest, schoolName: school.name, gradeLevel: grades.level })
 					.from(user)
-					.where(eq(user.schoolId, event.locals.user.school))
 					.leftJoin(school, eq(user.schoolId, school.id))
-					.leftJoin(grades, eq(user.gradesId, grades.id));
+					.leftJoin(grades, eq(user.gradesId, grades.id))
+					.where(eq(user.schoolId, event.locals.user.school));
+				classroomList = await db
+					.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+					.from(classroom)
+					.innerJoin(grades, eq(grades.id, classroom.gradesId))
+					.where(eq(classroom.schoolId, event.locals.user.school))
+					.orderBy(asc(grades.level), asc(classroom.name));
 			} else {
+				classroomList = await db
+					.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+					.from(classroom)
+					.innerJoin(grades, eq(grades.id, classroom.gradesId))
+					.orderBy(asc(grades.level), asc(classroom.name));
 				userList = await db
-					.select({ ...rest, schoolName: school.name })
+					.select({ ...rest, schoolName: school.name, gradeLevel: grades.level })
 					.from(user)
+					.leftJoin(grades, eq(user.gradesId, grades.id))
 					.leftJoin(school, eq(user.schoolId, school.id));
 			}
 			return {
@@ -61,6 +74,7 @@ export const load: PageServerLoad = async (event) => {
 				userList: userList,
 				schoolList: schoolList,
 				roleList: roleList,
+				classroomList,
 				form: await superValidate(zod4(formSchemaWithPass)),
 			};
 		} else {
@@ -190,6 +204,7 @@ export const actions: Actions = {
 					dob: form.data.dob,
 					username: form.data.username,
 					gradesId: form.data.gradesId ? Number(form.data.gradesId) : null,
+					classroomId: form.data.classroomId ? Number(form.data.classroomId) : null,
 					password: passwordHash,
 					schoolId: schoolId,
 				});
@@ -296,7 +311,6 @@ export const actions: Actions = {
 				),
 			);
 			await db.delete(forum).where(eq(forum.userId, numberId));
-			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
 		} catch (error) {
@@ -393,7 +407,6 @@ export const actions: Actions = {
 				),
 			);
 			await db.delete(forum).where(inArray(forum.userId, idArray));
-			await db.delete(enrollment).where(inArray(enrollment.userId, idArray));
 			await db.delete(session).where(inArray(session.userId, idArray));
 			await db.delete(user).where(inArray(user.id, idArray));
 		} catch (error) {
