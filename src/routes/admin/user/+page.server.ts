@@ -17,6 +17,7 @@ import {
 	submission,
 	user,
 	userRole,
+	teacherAssign,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -261,13 +262,17 @@ export const actions: Actions = {
 					allForum.map((f) => f.id),
 				),
 			);
-		const isTeacher = await db.select().from(subject).where(eq(subject.teacher, numberId));
+		const isTeacher = await db
+			.select({ ...getTableColumns(teacherAssign), subjectName: subject.name })
+			.from(teacherAssign)
+			.innerJoin(subject, eq(teacherAssign.subjectId, subject.id))
+			.where(eq(teacherAssign.userId, numberId));
 		if (isTeacher.length > 0) {
 			return fail(400, {
 				delete: {
 					success: false,
 					data: null,
-					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.subjectName).join(", ")}. Please remove the teacher from the subject first.`,
 				},
 			});
 		}
@@ -354,13 +359,17 @@ export const actions: Actions = {
 				});
 			}
 		}
-		const isTeacher = await db.select().from(subject).where(inArray(subject.teacher, idArray));
+		const isTeacher = await db
+			.select({ ...getTableColumns(teacherAssign), subjectName: subject.name })
+			.from(teacherAssign)
+			.innerJoin(subject, eq(teacherAssign.subjectId, subject.id))
+			.where(inArray(teacherAssign.userId, idArray));
 		if (isTeacher.length > 0) {
 			return fail(400, {
 				delete: {
 					success: false,
 					data: null,
-					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.name).join(", ")}. Please remove the teacher from the subject first.`,
+					message: `User is teacher and still assigned to ${isTeacher.map((t) => t.subjectName).join(", ")}. Please remove the teacher from the subject first.`,
 				},
 			});
 		}
