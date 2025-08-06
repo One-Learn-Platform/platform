@@ -276,6 +276,15 @@
 			</Alert.Root>
 		{/if}
 	{/if}
+
+	<div class="mb-0">
+		<div class="flex flex-row items-center justify-between">
+			<h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Material</h2>
+			<Button variant="link" href="{page.url.pathname}/material">See All Materials</Button>
+		</div>
+	</div>
+	<Separator />
+
 	{#if firstMaterial}
 		{@const sanitizedContent = browser
 			? DOMpurify.sanitize(firstMaterial.content)
@@ -338,7 +347,7 @@
 		{/if}
 	{/if}
 	{#if data.user.role === 3}
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/material/create">
+		<Button variant="default" class="w-fit" href="{page.url.pathname}/material/create">
 			<Plus class="" /> Add Material
 		</Button>
 	{/if}
@@ -359,7 +368,7 @@
 	</div>
 	<Separator />
 	{#if data.user.role === 3}
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
+		<Button variant="default" class="w-fit" href="{page.url.pathname}/assignments/create">
 			<Plus class="" /> Add Assignment
 		</Button>
 	{/if}

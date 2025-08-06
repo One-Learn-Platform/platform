@@ -39,10 +39,13 @@
 	);
 </script>
 
-<div>
-	<h2 class="font-display text-2xl font-semibold sm:text-3xl">Forum</h2>
-	<Separator />
+<div class="mb-0">
+	<div class="flex flex-row items-center justify-between">
+		<h2 class="font-display text-2xl font-semibold sm:text-3xl">Forum</h2>
+		<Button variant="link" href="{page.url.pathname}/forum">See All Forums</Button>
+	</div>
 </div>
+<Separator />
 <div class="flex justify-between">
 	<Button variant="default" href={`${page.url.pathname}/forum/create`}><Plus />New Post</Button>
 	<div class="flex flex-row gap-2">
