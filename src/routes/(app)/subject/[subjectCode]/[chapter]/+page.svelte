@@ -1,31 +1,39 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
-	import { goto } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
-	import type { PageData } from "./$types";
+	import type { ActionData, PageData } from "./$types";
 	dayjs.extend(relativeTime);
 
 	import Material from "$lib/components/cards/material.svelte";
 	import Forum from "$lib/components/page/forum.svelte";
 
+	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
 	import * as Alert from "$lib/components/ui/alert/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
+	import { Input } from "$lib/components/ui/input/index.js";
+	import { Label } from "$lib/components/ui/label/index.js";
+	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 
+	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+	import ArrowRight from "@lucide/svelte/icons/arrow-right";
 	import Edit from "@lucide/svelte/icons/edit";
 	import ListTodo from "@lucide/svelte/icons/list-todo";
+	import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
 	import Plus from "@lucide/svelte/icons/plus";
-	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
-	import SquareArrowOutUpRight from "@lucide/svelte/icons/square-arrow-out-up-right";
-	import { toast } from "svelte-sonner";
+	import SendHorizontal from "@lucide/svelte/icons/send-horizontal";
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import { QuestionType } from "$lib/types/assignment";
 	import DOMpurify from "dompurify";
+	import { toast } from "svelte-sonner";
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 	const firstMaterial = $derived(data.material[0]);
 	const firstMaterialAttachment = $derived(firstMaterial?.attachment);
 	const otherMaterials = $derived(data.material.slice(1));
@@ -41,56 +49,211 @@
 			dayjs(assignment.dueDate + "Z").isSame(dayjs().add(1, "day"), "day"),
 		),
 	);
+	let dialogSubmitOpen = $state(false);
+	let dialogQuizOpen = $state(false);
 	$effect(() => {
-		if (data.quiz?.length > 0) {
-			for (const quiz of data.quiz) {
-				toast.info("Quiz is available", {
-					richColors: true,
-					duration: 5000,
-					position: "top-center",
-					description: "Take the quiz now! Limited to first " + quiz.limitUser + " people.",
-					action: {
-						label: "Start",
-						onClick: () =>
-							goto(
-								`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments/${quiz.id}/start`,
-							),
-					},
-				});
-			}
+		if (data.quiz) {
+			dialogQuizOpen = true;
 		}
-		if (assignmentsDueTomorrow.length > 0) {
-			toast.warning(`You have ${assignmentsDueTomorrow.length} assignment(s) due tomorrow!`, {
-				description: "Please complete assignments immediately.",
-				action: {
-					label: "See Assignments",
-					onClick: () =>
-						goto(`/subject/${page.params.subjectCode}/${page.params.chapter}/assignments`),
-				},
-			});
+	});
+
+	let showError = $state(false);
+	let currentQuestion = $state(0);
+	const questionAmount = $derived(data.questions?.length ?? 0);
+	const answer = $state(
+		data.questions?.map((question, index) => ({
+			id: question.id,
+			number: index + 1,
+			key: `question-${index}`,
+			answer: "",
+		})) ?? [],
+	);
+	const unansweredQuestions = $derived.by(() => answer.filter((a) => a.answer === ""));
+	$effect(() => {
+		if (unansweredQuestions.length === 0) {
+			showError = false;
+		}
+	});
+	$effect(() => {
+		if (form?.submit?.success) {
+			toast.success("Your answers have been submitted successfully.");
+			dialogSubmitOpen = false;
+			currentQuestion = 0;
+		} else if (form?.submit?.message) {
+			dialogSubmitOpen = false;
+			toast.error(form.submit.message);
 		}
 	});
 </script>
 
 <section class="flex h-fit flex-col space-y-2">
-	{#if data.quiz?.length > 0}
-		{#each data.quiz as quiz (quiz.id)}
-			<Alert.Root variant="warning" fill="muted">
-				<TriangleAlert />
-				<Alert.Title>{quiz.title}</Alert.Title>
-				<Alert.Description>
-					You can take the {quiz.title} for first {quiz.limitUser} people.
-					<Button
-						variant="outline"
-						class="bg-input/30 hover:bg-input/50"
-						size="sm"
-						href="/subject/{page.params.subjectCode}/{page.params
-							.chapter}/assignments/{quiz.id}/start"><SquareArrowOutUpRight />Start</Button
+	{#if data.user.role === 4 && data.quiz && data.questions}
+		<Dialog.Root bind:open={dialogQuizOpen}>
+			<Dialog.Content class="sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+				<Dialog.Header>
+					<Dialog.Title>Quick Quiz</Dialog.Title>
+					<Dialog.Description>
+						Answer the following quiz to get bonus grade. Limited to first {data.quiz.limitUser} student(s).
+					</Dialog.Description>
+				</Dialog.Header>
+				<section class="flex h-full w-full flex-col items-center justify-between gap-2">
+					<div class="flex flex-col items-center text-center">
+						<p class="w-fit rounded-sm border px-2 py-1 text-sm font-medium tracking-tight">
+							{currentQuestion + 1}
+							<span class="font-normal text-muted-foreground">of {questionAmount}</span>
+						</p>
+						<h2 class="text-4xl font-semibold tracking-tight">
+							{data.questions[currentQuestion].question}
+						</h2>
+					</div>
+
+					<div class="flex w-full flex-col items-center justify-center gap-1 px-2 py-4 md:px-12">
+						{#if data.questions[currentQuestion].attachment}
+							{@const attachment = JSON.parse(data.questions[currentQuestion].attachment!)}
+							{#each attachment as file (file)}
+								{@const fileCategory = getFileCategory(file.name)}
+								{#if fileCategory === "image"}
+									<img
+										src="{PUBLIC_R2_URL}/{file.url}"
+										alt={file.name}
+										class="max-w-xs rounded-md"
+									/>
+								{:else}
+									{@const FileIcon = getFileIcon(file.name)}
+									<a
+										href="{PUBLIC_R2_URL}/{file.url}"
+										class="flex w-full max-w-xs flex-row items-center gap-2 rounded-md border p-2 hover:bg-muted"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
+										<FileIcon class="" />
+										<span class="text-sm">{file.name}</span>
+									</a>
+								{/if}
+							{/each}
+						{/if}
+
+						{#if data.questions[currentQuestion].questionType === QuestionType.MULTIPLE_CHOICE && data.questions[currentQuestion].choice}
+							{@const choices = JSON.parse(data.questions[currentQuestion].choice!) as string[]}
+							<RadioGroup.Root
+								class="flex w-full flex-col gap-4 py-4 md:flex-row"
+								bind:value={answer[currentQuestion].answer}
+							>
+								{#each choices as choice, index (choice)}
+									<Label
+										for={`q-${currentQuestion}-option-${index}`}
+										class="flex min-h-24 grow flex-col items-center justify-around rounded-sm border p-4 duration-150 ease-out hover:bg-muted"
+									>
+										<RadioGroup.Item value={choice} id={`q-${currentQuestion}-option-${index}`} />
+										<span class="leading-normal break-words">
+											{choice}
+										</span>
+									</Label>
+								{/each}
+							</RadioGroup.Root>
+						{:else if data.questions[currentQuestion].questionType === QuestionType.SHORT_ANSWER}
+							<Label for={`question-${currentQuestion}`} class="w-full">Answer</Label>
+							<Input
+								type="text"
+								name={`question-${currentQuestion}`}
+								bind:value={answer[currentQuestion].answer}
+								placeholder="Type your answer here..."
+								class="w-full"
+								autocomplete="off"
+							/>
+						{/if}
+					</div>
+
+					<Alert.Root
+						variant="destructive"
+						class="border-destructive transition duration-150 ease-out sm:hidden
+            {showError ? 'visible opacity-100' : 'invisible opacity-0'} "
 					>
-				</Alert.Description>
-			</Alert.Root>
-		{/each}
+						<OctagonAlert />
+						<Alert.Title>Please fill out all questions</Alert.Title>
+					</Alert.Root>
+					<div class="flex w-full flex-row items-end justify-between gap-2">
+						<Button
+							variant="outline"
+							type="button"
+							size="default"
+							class="h-full min-h-10 text-sm"
+							disabled={currentQuestion === 0}
+							onclick={() => (currentQuestion = currentQuestion - 1)}
+						>
+							<ArrowLeft />
+							Previous
+						</Button>
+						<Alert.Root
+							variant="destructive"
+							class="border-destructive transition duration-150 ease-out max-sm:hidden
+              {showError ? 'visible opacity-100' : 'invisible opacity-0'}"
+						>
+							<OctagonAlert />
+							<Alert.Title>Please fill out all questions</Alert.Title>
+						</Alert.Root>
+						{#if currentQuestion !== questionAmount - 1}
+							<Button
+								variant="outline"
+								type="button"
+								size="default"
+								class="h-full min-h-10 text-sm"
+								disabled={currentQuestion === questionAmount - 1}
+								onclick={() => (currentQuestion = currentQuestion + 1)}
+							>
+								Next
+								<ArrowRight />
+							</Button>
+						{:else}
+							<AlertDialog.Root bind:open={dialogSubmitOpen}>
+								<AlertDialog.Trigger>
+									{#snippet child({ props })}
+										<Button
+											{...props}
+											variant="default"
+											size="default"
+											class="h-full min-h-10 text-sm"
+											onclick={() => {
+												if (unansweredQuestions.length > 0) {
+													showError = true;
+													toast.error(`Please answer all questions before submitting.`);
+												} else {
+													dialogSubmitOpen = true;
+												}
+											}}
+										>
+											Submit
+											<SendHorizontal />
+										</Button>
+									{/snippet}
+								</AlertDialog.Trigger>
+								<AlertDialog.Content>
+									<form action="?/submit" method="POST" class="contents" use:enhance>
+										<AlertDialog.Header>
+											<AlertDialog.Title>Are you sure you want to submit?</AlertDialog.Title>
+											<AlertDialog.Description>
+												<input type="hidden" name="quiz_id" value={data.quiz.id} />
+												{#each answer as answer (answer.id)}
+													<input type="hidden" name={`q-${answer.id}`} bind:value={answer.answer} />
+												{/each}
+												The answers you provided will be submitted and cannot be changed afterwards.
+												You will see your score directly after submitting.
+											</AlertDialog.Description>
+										</AlertDialog.Header>
+										<AlertDialog.Footer>
+											<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
+											<AlertDialog.Action type="submit">Continue</AlertDialog.Action>
+										</AlertDialog.Footer>
+									</form>
+								</AlertDialog.Content>
+							</AlertDialog.Root>
+						{/if}
+					</div>
+				</section>
+			</Dialog.Content>
+		</Dialog.Root>
 	{/if}
+
 	{#if data.user.role === 4}
 		{#if assignmentsDueTomorrow.length > 0}
 			<Alert.Root variant="destructive" fill="muted">
@@ -112,6 +275,15 @@
 			</Alert.Root>
 		{/if}
 	{/if}
+
+	<div class="mb-0">
+		<div class="flex flex-row items-center justify-between">
+			<h2 class="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Material</h2>
+			<Button variant="link" href="{page.url.pathname}/material">See All Materials</Button>
+		</div>
+	</div>
+	<Separator />
+
 	{#if firstMaterial}
 		{@const sanitizedContent = browser
 			? DOMpurify.sanitize(firstMaterial.content)
@@ -174,7 +346,7 @@
 		{/if}
 	{/if}
 	{#if data.user.role === 3}
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/material/create">
+		<Button variant="default" class="w-fit" href="{page.url.pathname}/material/create">
 			<Plus class="" /> Add Material
 		</Button>
 	{/if}
@@ -195,7 +367,7 @@
 	</div>
 	<Separator />
 	{#if data.user.role === 3}
-		<Button variant="outline" class="w-fit" href="{page.url.pathname}/assignments/create">
+		<Button variant="default" class="w-fit" href="{page.url.pathname}/assignments/create">
 			<Plus class="" /> Add Assignment
 		</Button>
 	{/if}
