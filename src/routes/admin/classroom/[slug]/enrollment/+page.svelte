@@ -66,7 +66,12 @@
 </svelte:head>
 
 <div class="space-y-2 pr-2 pb-2">
-	<h1 class="font-display text-3xl font-semibold tracking-tight">Enrollment Details</h1>
+	<div>
+		<h1 class="font-display text-3xl font-semibold tracking-tight">Enroll Student</h1>
+		<p class="font-medium text-muted-foreground">
+			Class: {data.classData.gradeLevel}-{data.classData.name}
+		</p>
+	</div>
 	<Dialog.Root>
 		<Dialog.Trigger>
 			{#snippet child({ props })}

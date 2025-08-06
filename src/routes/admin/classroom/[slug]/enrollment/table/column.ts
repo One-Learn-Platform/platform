@@ -7,7 +7,7 @@ import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 import type { User } from "$lib/schema/db";
 type StudentWithGrades = Omit<User, "password"> & {
-	grades: number | null;
+	gradeLevel: number | null;
 };
 export const columns: ColumnDef<StudentWithGrades>[] = [
 	{

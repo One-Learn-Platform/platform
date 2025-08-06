@@ -7,30 +7,37 @@ import { and, eq, getTableColumns, notExists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		const db = getDb(event);
-		const params = event.params;
-		const { slug } = params;
-		const classroomId = Number(slug);
-		if (isNaN(classroomId) || classroomId <= 0) {
-			return error(400, { message: "Invalid Classroom ID" });
-		}
-		const schoolId = event.locals.user.school;
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			if (isNaN(classroomId)) {
-				return error(400, { message: "Invalid Subject ID" });
+			const db = getDb(event);
+			const params = event.params;
+			const { slug } = params;
+			const classroomId = Number(slug);
+			if (isNaN(classroomId) || classroomId <= 0) {
+				return error(400, { message: "Invalid Classroom ID" });
 			}
+			const schoolId = event.locals.user.school;
 			if (!schoolId) {
 				return error(400, { message: "School ID is required" });
 			}
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { password, ...restUser } = getTableColumns(user);
+			const classData = await db
+				.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
+				.from(classroom)
+				.innerJoin(grades, eq(classroom.gradesId, grades.id))
+				.where(and(eq(classroom.id, classroomId), eq(classroom.schoolId, schoolId)))
+				.get();
+			if (!classData) {
+				return error(404, { message: "Classroom not found" });
+			}
 			const studentList = await db
-				.select({ ...restUser, grades: grades.level })
+				.select({ ...restUser, gradeLevel: grades.level })
 				.from(user)
 				.where(
 					and(
 						eq(user.roleId, 4),
 						eq(user.schoolId, schoolId),
+						eq(user.gradesId, classData.gradesId),
 						notExists(
 							db
 								.select()
@@ -47,21 +54,11 @@ export const load: PageServerLoad = async (event) => {
 				.from(enrollment)
 				.where(and(eq(enrollment.classroomId, classroomId), eq(enrollment.schoolId, schoolId)))
 				.innerJoin(user, eq(user.id, enrollment.userId));
-			const classData = await db
-				.select({ ...getTableColumns(classroom), gradesLevel: grades.level })
-				.from(classroom)
-				.innerJoin(grades, eq(classroom.gradesId, grades.id))
-				.where(and(eq(classroom.id, classroomId), eq(classroom.schoolId, schoolId)))
-				.get();
-			if (classData) {
-				return {
-					studentList: studentList,
-					classData: classData,
-					enrolled: enrolled,
-				};
-			} else {
-				return error(404, { message: "Class Not Found" });
-			}
+			return {
+				studentList: studentList,
+				classData: classData,
+				enrolled: enrolled,
+			};
 		}
 	}
 	return redirect(302, "/signin");

@@ -7,24 +7,22 @@ import { and, eq, getTableColumns, notExists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		const db = getDb(event);
-		const params = event.params;
-		const { slug } = params;
-		const classroomId = Number(slug);
-		if (isNaN(classroomId) || classroomId <= 0) {
-			return error(400, { message: "Invalid Classroom ID" });
-		}
-		const schoolId = event.locals.user.school;
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
-			if (isNaN(classroomId)) {
-				return error(400, { message: "Invalid Subject ID" });
+			const db = getDb(event);
+			const params = event.params;
+			const { slug } = params;
+			const classroomId = Number(slug);
+			if (isNaN(classroomId) || classroomId <= 0) {
+				return error(400, { message: "Invalid Classroom ID" });
 			}
+			const schoolId = event.locals.user.school;
 			if (!schoolId) {
 				return error(400, { message: "School ID is required" });
 			}
 			const currentClassroom = await db
-				.select()
+				.select({ ...getTableColumns(classroom), gradeLevel: grades.level })
 				.from(classroom)
+				.innerJoin(grades, eq(classroom.gradesId, grades.id))
 				.where(and(eq(classroom.id, classroomId), eq(classroom.schoolId, schoolId)))
 				.get();
 			if (!currentClassroom) {
