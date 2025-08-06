@@ -1,19 +1,19 @@
-import { error, redirect, fail } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import {
 	assignment,
 	assignmentQuestion,
-	enrollment,
 	forum,
 	material,
+	report,
 	subject,
 	subjectType,
 	submission,
 	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, eq, exists, getTableColumns, sql, count } from "drizzle-orm";
+import { and, count, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const { subjectCode } = event.params;
@@ -222,17 +222,38 @@ export const actions: Actions = {
 			const overallScore = allSubmissions.reduce((acc, sub) => acc + (sub.score ?? 0), 0);
 			const averageScore = allSubmissions.length > 0 ? overallScore / allSubmissions.length : 0;
 			if (assignmentData.quiz && averageScore > beforeAvgScore) {
-				await db
-					.update(enrollment)
-					.set({
-						score: averageScore,
-					})
+				const currentReport = await db
+					.select()
+					.from(report)
 					.where(
 						and(
-							eq(enrollment.userId, event.locals.user.id),
-							eq(enrollment.subjectId, selectedSubject.id),
+							eq(report.userId, event.locals.user.id),
+							eq(report.classroomId, assignmentData.classroomId),
+							eq(report.subjectId, selectedSubject.id),
 						),
 					);
+				if (!currentReport) {
+					await db.insert(report).values({
+						userId: event.locals.user.id,
+						subjectId: selectedSubject.id,
+						classroomId: assignmentData.classroomId,
+						score: averageScore,
+						schoolId: schoolId,
+					});
+				} else {
+					await db
+						.update(report)
+						.set({
+							score: averageScore,
+						})
+						.where(
+							and(
+								eq(report.userId, event.locals.user.id),
+								eq(report.classroomId, assignmentData.classroomId),
+								eq(report.subjectId, selectedSubject.id),
+							),
+						);
+				}
 			}
 		} catch (error) {
 			console.error("Error inserting submission:", error);

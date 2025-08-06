@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { createInsertSchema } from "drizzle-zod";
 
 import { QUESTION_TYPE_VALUE } from "../types/assignment";
 
@@ -23,12 +22,31 @@ export const grades = sqliteTable("grades", {
 	level: integer("level").notNull(),
 });
 
+export const classroom = sqliteTable(
+	"classroom",
+	{
+		id: integer("classroom_id").primaryKey({ autoIncrement: true }),
+		name: text("name").notNull(),
+		gradesId: integer("grades_id")
+			.notNull()
+			.references(() => grades.id),
+		schoolId: integer("school_id")
+			.notNull()
+			.references(() => school.id),
+	},
+	(table) => [
+		index("classroom_school_index").on(table.schoolId),
+		index("classroom_grades_index").on(table.gradesId),
+	],
+);
+
 export const user = sqliteTable(
 	"user",
 	{
 		id: integer("user_id").primaryKey({ autoIncrement: true }),
 		avatar: text("avatar"),
 		schoolId: integer("school_id").references(() => school.id),
+		classroomId: integer("classroom_id").references(() => classroom.id),
 		roleId: integer("role_id")
 			.references(() => userRole.id)
 			.notNull(),
@@ -76,26 +94,8 @@ export const subject = sqliteTable(
 	],
 );
 
-export const classroom = sqliteTable(
-	"classroom",
-	{
-		id: integer("classroom_id").primaryKey({ autoIncrement: true }),
-		name: text("name").notNull(),
-		gradesId: integer("grades_id")
-			.notNull()
-			.references(() => grades.id),
-		schoolId: integer("school_id")
-			.notNull()
-			.references(() => school.id),
-	},
-	(table) => [
-		index("classroom_school_index").on(table.schoolId),
-		index("classroom_grades_index").on(table.gradesId),
-	],
-);
-
-export const enrollment = sqliteTable(
-	"enrollment",
+export const report = sqliteTable(
+	"report",
 	{
 		userId: integer("user_id")
 			.notNull()
@@ -103,19 +103,20 @@ export const enrollment = sqliteTable(
 		classroomId: integer("classroom_id")
 			.notNull()
 			.references(() => classroom.id),
-		score: integer("score"),
-		schoolId: integer("school_id")
-			.references(() => school.id)
-			.notNull(),
-		createdAt: text("created_at")
+		subjectId: integer("subject_id")
 			.notNull()
-			.default(sql`(current_timestamp)`),
+			.references(() => subject.id),
+		schoolId: integer("school_id")
+			.notNull()
+			.references(() => school.id),
+		score: integer("score").notNull(),
 	},
 	(table) => [
-		primaryKey({ columns: [table.userId, table.classroomId] }),
-		index("enrollment_user_index").on(table.userId),
-		index("enrollment_classroom_index").on(table.classroomId),
-		index("enrollment_school_index").on(table.schoolId),
+		primaryKey({ columns: [table.userId, table.classroomId, table.subjectId] }),
+		index("report_user_index").on(table.userId),
+		index("report_classroom_index").on(table.classroomId),
+		index("report_subject_index").on(table.subjectId),
+		index("report_school_index").on(table.schoolId),
 	],
 );
 
@@ -372,12 +373,10 @@ export type Material = typeof material.$inferSelect;
 export type Forum = typeof forum.$inferSelect;
 export type Comment = typeof comment.$inferSelect;
 export type Classroom = typeof classroom.$inferSelect;
+export type Report = typeof report.$inferSelect;
 export type TeacherAssign = typeof teacherAssign.$inferSelect;
 export type Schedule = typeof schedule.$inferSelect;
 export type Assignment = typeof assignment.$inferSelect;
 export type AssignmentQuestion = typeof assignmentQuestion.$inferSelect;
 export type Submission = typeof submission.$inferSelect;
-export type Enrollment = typeof enrollment.$inferSelect;
 export type Announcement = typeof announcement.$inferSelect;
-
-export const userInsertSchema = createInsertSchema(user);

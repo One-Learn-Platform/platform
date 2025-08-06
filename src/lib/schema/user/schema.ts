@@ -37,6 +37,7 @@ export const formSchema = createInsertSchema(user, {
 	roleId: Role,
 	gradesId: z.number().int().optional(),
 	schoolId: z.string().optional(),
+	classroomId: z.number().int().optional(),
 }).omit({
 	id: true,
 	createdAt: true,
