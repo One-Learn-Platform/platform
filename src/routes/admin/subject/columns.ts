@@ -9,7 +9,6 @@ import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type SubjectWithTeacher = Subject & {
-	teacherName: string | null;
 	subjectTypeName: string | null;
 	gradeLevel: number | null;
 };
@@ -113,15 +112,6 @@ export const columns: ColumnDef<SubjectWithTeacher>[] = [
 			});
 			return renderSnippet(typeCellSnippet, value);
 		},
-	},
-	{
-		accessorKey: "teacherName",
-		header: ({ column }) =>
-			renderComponent(sortable, {
-				name: "Teacher Name",
-				sort: column.getIsSorted(),
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
 	},
 	{
 		id: "actions",

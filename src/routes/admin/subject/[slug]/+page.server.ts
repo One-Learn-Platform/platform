@@ -9,17 +9,17 @@ import {
 	assignment,
 	assignmentQuestion,
 	comment,
-	enrollment,
 	forum,
 	grades,
 	material,
+	schedule,
 	subject,
 	subjectType,
 	submission,
 	user,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { eq, getTableColumns, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -31,15 +31,9 @@ export const load: PageServerLoad = async (event) => {
 		if (isNaN(schoolId)) {
 			return error(400, { message: "Invalid School ID" });
 		} else {
-			const { ...rest } = getTableColumns(subject);
 			const gradesList = await db.select().from(grades);
 			const teacherList = await db.select().from(user).where(eq(user.roleId, 3));
-			const subjectData = await db
-				.select({ ...rest, teacherName: user.fullname })
-				.from(subject)
-				.where(eq(subject.id, schoolId))
-				.leftJoin(user, eq(user.id, subject.teacher))
-				.get();
+			const subjectData = await db.select().from(subject).where(eq(subject.id, schoolId)).get();
 			const subjectTypeList = await db.select().from(subjectType);
 			if (subjectData) {
 				return {
@@ -64,7 +58,6 @@ export const actions: Actions = {
 		const { slug } = params;
 		const form = await superValidate(event, zod4(formSchemaEdit));
 		const subjectId = Number(slug);
-		const teacherId = Number(form.data.teacher);
 
 		if (isNaN(subjectId) || subjectId <= 0) {
 			setError(form, "", "Invalid subject ID, please try again");
@@ -82,30 +75,6 @@ export const actions: Actions = {
 			});
 		}
 
-		if (isNaN(teacherId) || teacherId <= 0) {
-			setError(form, "teacher", "Invalid teacher ID, please select a valid teacher");
-			return fail(400, {
-				edit: {
-					success: false,
-					data: null,
-					message: "Invalid teacher ID, please select a valid teacher",
-				},
-				form,
-			});
-		}
-		const teacher = await db.select().from(user).where(eq(user.id, teacherId)).get();
-		if (!teacher) {
-			setError(form, "teacher", "Teacher not found, please select a valid teacher");
-			return fail(404, {
-				edit: {
-					success: false,
-					data: null,
-					message: "Teacher not found, please select a valid teacher",
-				},
-				form,
-			});
-		}
-
 		try {
 			await db
 				.update(subject)
@@ -114,7 +83,6 @@ export const actions: Actions = {
 					code: form.data.code.toLocaleLowerCase(),
 					gradesId: form.data.gradesId,
 					chapterCount: Number(form.data.chapterCount),
-					teacher: teacherId,
 					subjectType: Number(form.data.subjectType),
 				})
 				.where(eq(subject.id, subjectId));
@@ -199,7 +167,7 @@ export const actions: Actions = {
 			);
 			await db.delete(assignment).where(eq(assignment.subjectId, numberId));
 			await db.delete(material).where(eq(material.subjectId, numberId));
-			await db.delete(enrollment).where(eq(enrollment.subjectId, numberId));
+			await db.delete(schedule).where(eq(schedule.subjectId, numberId));
 			await db.delete(subject).where(eq(subject.id, numberId));
 		} catch (error) {
 			console.error(error);

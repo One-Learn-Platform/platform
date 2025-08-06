@@ -61,9 +61,6 @@ export const subject = sqliteTable(
 		gradesId: integer("grades_id")
 			.notNull()
 			.references(() => grades.id),
-		teacher: integer("teacher_id")
-			.notNull()
-			.references(() => user.id),
 		name: text("name").notNull(),
 		subjectType: integer("subject_type_id")
 			.references(() => subjectType.id)
@@ -74,9 +71,26 @@ export const subject = sqliteTable(
 			.notNull(),
 	},
 	(table) => [
-		index("teacher_index").on(table.teacher),
 		index("subject_school_index").on(table.schoolId),
 		index("subject_grades_index").on(table.gradesId),
+	],
+);
+
+export const classroom = sqliteTable(
+	"classroom",
+	{
+		id: integer("classroom_id").primaryKey({ autoIncrement: true }),
+		name: text("name").notNull(),
+		gradesId: integer("grades_id")
+			.notNull()
+			.references(() => grades.id),
+		schoolId: integer("school_id")
+			.notNull()
+			.references(() => school.id),
+	},
+	(table) => [
+		index("classroom_school_index").on(table.schoolId),
+		index("classroom_grades_index").on(table.gradesId),
 	],
 );
 
@@ -86,9 +100,9 @@ export const enrollment = sqliteTable(
 		userId: integer("user_id")
 			.notNull()
 			.references(() => user.id),
-		subjectId: integer("subject_id")
+		classroomId: integer("classroom_id")
 			.notNull()
-			.references(() => subject.id),
+			.references(() => classroom.id),
 		score: integer("score"),
 		schoolId: integer("school_id")
 			.references(() => school.id)
@@ -98,10 +112,57 @@ export const enrollment = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		primaryKey({ columns: [table.userId, table.subjectId] }),
+		primaryKey({ columns: [table.userId, table.classroomId] }),
 		index("enrollment_user_index").on(table.userId),
-		index("enrollment_subject_index").on(table.subjectId),
+		index("enrollment_classroom_index").on(table.classroomId),
 		index("enrollment_school_index").on(table.schoolId),
+	],
+);
+
+export const teacherAssign = sqliteTable(
+	"teacher_assign",
+	{
+		userId: integer("user_id")
+			.notNull()
+			.references(() => user.id),
+		subjectId: integer("subject_id")
+			.notNull()
+			.references(() => subject.id),
+		schoolId: integer("school_id")
+			.notNull()
+			.references(() => school.id),
+	},
+	(table) => [
+		primaryKey({ columns: [table.userId, table.subjectId] }),
+		index("teacher_assign_user_index").on(table.userId),
+		index("teacher_assign_subject_index").on(table.subjectId),
+		index("teacher_assign_school_index").on(table.schoolId),
+	],
+);
+
+export const schedule = sqliteTable(
+	"schedule",
+	{
+		subjectId: integer("subject_id")
+			.notNull()
+			.references(() => subject.id),
+		classroomId: integer("classroom_id")
+			.notNull()
+			.references(() => classroom.id),
+		periodStart: integer("period_start"),
+		periodEnd: integer("period_end"),
+		dayOfWeek: text("day_of_week"),
+		startTime: text("start_time"),
+		endTime: text("end_time"),
+		schoolId: integer("school_id")
+			.references(() => school.id)
+			.notNull(),
+	},
+	(table) => [
+		primaryKey({ columns: [table.subjectId, table.classroomId] }),
+		index("schedule_subject_index").on(table.subjectId),
+		index("schedule_classroom_index").on(table.classroomId),
+		index("schedule_school_index").on(table.schoolId),
 	],
 );
 
@@ -109,6 +170,9 @@ export const material = sqliteTable(
 	"material",
 	{
 		id: integer("material_id").primaryKey({ autoIncrement: true }),
+		classroomId: integer("classroom_id")
+			.notNull()
+			.references(() => classroom.id),
 		subjectId: integer("subject_id")
 			.notNull()
 			.references(() => subject.id),
@@ -125,8 +189,9 @@ export const material = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		index("material_subject_index").on(table.subjectId),
+		index("material_classroom_index").on(table.classroomId),
 		index("material_school_index").on(table.schoolId),
+		index("material_subject_index").on(table.subjectId),
 	],
 );
 
@@ -134,9 +199,12 @@ export const forum = sqliteTable(
 	"forum",
 	{
 		id: integer("forum_id").primaryKey({ autoIncrement: true }),
-		subjectId: integer("subject_id")
-			.references(() => subject.id)
+		classroomId: integer("classroom_id")
+			.references(() => classroom.id)
 			.notNull(),
+		subjectId: integer("subject_id")
+			.notNull()
+			.references(() => subject.id),
 		chapter: integer("chapter").notNull(),
 		userId: integer("user_id")
 			.references(() => user.id)
@@ -154,7 +222,7 @@ export const forum = sqliteTable(
 	(table) => [
 		index("forum_user_index").on(table.userId),
 		index("forum_school_index").on(table.schoolId),
-		index("forum_subject_index").on(table.subjectId),
+		index("forum_classroom_index").on(table.classroomId),
 	],
 );
 
@@ -188,9 +256,12 @@ export const assignment = sqliteTable(
 	{
 		id: integer("assignment_id").primaryKey({ autoIncrement: true }),
 		chapter: integer("chapter").notNull(),
+		classroomId: integer("classroom_id")
+			.notNull()
+			.references(() => classroom.id),
 		subjectId: integer("subject_id")
-			.references(() => subject.id)
-			.notNull(),
+			.notNull()
+			.references(() => subject.id),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		attachment: text("attachment"),
@@ -206,7 +277,7 @@ export const assignment = sqliteTable(
 			.default(sql`(current_timestamp)`),
 	},
 	(table) => [
-		index("assignment_subject_index").on(table.subjectId),
+		index("assignment_classroom_index").on(table.classroomId),
 		index("assignment_school_index").on(table.schoolId),
 	],
 );
@@ -300,6 +371,9 @@ export type SubjectType = typeof subjectType.$inferSelect;
 export type Material = typeof material.$inferSelect;
 export type Forum = typeof forum.$inferSelect;
 export type Comment = typeof comment.$inferSelect;
+export type Classroom = typeof classroom.$inferSelect;
+export type TeacherAssign = typeof teacherAssign.$inferSelect;
+export type Schedule = typeof schedule.$inferSelect;
 export type Assignment = typeof assignment.$inferSelect;
 export type AssignmentQuestion = typeof assignmentQuestion.$inferSelect;
 export type Submission = typeof submission.$inferSelect;

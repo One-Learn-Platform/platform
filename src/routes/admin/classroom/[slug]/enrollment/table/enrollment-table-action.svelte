@@ -43,7 +43,7 @@
 			<DropdownMenu.Group>
 				<DropdownMenu.Item>
 					{#snippet child({ props })}
-						<a {...props} href="admin/user/{id}">
+						<a {...props} href="/admin/user/{id}">
 							<Logs class="mr-2 size-4" />
 							<span>User Detail</span>
 						</a>

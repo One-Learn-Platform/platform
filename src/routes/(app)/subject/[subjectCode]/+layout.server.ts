@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-import { enrollment, subject, subjectType } from "$lib/schema/db";
+import { enrollment, subject, subjectType, teacherAssign } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
@@ -24,7 +24,12 @@ export const load: LayoutServerLoad = async (event) => {
 			return error(404, "Subject not found");
 		}
 		if (event.locals.user.role === 3) {
-			if (subjectData.teacher !== userId) {
+			const isTeacher = await db
+				.select()
+				.from(teacherAssign)
+				.where(and(eq(teacherAssign.userId, userId), eq(teacherAssign.subjectId, subjectData.id)))
+				.get();
+			if (!isTeacher) {
 				return error(403, "Forbidden: You are not the teacher of this subject");
 			}
 		} else if (event.locals.user.role === 4) {

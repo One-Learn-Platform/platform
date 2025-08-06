@@ -8,7 +8,6 @@ const formSchema = createInsertSchema(subject, {
 		.lowercase({ error: "Please use lowercase letters and numbers only." })
 		.min(1, { error: "Subject code is required" }),
 	name: z.string().min(1, { error: "Subject name is required" }),
-	teacher: z.string().min(1, { error: "Teacher is required" }),
 	subjectType: z.string().min(1, { error: "Subject type is required" }),
 	gradesId: z.number().int(),
 	chapterCount: z
@@ -23,3 +22,4 @@ export const formSchemaCreate = formSchema;
 export const formSchemaEdit = formSchema;
 
 export type FormSchema = z.infer<typeof formSchemaCreate>;
+export type FormSchemaEdit = z.infer<typeof formSchemaEdit>;

@@ -1,0 +1,1 @@
+ALTER TABLE `classroom` DROP COLUMN `class_code`;

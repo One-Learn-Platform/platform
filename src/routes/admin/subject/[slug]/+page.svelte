@@ -4,7 +4,7 @@
 	import { page } from "$app/state";
 	import type { PageProps } from "./$types";
 
-	import { formSchemaEdit } from "$lib/schema/subject/schema";
+	import { formSchemaEdit, type FormSchemaEdit } from "$lib/schema/subject/schema";
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
@@ -23,14 +23,15 @@
 
 	const subjectDetail = $derived(data.subjectData);
 
-	let changes = $state({
-		name: false,
-		code: false,
-		teacher: false,
-		chapterCount: false,
-		subjectType: false,
-		grades: false,
-	});
+	const changes = $state(
+		(Object.keys(formSchemaEdit.shape) as Array<keyof FormSchemaEdit>).reduce(
+			(acc, field) => {
+				acc[field] = false;
+				return acc;
+			},
+			{} as Record<keyof FormSchemaEdit, boolean>,
+		),
+	);
 	const isChanged = $derived(changes);
 	const changesClass = clsx("border-blue-500 bg-blue-50");
 	const superform = superForm(data.form, {
@@ -45,12 +46,23 @@
 					} else {
 						changes.name = false;
 					}
-				}
-				if (event.paths.includes("teacher")) {
-					if (Number($formData.teacher) !== subjectDetail.teacher) {
-						changes.teacher = true;
+				} else if (event.paths.includes("chapterCount")) {
+					if ($formData.chapterCount !== subjectDetail.chapterCount) {
+						changes.chapterCount = true;
 					} else {
-						changes.teacher = false;
+						changes.chapterCount = false;
+					}
+				} else if (event.paths.includes("subjectType")) {
+					if ($formData.subjectType !== subjectDetail.subjectType?.toString()) {
+						changes.subjectType = true;
+					} else {
+						changes.subjectType = false;
+					}
+				} else if (event.paths.includes("gradesId")) {
+					if ($formData.gradesId !== subjectDetail.gradesId) {
+						changes.gradesId = true;
+					} else {
+						changes.gradesId = false;
 					}
 				}
 			}
@@ -61,7 +73,6 @@
 	$effect(() => {
 		$formData.name = subjectDetail.name;
 		$formData.code = subjectDetail.code;
-		$formData.teacher = subjectDetail.teacher?.toString();
 		$formData.subjectType = subjectDetail.subjectType?.toString();
 		$formData.chapterCount = subjectDetail.chapterCount;
 		$formData.gradesId = subjectDetail.gradesId;
@@ -149,7 +160,7 @@
 									$formData.gradesId = Number(value);
 								}}
 							>
-								<Select.Trigger {...props} class={changes.grades ? changesClass : ""}>
+								<Select.Trigger {...props} class={changes.gradesId ? changesClass : ""}>
 									{$formData.gradesId
 										? data.gradesList.find((g) => g.id === $formData.gradesId)?.level
 										: "Select a grades ID"}
@@ -226,39 +237,6 @@
 						<Form.Description>Type of subject, laboratory or lesson</Form.Description>
 					{/if}
 				</Form.Field>
-
-				<Form.Field form={superform} name="teacher">
-					<Form.Control>
-						{#snippet children({ props })}
-							<Form.Label>Teacher</Form.Label>
-							<Select.Root
-								type="single"
-								value={$formData.teacher}
-								name={props.name}
-								allowDeselect
-								onValueChange={(value) => ($formData.teacher = value)}
-							>
-								<Select.Trigger {...props}>
-									{$formData.teacher
-										? data.teacherList.find((t) => t.id.toString() === $formData.teacher)?.fullname
-										: "Select a teacher"}
-								</Select.Trigger>
-								<Select.Content>
-									{#each data.teacherList as teacher (teacher.id)}
-										<Select.Item value={teacher.id.toString()} label={teacher.fullname}>
-											{teacher.fullname}
-										</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						{/snippet}
-					</Form.Control>
-					{#if $formErrors.teacher}
-						<Form.FieldErrors />
-					{:else}
-						<Form.Description>This is the Teacher that will be displayed.</Form.Description>
-					{/if}
-				</Form.Field>
 			</Card.Content>
 
 			<Card.Footer class="justify-end gap-4">
@@ -277,15 +255,15 @@
 					onclick={() => {
 						reset({
 							data: {
-								name: subjectDetail.name ?? "",
-								teacher: undefined,
+								name: subjectDetail.name,
+								code: subjectDetail.code,
+								subjectType: subjectDetail.subjectType?.toString(),
+								chapterCount: subjectDetail.chapterCount,
 							},
 						});
-						changes.name = false;
-						changes.teacher = false;
-						changes.chapterCount = false;
-						changes.subjectType = false;
-						changes.grades = false;
+						for (const key in changes) {
+							changes[key as keyof typeof changes] = false;
+						}
 					}}>Cancel</Button
 				>
 				<Form.Button disabled={!isChanged}>Save Changes</Form.Button>
