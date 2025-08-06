@@ -2,13 +2,13 @@ import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 import {
-  assignment,
-  enrollment,
-  grades,
-  subject,
-  subjectType,
-  submission,
-  teacherAssign
+	assignment,
+	enrollment,
+	grades,
+	subject,
+	subjectType,
+	submission,
+	teacherAssign,
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, desc, eq, exists, getTableColumns, sql } from "drizzle-orm";

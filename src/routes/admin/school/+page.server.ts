@@ -29,7 +29,6 @@ export const actions: Actions = {
 	create: async (event) => {
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaCreate));
-		console.log("form", form);
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
