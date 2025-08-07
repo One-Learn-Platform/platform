@@ -52,6 +52,7 @@ export const user = sqliteTable(
 			.notNull(),
 		fullname: text("fullname").notNull(),
 		dob: text("dob").notNull(),
+		score: integer("score"),
 		gradesId: integer("grades_id").references(() => grades.id),
 		username: text("username").unique().notNull(),
 		password: text("password").notNull(),
