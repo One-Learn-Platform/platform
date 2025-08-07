@@ -13,6 +13,20 @@
 	import LogoDark from "$lib/assets/logo_dark.svg";
 
 	let { children }: { children: Snippet } = $props();
+	const bottomNav = [
+		{
+			title: "Home",
+			href: "/",
+		},
+		{
+			title: "About",
+			href: "/about",
+		},
+		{
+			title: "Disclaimer",
+			href: "/disclaimer",
+		},
+	];
 </script>
 
 <nav
@@ -94,18 +108,15 @@
 			</p>
 		</div>
 		<div class="flex flex-row items-center justify-start gap-4 text-sm">
-			<a
-				href="/about"
-				class="transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"
-			>
-				About
-			</a>
-			<a
-				href="/disclaimer"
-				class="transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"
-			>
-				Disclaimer
-			</a>
+			{#each bottomNav as item (item.href)}
+				<a
+					href={item.href}
+					class="transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"
+				>
+					{item.title}
+				</a>
+			{/each}
+
 			<a
 				href="https://github.com/One-Learn-Platform/platform"
 				class="flex flex-row items-center gap-1 transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"

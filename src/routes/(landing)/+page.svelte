@@ -28,11 +28,11 @@
 			<img src={LogoDark} alt="One Learn Logo Dark" class="hidden h-6 w-auto sm:h-8 dark:block" />
 			<h1 class="font-display text-lg font-bold tracking-tight sm:text-xl">One Learn</h1>
 		</div>
-		<div class="space-y-4">
+		<div class="space-y-4 px-2 sm:px-8">
 			<p
 				class="text-center text-4xl font-medium tracking-tight sm:text-5xl sm:tracking-tighter lg:text-6xl xl:text-7xl"
 			>
-				Empowering <span class="text-orange-500">Learning</span>. Connecting
+				Empowering <span class="text-orange-500">Learning</span>. <wbr />Connecting
 				<span class="text-orange-500">Minds</span>.
 			</p>
 			<p class="text-center text-lg tracking-tight text-muted-foreground sm:text-xl">
