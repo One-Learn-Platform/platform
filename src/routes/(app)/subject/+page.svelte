@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>Subjects | OneLearn</title>
+	<title>Subjects | One Learn</title>
 </svelte:head>
 
 <Input
