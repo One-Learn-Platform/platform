@@ -314,7 +314,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.forum.title} | OneLearn</title>
+	<title>{data.forum.title} | One Learn</title>
 </svelte:head>
 
 <div>

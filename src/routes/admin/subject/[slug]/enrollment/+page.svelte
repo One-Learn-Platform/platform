@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-	<title>Edit Subject | OneLearn</title>
+	<title>Edit Subject | One Learn</title>
 </svelte:head>
 
 <div class="space-y-2 pr-2 pb-2">
