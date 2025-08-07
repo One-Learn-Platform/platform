@@ -9,7 +9,7 @@
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
 </script>
 
-<div class="[--header-height:calc(--spacing(14))]">
+<div class="antialiased [--header-height:calc(--spacing(14))]">
 	<Sidebar.Provider class="flex flex-col">
 		<Topbar user={data.user} />
 		<div class="flex flex-1">
