@@ -79,13 +79,13 @@
 							<Sidebar.MenuButton
 								{...props}
 								size="md"
-								class="border p-1.5 shadow-xs group-data-[collapsible=icon]:border-none data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+								class="border p-1.5 shadow-xs transition group-data-[collapsible=icon]:border-none data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div
 									class="flex aspect-square size-6 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground duration-150 group-data-[collapsible=icon]:size-8"
 								>
 									<span
-										class="flex items-center justify-center font-display text-sm font-extrabold tabular-nums duration-150 group-data-[collapsible=icon]:text-lg"
+										class="flex items-center justify-center font-display text-sm font-extrabold text-background tabular-nums duration-150 group-data-[collapsible=icon]:text-lg"
 									>
 										{selectedGrade.current?.number}
 									</span>
