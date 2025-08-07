@@ -1,9 +1,9 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { enrollment, grades, user, classroom } from "$lib/schema/db";
+import { classroom, grades, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, eq, getTableColumns, notExists } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, ne, or, isNull } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -33,27 +33,19 @@ export const load: PageServerLoad = async (event) => {
 			const studentList = await db
 				.select({ ...restUser, gradeLevel: grades.level })
 				.from(user)
+				.leftJoin(grades, eq(grades.id, user.gradesId))
 				.where(
 					and(
 						eq(user.roleId, 4),
 						eq(user.schoolId, schoolId),
 						eq(user.gradesId, classData.gradesId),
-						notExists(
-							db
-								.select()
-								.from(enrollment)
-								.where(
-									and(eq(enrollment.userId, user.id), eq(enrollment.classroomId, classroomId)),
-								),
-						),
+						or(ne(user.classroomId, classroomId), isNull(user.classroomId)),
 					),
-				)
-				.leftJoin(grades, eq(grades.id, user.gradesId));
+				);
 			const enrolled = await db
-				.select({ ...getTableColumns(enrollment), fullname: user.fullname })
-				.from(enrollment)
-				.where(and(eq(enrollment.classroomId, classroomId), eq(enrollment.schoolId, schoolId)))
-				.innerJoin(user, eq(user.id, enrollment.userId));
+				.select({ ...getTableColumns(user) })
+				.from(user)
+				.where(and(eq(user.classroomId, classroomId), eq(user.schoolId, schoolId)));
 			return {
 				studentList: studentList,
 				classData: classData,
@@ -111,24 +103,29 @@ export const actions: Actions = {
 			}
 			const existingEnrollment = await db
 				.select()
-				.from(enrollment)
-				.where(and(eq(enrollment.userId, userId), eq(enrollment.classroomId, classroomId)))
+				.from(user)
+				.where(and(eq(user.id, userId), eq(user.classroomId, classroomId)))
 				.get();
 			if (existingEnrollment) {
 				return fail(400, {
 					enroll: { success: false, message: "User already enrolled in this class" },
 				});
 			}
+
 			try {
-				await db.insert(enrollment).values({
-					userId: userId,
-					classroomId: classroomId,
-					schoolId: schoolId,
-				});
+				await db
+					.update(user)
+					.set({
+						classroomId: classroomId,
+					})
+					.where(eq(user.id, userId));
 			} catch (error) {
 				console.error("Enrollment Error:", error);
 				return fail(500, {
-					enroll: { success: false, message: "Failed to enroll user in class" },
+					enroll: {
+						success: false,
+						message: error instanceof Error ? error.message : "Failed to enroll user in class",
+					},
 				});
 			}
 		} else if (type === "multiple") {
@@ -145,13 +142,12 @@ export const actions: Actions = {
 				usersList.push(userId);
 			}
 			try {
-				await db.insert(enrollment).values(
-					usersList.map((userId) => ({
-						userId: userId,
+				await db
+					.update(user)
+					.set({
 						classroomId: classroomId,
-						schoolId: schoolId,
-					})),
-				);
+					})
+					.where(inArray(user.id, usersList));
 			} catch (error) {
 				console.error("Enrollment Error:", error);
 				return fail(500, {
@@ -202,14 +198,11 @@ export const actions: Actions = {
 		}
 		try {
 			await db
-				.delete(enrollment)
-				.where(
-					and(
-						eq(enrollment.userId, userId),
-						eq(enrollment.classroomId, classroomId),
-						eq(enrollment.schoolId, schoolId),
-					),
-				);
+				.update(user)
+				.set({
+					classroomId: null,
+				})
+				.where(and(eq(user.id, userId)));
 		} catch (error) {
 			console.error("Unenrollment Error:", error);
 			return fail(500, {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import { invalidateAll } from "$app/navigation";
-	import type { Enrollment } from "$lib/schema/db";
+	import type { User } from "$lib/schema/db";
 	import type { PageProps } from "./$types";
 
 	import { cn } from "$lib/utils.js";
@@ -25,7 +25,7 @@
 	let { data, form }: PageProps = $props();
 
 	let dialogOpen = $state(false);
-	let toBeDeleted: (Enrollment & { fullname: string }) | undefined = $state();
+	let toBeDeleted: (User & { fullname: string }) | undefined = $state();
 	let tabsType = $state("single");
 	let open = $state(false);
 	let value: number | undefined = $state(undefined);
@@ -172,7 +172,7 @@
 					</Table.Cell>
 				</Table.Row>
 			{:else}
-				{#each data.enrolled as student, index (student.userId)}
+				{#each data.enrolled as student, index (student.id)}
 					<Table.Row>
 						<Table.Cell class="font-medium">{index + 1}</Table.Cell>
 						<Table.Cell>{student.fullname}</Table.Cell>
@@ -200,7 +200,7 @@
 				<AlertDialog.Title>Do you want to remove {toBeDeleted?.fullname}?</AlertDialog.Title>
 				<AlertDialog.Description>
 					<input type="hidden" name="classId" value={data.classData.id} />
-					<input type="hidden" name="id" value={toBeDeleted?.userId} />
+					<input type="hidden" name="id" value={toBeDeleted?.id} />
 					This action cannot be undone. This will remove the student from this class.
 				</AlertDialog.Description>
 			</AlertDialog.Header>
