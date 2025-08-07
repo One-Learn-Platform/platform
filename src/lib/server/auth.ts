@@ -1,9 +1,12 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+
 import { sha256 } from "@oslojs/crypto/sha2";
 import { encodeBase64url, encodeHexLowerCase } from "@oslojs/encoding";
-import { getDb } from "$lib/server/db";
+
+import type { Session } from "$lib/schema/db";
 import * as table from "$lib/schema/db";
+import { getDb } from "$lib/server/db";
+import { eq } from "drizzle-orm";
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -18,7 +21,7 @@ export function generateSessionToken() {
 export async function createSession(event: RequestEvent, token: string, userId: number) {
 	const db = getDb(event);
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const session: table.Session = {
+	const session: Omit<Session, "createdAt"> = {
 		id: sessionId,
 		userId,
 		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
@@ -44,6 +47,7 @@ export async function validateSessionToken(event: RequestEvent, token: string) {
 				fullname: table.user.fullname,
 				role: table.user.roleId,
 				school: table.user.schoolId,
+				classroom: table.user.classroomId,
 			},
 			session: table.session,
 		})
