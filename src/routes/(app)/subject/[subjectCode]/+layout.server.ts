@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-import { enrollment, subject, subjectType, teacherAssign } from "$lib/schema/db";
+import { schedule, subject, subjectType, teacherAssign } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
@@ -33,13 +33,12 @@ export const load: LayoutServerLoad = async (event) => {
 				return error(403, "Forbidden: You are not the teacher of this subject");
 			}
 		} else if (event.locals.user.role === 4) {
-			const enrollmentData = await db
+			const currentClassroom = await db
 				.select()
-				.from(enrollment)
-				.where(eq(enrollment.userId, userId))
-				.get();
-			if (!enrollmentData) {
-				return error(404, "Not Found");
+				.from(schedule)
+				.where(eq(schedule.subjectId, subjectData.id));
+			if (!currentClassroom?.find((c) => c.classroomId === event.locals.user?.classroom)) {
+				return error(403, "Forbidden: You are not enrolled in this subject");
 			}
 		}
 		return { params: subjectCode, chapter: chapter, subject: subjectData };

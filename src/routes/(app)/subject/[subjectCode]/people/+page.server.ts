@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { enrollment, subject, user } from "$lib/schema/db";
+import { schedule, subject, teacherAssign, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { and, asc, eq, getTableColumns } from "drizzle-orm";
 
@@ -24,24 +24,29 @@ export const load: PageServerLoad = async (event) => {
 		if (!currentSubject) {
 			return error(404, "Subject not found");
 		}
+		const currentClassroom = await db
+			.select()
+			.from(schedule)
+			.where(and(eq(schedule.subjectId, currentSubject.id)))
+			.get();
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, ...userColumns } = getTableColumns(user);
+		const { password, score, ...userColumns } = getTableColumns(user);
 		const students = await db
 			.select({
 				...userColumns,
-				enrolledAt: enrollment.createdAt,
-				...(event.locals.user.role === 3 && { score: enrollment.score }),
+				...(event.locals.user.role === 3 && { score: user.score }),
 			})
-			.from(enrollment)
-			.innerJoin(user, eq(enrollment.userId, user.id))
-			.where(eq(enrollment.subjectId, currentSubject.id))
+			.from(user)
+			.where(eq(user.classroomId, currentSubject.id))
 			.orderBy(asc(user.fullname), asc(user.username));
 		const teacher = await db
 			.select({
+				...getTableColumns(teacherAssign),
 				...userColumns,
 			})
-			.from(user)
-			.where(eq(user.id, currentSubject.teacher))
+			.from(teacherAssign)
+			.innerJoin(user, eq(teacherAssign.userId, user.id))
+			.where(eq(teacherAssign.subjectId, currentSubject.id))
 			.get();
 		return { students, teacher, subject: currentSubject };
 	}

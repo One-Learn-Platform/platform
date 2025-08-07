@@ -1,15 +1,15 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { enrollment, subject, subjectType, grades, teacherAssign } from "$lib/schema/db";
+import { grades, schedule, subject, subjectType, teacherAssign } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { and, eq, getTableColumns, exists } from "drizzle-orm";
+import { and, eq, exists, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
 	event.depends("app:selectedGrade");
 	if (event.locals.user) {
 		const db = getDb(event);
-		const columns = getTableColumns(subject);
+		const subjectColumns = getTableColumns(subject);
 		const isAdmin = event.locals.user.role === 1 || event.locals.user.role === 2;
 		const isTeacher = event.locals.user.role === 3;
 		const isStudent = event.locals.user.role === 4;
@@ -21,7 +21,11 @@ export const load: PageServerLoad = async (event) => {
 		if (event.locals.user.school) {
 			if (isAdmin) {
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
+					.select({
+						...subjectColumns,
+						subjectTypeName: subjectType.name,
+						gradeLevel: grades.level,
+					})
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
@@ -37,22 +41,29 @@ export const load: PageServerLoad = async (event) => {
 					conditions.push(eq(grades.level, grade));
 				}
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
+					.select({
+						...subjectColumns,
+						subjectTypeName: subjectType.name,
+						gradeLevel: grades.level,
+					})
 					.from(subject)
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.where(and(...conditions))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id));
 			} else if (isStudent) {
-				const conditions = [
-					eq(subject.schoolId, event.locals.user.school),
-					exists(db.select().from(enrollment).where(eq(enrollment.userId, event.locals.user.id))),
-				];
+				const conditions = [eq(subject.schoolId, event.locals.user.school)];
 				if (grade !== "all") {
 					conditions.push(eq(grades.level, grade));
 				}
 				subjectList = await db
-					.select({ ...columns, subjectTypeName: subjectType.name, gradeLevel: grades.level })
-					.from(subject)
+					.select({
+						...getTableColumns(schedule),
+						...subjectColumns,
+						subjectTypeName: subjectType.name,
+						gradeLevel: grades.level,
+					})
+					.from(schedule)
+					.innerJoin(subject, eq(schedule.subjectId, subject.id))
 					.innerJoin(grades, eq(subject.gradesId, grades.id))
 					.innerJoin(subjectType, eq(subject.subjectType, subjectType.id))
 					.where(and(...conditions));
