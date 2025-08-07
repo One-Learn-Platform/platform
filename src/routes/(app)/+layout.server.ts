@@ -1,8 +1,8 @@
-import { redirect, error } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
+import { grades, school, user } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
-import { grades, user, school } from "$lib/schema/db";
 import { eq, inArray } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {
@@ -15,7 +15,7 @@ export const load: LayoutServerLoad = async (event) => {
 			return redirect(302, "/signin");
 		}
 		if (currentUser.roleId === 1) {
-			return error(403, { message: "Super Admin is not allowed to view app" });
+			return redirect(302, "/admin");
 		}
 		let gradesList;
 		if (currentUser.gradesId !== null) {
@@ -57,5 +57,5 @@ export const load: LayoutServerLoad = async (event) => {
 			school: currentSchool,
 		};
 	}
-	return redirect(302, "/signin");
+	return redirect(302, "/");
 };

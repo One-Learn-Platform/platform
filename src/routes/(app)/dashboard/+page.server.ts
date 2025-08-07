@@ -1,4 +1,4 @@
-import { error, redirect } from "@sveltejs/kit";
+import { redirect, error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 import { enrollment, grades, subject, user } from "$lib/schema/db";

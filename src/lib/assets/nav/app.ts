@@ -8,7 +8,7 @@ export const appNav = [
 	{
 		title: "Dashboard",
 		icon: LayoutDashboard,
-		href: "/",
+		href: "/dashboard",
 	},
 	{
 		title: "Subject",
