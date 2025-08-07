@@ -27,6 +27,9 @@
 	);
 </script>
 
+<h1 class="font-display text-3xl font-semibold tracking-tight text-primary sm:text-4xl md:text-5xl">
+	Announcements
+</h1>
 <Input
 	type="search"
 	bind:value={search}

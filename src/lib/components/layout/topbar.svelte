@@ -64,7 +64,7 @@
 		"fixed top-0 left-0 z-1 flex h-(--header-height) w-full items-center gap-2 border-b bg-background px-2",
 	]}
 >
-	<Sidebar.Trigger class="z-50 size-8 h-10 bg-background" />
+	<Sidebar.Trigger class="z-50 size-8 h-10 bg-background text-primary" />
 	<Separator orientation="vertical" class="mr-2 -ml-px h-4" />
 	<Breadcrumb.Root class="hidden grow sm:block">
 		<Breadcrumb.List>

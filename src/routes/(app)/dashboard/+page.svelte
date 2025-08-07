@@ -31,7 +31,9 @@
 	});
 </script>
 
-<h1 class="font-display text-5xl font-semibold tracking-tight">Dashboard</h1>
+<h1 class="font-display text-3xl font-semibold tracking-tight text-primary sm:text-4xl md:text-5xl">
+	Dashboard
+</h1>
 <Card.Root>
 	<Card.Header>
 		<Card.Title>Leaderboard</Card.Title>

@@ -45,6 +45,9 @@
 	const selectedSort = $derived(sortChoice.find((choice) => choice.value === sortBy));
 </script>
 
+<h1 class="font-display text-3xl font-semibold tracking-tight text-primary sm:text-4xl md:text-5xl">
+	Forum
+</h1>
 <div class="mb-4 flex flex-col items-center justify-between gap-2 sm:flex-row">
 	<Input type="search" bind:value={searchQuery} placeholder="Search by name" class="max-w-sm" />
 	<div class="flex items-center gap-2 self-end max-sm:w-full">

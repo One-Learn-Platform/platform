@@ -83,7 +83,7 @@
 	});
 </script>
 
-<h1 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
+<h1 class="font-display text-3xl font-semibold tracking-tight text-primary sm:text-4xl md:text-5xl">
 	Assignments
 </h1>
 <div class="mb-4 flex flex-row items-center justify-between gap-2">

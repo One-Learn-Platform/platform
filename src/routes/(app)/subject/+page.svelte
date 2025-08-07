@@ -20,6 +20,9 @@
 	<title>Subjects | One Learn</title>
 </svelte:head>
 
+<h1 class="font-display text-3xl font-semibold tracking-tight text-primary sm:text-4xl md:text-5xl">
+	Subjects
+</h1>
 <Input
 	type="search"
 	placeholder="Search subjects by code or name"
