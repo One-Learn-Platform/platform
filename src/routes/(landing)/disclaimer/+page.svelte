@@ -12,8 +12,9 @@
 		<Separator />
 	</div>
 	<p class="max-w-prose text-base sm:text-lg">
-		This website is designed and built for the purpose of Thesis submission. All information,
+		This website is designed and built for the purpose of thesis submission. All information,
 		statistics, and content in this website may be fictional and for educational purposes only and
-		may not reflect real-world data or events.
+		may not reflect real-world data or events. Any resemblance to actual persons, living or dead, or
+		actual events is purely coincidental.
 	</p>
 </main>
