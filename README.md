@@ -1,5 +1,7 @@
 # One Learn
 
+https://github.com/One-Learn-Platform/platform
+
 ## Development
 
 ### Prerequisites
