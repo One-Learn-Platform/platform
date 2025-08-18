@@ -1,11 +1,11 @@
 import * as schema from "$lib/schema/db";
-import { grades, school, user, userRole } from "$lib/schema/db";
+import { grades, user, userRole } from "$lib/schema/db";
 import { createClient } from "@libsql/client";
 import bcryptjs from "bcryptjs";
 import { count } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
-import path from "node:path";
 import fs from "node:fs";
+import path from "node:path";
 
 function findDatabasePath() {
 	const baseDir = path.resolve(process.cwd(), ".wrangler/state/v3/d1/miniflare-D1DatabaseObject");
@@ -65,14 +65,7 @@ export async function seedDatabase() {
 		]);
 		console.log("✅ Grades seeded");
 
-		// 3. Seed School
-		await db.insert(school).values({
-			name: "Demo High School",
-			logo: "default-school-logo.png",
-		});
-		console.log("✅ School seeded");
-
-		// 4. Seed Default Users
+		// 3. Seed Default Users
 		const defaultPassword = await bcryptjs.hash("password123", 10);
 
 		await db.insert(user).values([
