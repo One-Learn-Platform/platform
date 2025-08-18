@@ -92,7 +92,16 @@ one-learn
    - `prod-db` - This is the name of the database that One Learn uses in production. This name mirror the one we use in production, but don't worry the data is totally separated because we use `--local`. If you want to change the database name, you can do so in the `wrangler.toml` file.
    - `--local` - This flag tells Wrangler to run the command locally instead of in the Cloudflare environment.
 
-4. Run the application
+4. Seed the local database\
+   This command will seed the local database with the initial data. This is useful for development and testing purposes.
+
+   ```bash
+   pnpm run seed
+   ```
+
+   This command will create the minimum data needed to run the app. This will seed a super admin so you can create a school and users. The default login credentials will be displayed in the console.
+
+5. Run the application
 
    ```bash
    pnpm dev
@@ -100,7 +109,7 @@ one-learn
 
    This will start the development server and you should be able to access the application at `http://localhost:5173`.
 
-5. (Optional) Because we're using Cloudflare R2, we need to run the R2 server locally to test the file upload function
+6. (Optional) Because we're using Cloudflare R2, we need to run the R2 server locally to test the file upload function
 
    ```bash
    cd r2-server
