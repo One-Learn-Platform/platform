@@ -16,7 +16,7 @@
 
 <Sidebar.Provider>
 	<AppSidebar {role} {user} />
-	<main class="w-full py-2 pr-2">
+	<main class="w-full py-2 pr-2 antialiased">
 		{@render children?.()}
 	</main>
 </Sidebar.Provider>
