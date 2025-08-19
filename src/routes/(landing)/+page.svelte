@@ -17,6 +17,10 @@
 
 <svelte:head>
 	<title>One Learn</title>
+	<meta
+		name="description"
+		content="One Learn is a comprehensive learning management system designed to modernize education."
+	/>
 </svelte:head>
 
 <main class="space-y-8 antialiased">
