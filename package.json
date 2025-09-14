@@ -77,7 +77,7 @@
 		"vite": "^7.1.5",
 		"vitest": "^3.2.4",
 		"wrangler": "^4.36.0",
-		"zod": "4.0.10"
+		"zod": "4.1.8"
 	},
 	"dependencies": {
 		"@libsql/client": "^0.15.15",
