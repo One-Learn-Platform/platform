@@ -14,9 +14,6 @@ export const load: LayoutServerLoad = async (event) => {
 		if (!currentUser) {
 			return redirect(302, "/signin");
 		}
-		if (currentUser.roleId === 1) {
-			return redirect(302, "/admin");
-		}
 		let gradesList;
 		if (currentUser.gradesId !== null) {
 			const grade = await db.select().from(grades).where(eq(grades.id, currentUser.gradesId)).get();

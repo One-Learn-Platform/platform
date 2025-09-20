@@ -4,6 +4,6 @@ export const nav = [
 	{
 		title: "Home",
 		icon: House,
-		href: "/",
+		href: "/dashboard",
 	},
 ];
