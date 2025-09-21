@@ -8,6 +8,9 @@ import { eq, inArray } from "drizzle-orm";
 export const load: LayoutServerLoad = async (event) => {
 	event.depends("app:selectedGrade");
 	if (event.locals.user) {
+		if (event.locals.user.role === 1) {
+			return { user: event.locals.user, session: event.locals.session };
+		}
 		const selectedGrade = event.cookies.get("selectedGrade");
 		const db = getDb(event);
 		const currentUser = await db.select().from(user).where(eq(user.id, event.locals.user.id)).get();

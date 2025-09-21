@@ -11,13 +11,14 @@
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
 
-	import { nav } from "$lib/assets/nav/main";
+	import { appNav } from "$lib/assets/nav/app";
 	import { acronym } from "$lib/utils";
 
 	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 	import BookCopy from "@lucide/svelte/icons/book-copy";
 	import BookMarked from "@lucide/svelte/icons/book-marked";
 	import ChartArea from "@lucide/svelte/icons/chart-area";
+	import ChartCandlestick from "@lucide/svelte/icons/chart-candlestick";
 	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
 	import CircleUser from "@lucide/svelte/icons/circle-user";
 	import LogOut from "@lucide/svelte/icons/log-out";
@@ -25,7 +26,6 @@
 	import School from "@lucide/svelte/icons/school";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
-	import ChartCandlestick from "@lucide/svelte/icons/chart-candlestick";
 
 	const sidebar = useSidebar();
 	const prefix = "/admin";
@@ -192,33 +192,35 @@
 						</div>
 					</div>
 				</DropdownMenu.Label>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					{#each nav as item (item.href)}
-						{@const Icon = item.icon}
-						<DropdownMenu.Item>
-							{#snippet child({ props })}
-								<a {...props} href={item.href}>
-									<Icon />
-									<span>{item.title}</span>
-								</a>
-							{/snippet}
-						</DropdownMenu.Item>
-					{/each}
-				</DropdownMenu.Group>
+				{#if role !== 1}
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						{#each appNav as item (item.href)}
+							{@const Icon = item.icon}
+							<DropdownMenu.Item>
+								{#snippet child({ props })}
+									<a {...props} href={item.href}>
+										<Icon class="text-sidebar-primary" />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</DropdownMenu.Item>
+						{/each}
+					</DropdownMenu.Group>
+				{/if}
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
 					<DropdownMenu.Item>
 						{#snippet child({ props })}
-							<a {...props} href="/profile">
-								<CircleUser />
+							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
+								<CircleUser class="text-sidebar-primary" />
 								<span>Profile</span>
 							</a>
 						{/snippet}
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={() => (alertDialogOpen = true)}>
+				<DropdownMenu.Item onclick={() => (alertDialogOpen = true)} variant="destructive">
 					<LogOut />
 					<span>Sign Out</span>
 				</DropdownMenu.Item>
