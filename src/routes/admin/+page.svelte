@@ -54,12 +54,14 @@
 	});
 	const userFiltered = $derived.by(() => {
 		const users = data.allUsers;
+		const total = users.length;
+		const totalWithoutSuperAdmin = users.filter((u) => u.roleId !== 1).length;
 		const isSuperadmin = data.user.role === 1;
 
 		return [
 			{
 				role: "total",
-				count: users.length,
+				count: isSuperadmin ? total : totalWithoutSuperAdmin,
 			},
 			...(isSuperadmin
 				? [
