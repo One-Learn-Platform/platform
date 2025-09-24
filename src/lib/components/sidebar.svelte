@@ -161,78 +161,6 @@
 	</Sidebar.Content>
 	<Sidebar.Footer>
 		<DropdownMenu.Root>
-			<DropdownMenu.Trigger class="border">
-				{#snippet child({ props })}
-					<Sidebar.MenuButton
-						size="lg"
-						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-						{...props}
-					>
-						<Avatar.Root class="h-8 w-8 rounded-lg">
-							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
-							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-semibold">{user?.fullname}</span>
-							<span class="truncate text-xs">{user?.username}</span>
-						</div>
-						<ChevronsUpDown class="ml-auto size-4" />
-					</Sidebar.MenuButton>
-				{/snippet}
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content
-				class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
-				side={sidebar.isMobile ? "bottom" : "right"}
-				align="end"
-				sideOffset={4}
-			>
-				<DropdownMenu.Label class="p-0 font-normal">
-					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-						<Avatar.Root class="h-8 w-8 rounded-lg">
-							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
-							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
-						</Avatar.Root>
-						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-semibold">{user?.fullname}</span>
-							<span class="truncate text-xs">{user?.username}</span>
-						</div>
-					</div>
-				</DropdownMenu.Label>
-				{#if role !== 1}
-					<DropdownMenu.Separator />
-					<DropdownMenu.Group>
-						{#each appNav as item (item.href)}
-							{@const Icon = item.icon}
-							<DropdownMenu.Item>
-								{#snippet child({ props })}
-									<a {...props} href={item.href}>
-										<Icon class="text-primary" />
-										<span>{item.title}</span>
-									</a>
-								{/snippet}
-							</DropdownMenu.Item>
-						{/each}
-					</DropdownMenu.Group>
-				{/if}
-				<DropdownMenu.Separator />
-				<DropdownMenu.Group>
-					<DropdownMenu.Item>
-						{#snippet child({ props })}
-							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
-								<CircleUser class="text-primary" />
-								<span>Profile</span>
-							</a>
-						{/snippet}
-					</DropdownMenu.Item>
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={() => (alertDialogOpen = true)} variant="destructive">
-					<LogOut />
-					<span>Sign Out</span>
-				</DropdownMenu.Item>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
-		<DropdownMenu.Root>
 			<DropdownMenu.Trigger class={buttonVariants({ variant: "outline", size: "default" })}>
 				<MoonIcon
 					class={[
@@ -278,6 +206,82 @@
 						? "font-semibold [&_svg:not([class*='text-'])]:text-foreground"
 						: ""}><Contrast />System</DropdownMenu.Item
 				>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger class="border">
+				{#snippet child({ props })}
+					<Sidebar.MenuButton
+						size="lg"
+						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+						{...props}
+					>
+						<Avatar.Root class="h-8 w-8 rounded-lg">
+							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
+							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="grid flex-1 text-left text-sm leading-tight">
+							<span class="truncate font-semibold">{user?.fullname}</span>
+							<span class="truncate text-xs">{user?.username}</span>
+						</div>
+						<ChevronsUpDown class="ml-auto size-4" />
+					</Sidebar.MenuButton>
+				{/snippet}
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content
+				class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+				side={sidebar.isMobile ? "bottom" : "right"}
+				align="end"
+				sideOffset={4}
+			>
+				<DropdownMenu.Label class="p-0 font-normal">
+					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+						<Avatar.Root class="h-8 w-8 rounded-lg">
+							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
+							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>
+						</Avatar.Root>
+						<div class="grid flex-1 text-left text-sm leading-tight">
+							<span class="truncate font-semibold">{user?.fullname}</span>
+							<span class="truncate text-xs">{user?.username}</span>
+						</div>
+					</div>
+				</DropdownMenu.Label>
+				{#if role !== 1}
+					<DropdownMenu.Separator />
+					<DropdownMenu.Group>
+						{#each appNav as item (item.href)}
+							{@const Icon = item.icon}
+							<DropdownMenu.Item class="cursor-pointer">
+								{#snippet child({ props })}
+									<a {...props} href={item.href}>
+										<Icon class="text-primary" />
+										<span>{item.title}</span>
+									</a>
+								{/snippet}
+							</DropdownMenu.Item>
+						{/each}
+					</DropdownMenu.Group>
+				{/if}
+				<DropdownMenu.Separator />
+				<DropdownMenu.Group>
+					<DropdownMenu.Item class="cursor-pointer">
+						{#snippet child({ props })}
+							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
+								<CircleUser class="text-primary" />
+								<span>Profile</span>
+							</a>
+						{/snippet}
+					</DropdownMenu.Item>
+				</DropdownMenu.Group>
+				<DropdownMenu.Separator />
+				<DropdownMenu.Item
+					class="cursor-pointer"
+					onclick={() => (alertDialogOpen = true)}
+					variant="destructive"
+				>
+					<LogOut />
+					<span>Sign Out</span>
+				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</Sidebar.Footer>

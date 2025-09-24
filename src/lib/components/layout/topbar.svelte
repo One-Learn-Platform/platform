@@ -20,8 +20,6 @@
 	import SunIcon from "@lucide/svelte/icons/sun";
 	import UserCog from "@lucide/svelte/icons/user-cog";
 
-	import { nav } from "$lib/assets/nav/main";
-
 	import type { SessionValidationResult } from "$lib/server/auth";
 	import { acronym } from "$lib/utils";
 
@@ -98,21 +96,7 @@
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content>
 				<DropdownMenu.Group>
-					{#each nav as item (item.title)}
-						<DropdownMenu.Item>
-							{#snippet child({ props })}
-								<a href={item.href} {...props}>
-									<item.icon />
-									{item.title}
-								</a>
-							{/snippet}
-						</DropdownMenu.Item>
-					{/each}
-				</DropdownMenu.Group>
-				<DropdownMenu.Separator />
-
-				<DropdownMenu.Group>
-					<DropdownMenu.Item>
+					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
 							<a {...props} href="/profile">
 								<CircleUser />
@@ -122,7 +106,11 @@
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item onclick={() => (alertDialogOpen = true)}>
+				<DropdownMenu.Item
+					class="cursor-pointer"
+					onclick={() => (alertDialogOpen = true)}
+					variant="destructive"
+				>
 					<LogOut />
 					<span>Sign Out</span>
 				</DropdownMenu.Item>
