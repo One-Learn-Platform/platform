@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+
 	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { resetMode, setMode, userPrefersMode } from "mode-watcher";
 
 	import type { SessionValidationResult } from "$lib/server/auth";
 
@@ -10,6 +12,7 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
+	import { buttonVariants } from "$lib/components/ui/button/index.js";
 
 	import { appNav } from "$lib/assets/nav/app";
 	import { acronym } from "$lib/utils";
@@ -21,9 +24,12 @@
 	import ChartCandlestick from "@lucide/svelte/icons/chart-candlestick";
 	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
 	import CircleUser from "@lucide/svelte/icons/circle-user";
+	import Contrast from "@lucide/svelte/icons/contrast";
 	import LogOut from "@lucide/svelte/icons/log-out";
 	import MessagesSquare from "@lucide/svelte/icons/messages-square";
+	import MoonIcon from "@lucide/svelte/icons/moon";
 	import School from "@lucide/svelte/icons/school";
+	import SunIcon from "@lucide/svelte/icons/sun";
 	import User from "@lucide/svelte/icons/user";
 	import UserCog from "@lucide/svelte/icons/user-cog";
 
@@ -200,7 +206,7 @@
 							<DropdownMenu.Item>
 								{#snippet child({ props })}
 									<a {...props} href={item.href}>
-										<Icon class="text-sidebar-primary" />
+										<Icon class="text-primary" />
 										<span>{item.title}</span>
 									</a>
 								{/snippet}
@@ -213,7 +219,7 @@
 					<DropdownMenu.Item>
 						{#snippet child({ props })}
 							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
-								<CircleUser class="text-sidebar-primary" />
+								<CircleUser class="text-primary" />
 								<span>Profile</span>
 							</a>
 						{/snippet}
@@ -224,6 +230,54 @@
 					<LogOut />
 					<span>Sign Out</span>
 				</DropdownMenu.Item>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger class={buttonVariants({ variant: "outline", size: "default" })}>
+				<MoonIcon
+					class={[
+						"absolute h-[1.2rem] w-[1.2rem] transition-all",
+						userPrefersMode.current === "dark" ? "scale-100 rotate-0" : "scale-0 rotate-90",
+					]}
+				/>
+				<SunIcon
+					class={[
+						" absolute h-[1.2rem] w-[1.2rem] transition-all",
+						userPrefersMode.current === "light" ? "scale-100 rotate-0" : "scale-0 rotate-90",
+					]}
+				/>
+				<Contrast
+					class={[
+						"absolute h-[1.2rem] w-[1.2rem] transition-all",
+						userPrefersMode.current === "system" ? "scale-100 rotate-0" : "scale-0 rotate-90",
+					]}
+				/>
+				<span class="sr-only">Toggle theme</span>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content
+				class="w-(--bits-dropdown-menu-anchor-width) min-w-56 rounded-lg"
+				side={sidebar.isMobile ? "bottom" : "right"}
+				align="end"
+				sideOffset={4}
+			>
+				<DropdownMenu.Item
+					onclick={() => setMode("light")}
+					class={userPrefersMode.current === "light"
+						? "font-semibold [&_svg:not([class*='text-'])]:text-foreground"
+						: ""}><SunIcon />Light</DropdownMenu.Item
+				>
+				<DropdownMenu.Item
+					onclick={() => setMode("dark")}
+					class={userPrefersMode.current === "dark"
+						? "font-semibold [&_svg:not([class*='text-'])]:text-foreground"
+						: ""}><MoonIcon />Dark</DropdownMenu.Item
+				>
+				<DropdownMenu.Item
+					onclick={() => resetMode()}
+					class={userPrefersMode.current === "system"
+						? "font-semibold [&_svg:not([class*='text-'])]:text-foreground"
+						: ""}><Contrast />System</DropdownMenu.Item
+				>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</Sidebar.Footer>
