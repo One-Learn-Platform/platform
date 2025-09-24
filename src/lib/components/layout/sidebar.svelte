@@ -57,7 +57,7 @@
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton class="h-16 data-[slot=sidebar-menu-button]:!p-1.5">
 					{#snippet child({ props })}
-						<a href="/" {...props}>
+						<a href="/dashboard" {...props}>
 							<img
 								src="{PUBLIC_R2_URL}/{school.logo}"
 								alt=""
@@ -112,9 +112,11 @@
 									await updateGrade(item);
 								}}
 							>
-								<div class="flex size-6 items-center justify-center rounded-md border">
+								<div
+									class="flex size-6 items-center justify-center rounded-md border border-primary/20 bg-accent"
+								>
 									<span
-										class="flex size-3.5 shrink-0 items-center justify-center font-display text-sm font-extrabold tabular-nums"
+										class="flex size-3.5 shrink-0 items-center justify-center font-display text-sm font-extrabold text-primary tabular-nums"
 									>
 										{item.number}
 									</span>
