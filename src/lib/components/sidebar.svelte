@@ -254,7 +254,7 @@
 							<DropdownMenu.Item class="cursor-pointer">
 								{#snippet child({ props })}
 									<a {...props} href={item.href}>
-										<Icon class="text-primary" />
+										<Icon />
 										<span>{item.title}</span>
 									</a>
 								{/snippet}
@@ -267,7 +267,7 @@
 					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
 							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
-								<CircleUser class="text-primary" />
+								<CircleUser />
 								<span>Profile</span>
 							</a>
 						{/snippet}
