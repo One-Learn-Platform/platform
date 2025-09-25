@@ -330,7 +330,7 @@
 								class={cn(
 									buttonVariants({ variant: "outline" }),
 									changes.dob ? "border-blue-500 bg-blue-50" : "",
-									"w-full text-left font-normal",
+									"w-full text-left font-normal text-foreground",
 									!value && "text-muted-foreground",
 								)}
 							>

@@ -274,7 +274,7 @@
 										{...props}
 										class={cn(
 											buttonVariants({ variant: "outline" }),
-											"w-full text-left font-normal",
+											"w-full text-left font-normal text-foreground",
 											!value && "text-muted-foreground",
 										)}
 									>
