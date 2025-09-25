@@ -10,7 +10,7 @@ import DataTableActions from "$lib/components/table/data-table-actions.svelte";
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-type SafeUser = Omit<User, "password"> & { gradeLevel: number };
+type SafeUser = Omit<User, "password"> & { gradeLevel?: number; schoolName?: string };
 export const columns: ColumnDef<SafeUser>[] = [
 	{
 		id: "select",
