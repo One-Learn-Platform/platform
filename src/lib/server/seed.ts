@@ -81,6 +81,14 @@ export async function seedDatabase() {
 			},
 		]);
 		console.log("✅ Default users seeded");
+
+		// 4. Seed Subject Types
+		await db.insert(schema.subjectType).values([
+			{ id: 1, name: "Laboratory" },
+			{ id: 2, name: "Lesson" },
+			{ id: 3, name: "Practicum" },
+		]);
+		console.log("✅ Subject types seeded");
 		console.log("🎉 Database seeding completed successfully!");
 		console.log("📝 Default login credentials:");
 		console.log("   Super Admin: superadmin / password123");
