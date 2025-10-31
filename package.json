@@ -24,7 +24,7 @@
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250927.0",
 		"@eslint/compat": "^1.4.0",
-		"@eslint/js": "^9.36.0",
+		"@eslint/js": "^9.38.0",
 		"@fontsource-variable/jetbrains-mono": "^5.2.8",
 		"@fontsource-variable/outfit": "^5.2.8",
 		"@internationalized/date": "^3.9.0",
