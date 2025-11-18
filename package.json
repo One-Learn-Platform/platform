@@ -46,7 +46,7 @@
 		"drizzle-kit": "^0.31.7",
 		"drizzle-zod": "^0.8.3",
 		"embla-carousel-svelte": "^8.6.0",
-		"eslint": "^9.36.0",
+		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.12.4",
 		"formsnap": "^2.0.1",
