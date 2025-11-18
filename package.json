@@ -42,7 +42,7 @@
 		"clsx": "^2.1.1",
 		"d3-scale": "^4.0.2",
 		"dayjs": "^1.11.18",
-		"dompurify": "^3.2.7",
+		"dompurify": "^3.3.0",
 		"drizzle-kit": "^0.31.5",
 		"drizzle-zod": "^0.8.3",
 		"embla-carousel-svelte": "^8.6.0",
