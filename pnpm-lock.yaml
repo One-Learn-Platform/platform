@@ -49,8 +49,8 @@ importers:
         specifier: ^5.2.8
         version: 5.2.8
       '@internationalized/date':
-        specifier: ^3.9.0
-        version: 3.9.0
+        specifier: ^3.10.0
+        version: 3.10.0
       '@lucide/svelte':
         specifier: ^0.544.0
         version: 0.544.0(svelte@5.39.7)
@@ -83,7 +83,7 @@ importers:
         version: 24.6.0
       bits-ui:
         specifier: ^2.11.4
-        version: 2.11.4(@internationalized/date@3.9.0)(svelte@5.39.7)
+        version: 2.11.4(@internationalized/date@3.10.0)(svelte@5.39.7)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1365,8 +1365,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@internationalized/date@3.9.0':
-    resolution: {integrity: sha512-yaN3brAnHRD+4KyyOsJyk49XUvj2wtbNACSqg0bz3u8t2VuzhC8Q5dfRnrSxjnnbDb+ienBnkn1TzQfE154vyg==}
+  '@internationalized/date@3.10.0':
+    resolution: {integrity: sha512-oxDR/NTEJ1k+UFVQElaNIk65E/Z83HK1z1WI3lQyhTtnNg4R5oVXaPzK3jcpKG8UHKDVuDQHzn+wsxSz8RP3aw==}
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -4507,7 +4507,7 @@ snapshots:
   '@img/sharp-win32-x64@0.34.4':
     optional: true
 
-  '@internationalized/date@3.9.0':
+  '@internationalized/date@3.10.0':
     dependencies:
       '@swc/helpers': 0.5.17
 
@@ -5189,11 +5189,11 @@ snapshots:
 
   bcryptjs@3.0.2: {}
 
-  bits-ui@2.11.4(@internationalized/date@3.9.0)(svelte@5.39.7):
+  bits-ui@2.11.4(@internationalized/date@3.10.0)(svelte@5.39.7):
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/dom': 1.7.4
-      '@internationalized/date': 3.9.0
+      '@internationalized/date': 3.10.0
       esm-env: 1.2.2
       runed: 0.31.1(svelte@5.39.7)
       svelte: 5.39.7
