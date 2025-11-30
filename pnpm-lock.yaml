@@ -118,8 +118,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(svelte@5.39.7)(sveltekit-superforms@2.27.1(@sveltejs/kit@2.48.5(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.39.7)(vite@7.1.12(@types/node@24.6.0)(jiti@2.6.0)(lightningcss@1.30.1)(tsx@4.21.0)))(svelte@5.39.7)(vite@7.1.12(@types/node@24.6.0)(jiti@2.6.0)(lightningcss@1.30.1)(tsx@4.21.0)))(@types/json-schema@7.0.15)(esbuild@0.27.0)(svelte@5.39.7)(typescript@5.9.2))
       globals:
-        specifier: ^16.4.0
-        version: 16.4.0
+        specifier: ^16.5.0
+        version: 16.5.0
       layerchart:
         specifier: ^2.0.0-next.39
         version: 2.0.0-next.40(svelte@5.39.7)
@@ -2652,8 +2652,8 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@16.4.0:
-    resolution: {integrity: sha512-ob/2LcVVaVGCYN+r14cnwnoDPUufjiYgSqRhiFD0Q1iI4Odora5RE8Iv1D24hAz5oMophRGkGz+yuvQmmUMnMw==}
+  globals@16.5.0:
+    resolution: {integrity: sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==}
     engines: {node: '>=18'}
 
   graceful-fs@4.2.11:
@@ -5626,7 +5626,7 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
       eslint: 9.39.1(jiti@2.6.0)
       esutils: 2.0.3
-      globals: 16.4.0
+      globals: 16.5.0
       known-css-properties: 0.37.0
       postcss: 8.5.6
       postcss-load-config: 3.1.4(postcss@8.5.6)
@@ -5826,7 +5826,7 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@16.4.0: {}
+  globals@16.5.0: {}
 
   graceful-fs@4.2.11: {}
 
