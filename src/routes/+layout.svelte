@@ -20,6 +20,7 @@
 	<title>One Learn</title>
 	<link href="https://api.fontshare.com/" rel="preconnect" />
 	<link href="https://api.fontshare.com/v2/css?f[]=switzer@1,2&display=swap" rel="stylesheet" />
+	<meta name="theme-color" content="#f54900" />
 </svelte:head>
 
 <ModeWatcher />
