@@ -1,11 +1,19 @@
 <script lang="ts">
 	import { ModeWatcher } from "mode-watcher";
+	import { configure } from "onedollarstats";
+	import { onMount } from "svelte";
+
 	import "@fontsource-variable/outfit";
 	import "@fontsource-variable/jetbrains-mono";
 	import "../app.css";
-	let { children } = $props();
 
 	import { Toaster } from "$lib/components/ui/sonner/index.js";
+
+	let { children } = $props();
+
+	onMount(() => {
+		configure({ trackLocalhostAs: "onelearn.id" });
+	});
 </script>
 
 <svelte:head>
