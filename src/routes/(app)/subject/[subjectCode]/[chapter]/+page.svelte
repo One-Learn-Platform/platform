@@ -236,8 +236,8 @@
 												{#each answer as answer (answer.id)}
 													<input type="hidden" name={`q-${answer.id}`} bind:value={answer.answer} />
 												{/each}
-												The answers you provided will be submitted and cannot be changed afterwards.
-												You will see your score directly after submitting.
+												The answers you provided will be submitted and cannot be changed afterwards. You
+												will see your score directly after submitting.
 											</AlertDialog.Description>
 										</AlertDialog.Header>
 										<AlertDialog.Footer>
