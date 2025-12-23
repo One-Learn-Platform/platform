@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import { browser } from "$app/environment";
 	import { invalidate } from "$app/navigation";
@@ -55,9 +56,9 @@
 	<Sidebar.Header class="bg-background">
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
-				<Sidebar.MenuButton class="h-16 data-[slot=sidebar-menu-button]:!p-1.5">
+				<Sidebar.MenuButton class="h-16 data-[slot=sidebar-menu-button]:p-1.5!">
 					{#snippet child({ props })}
-						<a href="/dashboard" {...props}>
+						<a href={resolve("/dashboard")} {...props}>
 							<img
 								src="{PUBLIC_R2_URL}/{school.logo}"
 								alt=""
@@ -137,7 +138,7 @@
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton class="h-10" isActive={page.url.pathname.startsWith(item.href)}>
 								{#snippet child({ props })}
-									<a href={item.href} {...props}>
+									<a href={resolve(item.href)} {...props}>
 										<item.icon />
 										<span>{item.title}</span>
 									</a>

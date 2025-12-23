@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import type { Assignment } from "$lib/schema/db";
 
 	import dayjs from "dayjs";
@@ -37,7 +38,9 @@
 </script>
 
 <a
-	href="/subject/{assignment.subjectCode}/{assignment.chapter}/assignments/{assignment.id}"
+	href={resolve(
+		`/subject/${assignment.subjectCode}/${assignment.chapter}/assignments/${assignment.id}`,
+	)}
 	class="flex h-fit flex-col gap-2 overflow-hidden rounded-sm border bg-background p-4 duration-150 hover:bg-accent/90"
 >
 	<div class="">

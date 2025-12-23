@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
+	import { resolve } from "$app/paths";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import type { Forum } from "$lib/schema/db";
 
@@ -46,7 +47,7 @@
 </script>
 
 <a
-	href="/subject/{forum.subjectCode}/{forum.chapter}/forum/{forum.id}"
+	href={resolve(`/subject/${forum.subjectCode}/${forum.chapter}/forum/${forum.id}`)}
 	class="flex h-fit flex-col gap-2 rounded-sm border bg-background p-4 duration-150 hover:bg-muted hover:shadow-xs"
 >
 	<div class="">

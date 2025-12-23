@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
@@ -98,7 +99,7 @@
 				<DropdownMenu.Group>
 					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
-							<a {...props} href="/profile">
+							<a {...props} href={resolve("/profile")}>
 								<CircleUser />
 								<span>Profile</span>
 							</a>
