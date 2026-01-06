@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { browser } from "$app/environment";
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";

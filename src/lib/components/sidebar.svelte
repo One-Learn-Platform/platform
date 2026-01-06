@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { enhance } from "$app/forms";
+	import type { NavItem } from "$lib/types/nav";
 
 	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
@@ -36,7 +38,7 @@
 	const sidebar = useSidebar();
 	const prefix = "/admin";
 	// Menu items.
-	const overview = [
+	const overview: NavItem[] = [
 		{
 			title: "Statistic",
 			href: `${prefix}`,
@@ -45,7 +47,7 @@
 		},
 	];
 
-	const management = [
+	const management: NavItem[] = [
 		{
 			title: "User",
 			href: `${prefix}/user`,
@@ -129,7 +131,7 @@
 												: page.url.pathname.startsWith(item.href)}
 										>
 											{#snippet child({ props })}
-												<a href={item.href} {...props}>
+												<a href={resolve(item.href)} {...props}>
 													<item.icon />
 													<span>{item.title}</span>
 												</a>
@@ -145,7 +147,7 @@
 											: page.url.pathname.startsWith(item.href)}
 									>
 										{#snippet child({ props })}
-											<a href={item.href} {...props}>
+											<a href={resolve(item.href)} {...props}>
 												<item.icon />
 												<span>{item.title}</span>
 											</a>
@@ -253,7 +255,7 @@
 							{@const Icon = item.icon}
 							<DropdownMenu.Item class="cursor-pointer">
 								{#snippet child({ props })}
-									<a {...props} href={item.href}>
+									<a {...props} href={resolve(item.href)}>
 										<Icon />
 										<span>{item.title}</span>
 									</a>
@@ -266,7 +268,7 @@
 				<DropdownMenu.Group>
 					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
-							<a {...props} href={role === 1 ? "/admin/profile" : "/profile"}>
+							<a {...props} href={resolve(role === 1 ? "/admin/profile" : "/profile")}>
 								<CircleUser />
 								<span>Profile</span>
 							</a>
