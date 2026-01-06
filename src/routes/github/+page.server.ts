@@ -1,6 +1,6 @@
 import { redirect } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import type { PageServerLoad } from "./$types";
 
-export const GET: RequestHandler = () => {
+export const load: PageServerLoad = () => {
 	return redirect(302, "https://github.com/One-Learn-Platform/platform");
 };
