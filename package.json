@@ -33,7 +33,7 @@
 		"@sveltejs/adapter-cloudflare": "^7.2.4",
 		"@sveltejs/enhanced-img": "^0.9.2",
 		"@sveltejs/kit": "^2.49.3",
-		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tailwindcss/vite": "^4.1.18",
 		"@tanstack/table-core": "^8.21.3",
 		"@types/d3-scale": "^4.0.9",
