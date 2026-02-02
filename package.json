@@ -60,7 +60,7 @@
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"rimraf": "^6.1.2",
 		"runed": "^0.37.1",
-		"simple-icons": "^16.4.0",
+		"simple-icons": "^16.7.0",
 		"svelte": "^5.46.1",
 		"svelte-check": "^4.3.5",
 		"svelte-sonner": "^1.0.7",
