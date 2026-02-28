@@ -43,7 +43,7 @@
 		"d3-scale": "^4.0.2",
 		"dayjs": "^1.11.19",
 		"dompurify": "^3.3.1",
-		"drizzle-kit": "^0.31.8",
+		"drizzle-kit": "^0.31.9",
 		"drizzle-zod": "^0.8.3",
 		"embla-carousel-svelte": "^8.6.0",
 		"eslint": "^9.39.2",
