@@ -1,3 +1,4 @@
+import { defineConfig } from "eslint/config";
 import { includeIgnoreFile } from "@eslint/compat";
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
@@ -9,8 +10,11 @@ import { fileURLToPath } from "node:url";
 
 const gitignorePath = fileURLToPath(new URL("./.gitignore", import.meta.url));
 
-export default ts.config(
+export default defineConfig(
 	includeIgnoreFile(gitignorePath),
+	{
+		ignores: [".agents/**"],
+	},
 	js.configs.recommended,
 	...ts.configs.recommended,
 	...svelte.configs["flat/recommended"],
