@@ -26,6 +26,7 @@ binding = "DB"
 database_id = "8d67040c-2232-4ea0-9a03-54d674b839a9"
 database_name = "prod-db"
 migrations_dir = "./src/lib/server/db/migrations"
+remote = true
 
 [[r2_buckets]]
 binding = "MEDIA"
