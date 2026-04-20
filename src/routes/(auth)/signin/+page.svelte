@@ -59,7 +59,7 @@
 					</Avatar.Root>
 					<p class="grow truncate font-medium">{data.user?.username}</p>
 					<Button
-						href={data.user.role === 1 || data.user.role === 2 ? "/admin" : "/"}
+						href={data.user.role === 1 || data.user.role === 2 ? "/admin" : "/dashboard"}
 						size="sm"
 						variant="outline"
 						class="h-auto w-auto self-stretch justify-self-end text-sm"
