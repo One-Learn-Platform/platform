@@ -8,7 +8,7 @@
 	import { Switch } from "$lib/components/ui/switch/index.js";
 
 	import { scaleBand } from "d3-scale";
-	import { BarChart, Highlight, type ChartContextValue } from "layerchart";
+	import { BarChart, Highlight } from "layerchart";
 
 	import { groupUsers } from "$lib/functions/db";
 
@@ -41,7 +41,6 @@
 		return Math.max(...userStats.map((stat) => stat.count), 0);
 	});
 
-	let context = $state<ChartContextValue>();
 	let split = $state(false);
 
 	const chartData = $derived(userStats);
@@ -133,7 +132,6 @@
 		<Chart.Container config={chartConfig} class="h-[250px] min-h-[200px] w-full">
 			{#key chartData}
 				<BarChart
-					bind:context
 					data={chartData}
 					xScale={scaleBand().padding(0.25)}
 					x="period"
@@ -149,7 +147,7 @@
 							radius: 8,
 							stroke: "none",
 							// use the height of the chart to animate the bars
-							initialY: context?.height,
+							initialY: 250,
 							initialHeight: 0,
 							motion: {
 								y: { type: "tween", duration: 500, easing: cubicInOut },
