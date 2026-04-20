@@ -12,5 +12,9 @@
 		"lib": "$lib"
 	},
 	"typescript": true,
+	"style": "nova",
+	"iconLibrary": "lucide",
+	"menuColor": "default-translucent",
+	"menuAccent": "subtle",
 	"registry": "https://shadcn-svelte.com/registry"
 }
