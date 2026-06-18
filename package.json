@@ -75,7 +75,7 @@
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.59.2",
 		"vaul-svelte": "1.0.0-next.7",
-		"vite": "^8.0.10",
+		"vite": "^8.0.16",
 		"vitest": "^4.1.5",
 		"wrangler": "^4.85.0",
 		"zod": "^4.3.6"
