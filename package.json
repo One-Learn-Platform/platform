@@ -50,7 +50,7 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.17.1",
 		"formsnap": "^2.0.1",
-		"globals": "^17.5.0",
+		"globals": "^17.7.0",
 		"layerchart": "2.0.0-next.62",
 		"mdsvex": "^0.12.7",
 		"mode-watcher": "^1.1.0",
