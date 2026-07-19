@@ -1,4 +1,4 @@
-import type { BadgeVariant } from "$lib/components/ui/badge";
+import type { BadgeFill, BadgeVariant } from "$lib/components/ui/badge";
 import {
 	Atom,
 	BookUser,
@@ -127,28 +127,32 @@ export function subjectAbbreviation(subject: string) {
 }
 
 /**
- * Returns the appropriate badge variant based on the subject type.
+ * Returns the appropriate badge variant/fill based on the subject type.
  *
  * @param subject - The subject string to determine the color for
- * @param muted - Whether to return a muted variant of the color (defaults to false)
+ * @param muted - Whether to return the muted fill of the color (defaults to false)
  *
- * @returns The badge variant corresponding to the subject type:
- *   - "informative" or "informative_muted" for "laboratory"
- *   - "success" or "success_muted" for "lesson"
- *   - "interactive" or "interactive_muted" for "practicum"
+ * @returns The badge variant+fill corresponding to the subject type:
+ *   - "informative" for "laboratory"
+ *   - "success" for "lesson"
+ *   - "interactive" for "practicum"
  *   - "outline" for any other subject
  */
-export function subjectColor(subject: string, muted: boolean = false): BadgeVariant {
+export function subjectColor(
+	subject: string,
+	muted: boolean = false
+): { variant: BadgeVariant; fill: BadgeFill } {
+	const fill: BadgeFill = muted ? "muted" : "default";
 	const subjectLower = subject.toLowerCase();
 	switch (subjectLower) {
 		case "laboratory":
-			return muted ? "informative_muted" : "informative";
+			return { variant: "informative", fill };
 		case "lesson":
-			return muted ? "success_muted" : "success";
+			return { variant: "success", fill };
 		case "practicum":
-			return muted ? "interactive_muted" : "interactive";
+			return { variant: "interactive", fill };
 		default:
-			return "outline";
+			return { variant: "outline", fill: "default" };
 	}
 }
 

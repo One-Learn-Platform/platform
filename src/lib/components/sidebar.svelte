@@ -237,7 +237,7 @@
 				sideOffset={4}
 			>
 				<DropdownMenu.Label class="p-0 font-normal">
-					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+					<div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
 						<Avatar.Root class="h-8 w-8 rounded-lg">
 							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" alt={user?.fullname} />
 							<Avatar.Fallback class="rounded-lg">{initial}</Avatar.Fallback>

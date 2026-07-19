@@ -77,7 +77,7 @@
 													<span class="font-mono tracking-tight text-muted-foreground">
 														{subject.code}
 													</span>
-													<Badge variant={subjectColor(subject.subjectTypeName)}>
+													<Badge {...subjectColor(subject.subjectTypeName)}>
 														{subjectAbbreviation(subject.subjectTypeName)}
 													</Badge>
 												</div>

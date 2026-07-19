@@ -43,7 +43,7 @@
 			>
 				{data.subject.name}
 			</Button>
-			<Badge class="mt-0.5 text-xs" variant={subjectColor(data.subject.subjectTypeName, true)}>
+			<Badge class="mt-0.5 text-xs" {...subjectColor(data.subject.subjectTypeName, true)}>
 				{data.subject.subjectTypeName}
 			</Badge>
 		</div>

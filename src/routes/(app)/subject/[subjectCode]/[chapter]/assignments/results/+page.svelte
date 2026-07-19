@@ -89,9 +89,9 @@
 								<Table.Cell class="font-medium">{student.fullname}</Table.Cell>
 								<Table.Cell>
 									{#if student.hasSubmitted}
-										<Badge variant="success_muted">Submitted</Badge>
+										<Badge variant="success" fill="muted">Submitted</Badge>
 									{:else}
-										<Badge variant="destructive_muted">Not Submitted</Badge>
+										<Badge variant="destructive" fill="muted">Not Submitted</Badge>
 									{/if}
 								</Table.Cell>
 								<Table.Cell class="font-mono">

@@ -133,7 +133,7 @@
 				<div class={["flex flex-row items-center gap-4", subjectTextColor(group.subjectType)]}>
 					<Icons class="size-10" />
 					<p class="font-display text-2xl font-semibold">{group.subject}</p>
-					<Badge variant={subjectColor(group.subjectType)}>{group.subjectType}</Badge>
+					<Badge {...subjectColor(group.subjectType)}>{group.subjectType}</Badge>
 				</div>
 				{#each group.assignments as assignment (assignment.id)}
 					<div

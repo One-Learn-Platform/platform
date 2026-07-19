@@ -80,18 +80,20 @@
 
 	<div class="flex grow items-center justify-end gap-2 sm:grow-0">
 		{#if user?.role === 1 || user?.role === 2}
-			<Button variant="outline" outline href="/admin"><UserCog />Admin Panel</Button>
+			<Button variant="outline" href="/admin"
+				><UserCog data-icon="inline-start" />Admin Panel</Button
+			>
 		{/if}
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button variant="outline" outline size="default" class="py-1" {...props}>
+					<Button variant="outline" size="default" class="py-1" {...props}>
 						<Avatar.Root class="h-full w-auto">
 							<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
 							<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
 						</Avatar.Root>
 						{user?.fullname ?? "User"}
-						<ChevronDown />
+						<ChevronDown data-icon="inline-end" />
 					</Button>
 				{/snippet}
 			</DropdownMenu.Trigger>
