@@ -140,7 +140,7 @@ export function subjectAbbreviation(subject: string) {
  */
 export function subjectColor(
 	subject: string,
-	muted: boolean = false
+	muted: boolean = false,
 ): { variant: BadgeVariant; fill: BadgeFill } {
 	const fill: BadgeFill = muted ? "muted" : "default";
 	const subjectLower = subject.toLowerCase();
