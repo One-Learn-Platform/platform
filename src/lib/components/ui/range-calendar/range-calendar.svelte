@@ -46,7 +46,7 @@
 	{weekdayFormat}
 	{disableDaysOutsideMonth}
 	class={cn(
-		"group/calendar bg-background p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+		"group/calendar bg-background p-2 p-3 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(7)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
 		className,
 	)}
 	{locale}
@@ -79,7 +79,7 @@
 					<RangeCalendar.Grid>
 						<RangeCalendar.GridHead>
 							<RangeCalendar.GridRow class="select-none">
-								{#each weekdays as weekday (weekday)}
+								{#each weekdays as weekday, i (i)}
 									<RangeCalendar.HeadCell>
 										{weekday.slice(0, 2)}
 									</RangeCalendar.HeadCell>
