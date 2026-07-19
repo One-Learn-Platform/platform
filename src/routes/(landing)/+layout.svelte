@@ -101,7 +101,7 @@
 					href="https://creativecommons.org/licenses/by/4.0/"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="text-blue-600 hover:underline dark:text-blue-400"
+					class="text-informative hover:underline"
 				>
 					Creative Commons Attribution 4.0 International
 				</a>
@@ -111,7 +111,7 @@
 			{#each bottomNav as item (item.href)}
 				<a
 					href={item.href}
-					class="transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"
+					class="transition duration-150 ease-out hover:text-primary hover:underline"
 				>
 					{item.title}
 				</a>
@@ -119,7 +119,7 @@
 
 			<a
 				href="https://github.com/One-Learn-Platform/platform"
-				class="flex flex-row items-center gap-1 transition duration-150 ease-out hover:text-orange-600 hover:underline dark:hover:text-orange-400"
+				class="flex flex-row items-center gap-1 transition duration-150 ease-out hover:text-primary hover:underline"
 			>
 				<div class="size-4 dark:fill-white">
 					{@html siGithub.svg}

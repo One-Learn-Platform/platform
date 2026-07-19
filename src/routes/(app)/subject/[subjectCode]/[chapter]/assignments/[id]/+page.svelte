@@ -347,12 +347,12 @@
 					<Form.Control>
 						{#snippet children({ props })}
 							<Form.Label
-								class="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent/50 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950"
+								class="flex items-start gap-3 rounded-lg border p-3 hover:bg-accent/50 has-[[aria-checked=true]]:border-informative has-[[aria-checked=true]]:bg-informative-muted"
 							>
 								<Checkbox
 									{...props}
 									checked={$formData.quiz}
-									class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+									class="data-[state=checked]:border-informative data-[state=checked]:bg-informative data-[state=checked]:text-white"
 									onCheckedChange={(checked) => {
 										if (checked) {
 											$formData.limitUser = data.assignment.limitUser || 1;

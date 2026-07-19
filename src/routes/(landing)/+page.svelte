@@ -36,8 +36,8 @@
 			<p
 				class="text-center text-4xl font-medium tracking-tight sm:text-5xl sm:tracking-tighter lg:text-6xl xl:text-7xl"
 			>
-				Empowering <span class="text-orange-500">Learning</span>. <wbr />Connecting
-				<span class="text-orange-500">Minds</span>.
+				Empowering <span class="text-primary">Learning</span>. <wbr />Connecting
+				<span class="text-primary">Minds</span>.
 			</p>
 			<p class="text-center text-lg tracking-tight text-muted-foreground sm:text-xl">
 				A smart platform for students and teachers to connect, learn, and grow—anytime, anywhere
@@ -68,7 +68,7 @@
 				<Card.Root class="w-full gap-4">
 					<Card.Content>
 						<div
-							class="flex h-12 w-12 items-center justify-center rounded-sm bg-orange-500 text-white"
+							class="flex h-12 w-12 items-center justify-center rounded-sm bg-primary text-white"
 						>
 							<Icon />
 						</div>
@@ -83,7 +83,7 @@
 	</section>
 
 	<section
-		class="flex flex-col-reverse items-start justify-between gap-4 bg-neutral-50 px-8 py-16 sm:px-16 sm:py-20 md:px-20 md:py-30 lg:grid-cols-4 lg:flex-row lg:px-24 dark:bg-neutral-900"
+		class="flex flex-col-reverse items-start justify-between gap-4 bg-muted px-8 py-16 sm:px-16 sm:py-20 md:px-20 md:py-30 lg:grid-cols-4 lg:flex-row lg:px-24"
 	>
 		<div class="space-y-1">
 			<Badge
@@ -101,13 +101,13 @@
 			</p>
 			<ul class="space-y-4 font-medium">
 				<li class="flex items-center gap-2">
-					<Zap class="text-orange-500" /> Lightning-fast performance
+					<Zap class="text-primary" /> Lightning-fast performance
 				</li>
 				<li class="flex items-center gap-2">
-					<Shield class="text-orange-500" /> Enterprise-grade security
+					<Shield class="text-primary" /> Enterprise-grade security
 				</li>
 				<li class="flex items-center gap-2">
-					<Star class="text-orange-500" /> 99.9% uptime guarantee
+					<Star class="text-primary" /> 99.9% uptime guarantee
 				</li>
 			</ul>
 		</div>
@@ -121,14 +121,14 @@
 	>
 		{#each stats as stat (stat.label)}
 			<div class="flex flex-col items-center text-center">
-				<p class="text-4xl font-semibold text-orange-500 tabular-nums">{stat.value}</p>
+				<p class="text-4xl font-semibold text-primary tabular-nums">{stat.value}</p>
 				<p class="text-muted-foreground">{stat.label}</p>
 			</div>
 		{/each}
 	</section>
 
 	<section
-		class="flex h-dvh flex-col items-center justify-center gap-4 bg-orange-500 px-4 text-white sm:px-8 dark:bg-orange-800"
+		class="flex h-dvh flex-col items-center justify-center gap-4 bg-primary px-4 text-white sm:px-8"
 	>
 		<h2 class="text-center text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl">
 			Ready to transform your teaching?
@@ -145,7 +145,7 @@
 				placeholder="email"
 				class="border-border/30 bg-input/20 text-white placeholder:text-white"
 			/>
-			<Button class="bg-background font-medium text-orange-500 hover:bg-accent">Get Started</Button>
+			<Button class="bg-background font-medium text-primary hover:bg-accent">Get Started</Button>
 		</div>
 	</section>
 </main>

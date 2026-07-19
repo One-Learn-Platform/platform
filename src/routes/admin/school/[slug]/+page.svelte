@@ -28,7 +28,7 @@
 		logo: false,
 	});
 	const isChanged = $derived.by(() => changes.name || changes.logo);
-	const changesClass = clsx("border-blue-500 bg-blue-50");
+	const changesClass = clsx("border-informative bg-informative-muted");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zod4Client(formSchemaEdit),

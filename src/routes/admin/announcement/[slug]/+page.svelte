@@ -42,7 +42,7 @@
 		endDate: false,
 	});
 	const isChanged = $derived(changes);
-	const changesClass = clsx("border-blue-500 bg-blue-50");
+	const changesClass = clsx("border-informative bg-informative-muted");
 	const superform = superForm(data.form, {
 		taintedMessage: null,
 		validators: zod4Client(formSchema),
