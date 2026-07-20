@@ -115,7 +115,7 @@
 {@render children()}
 
 <style>
-	@reference "tailwindcss";
+	@reference "../../../../app.css";
 	:global(.raw h1) {
 		@apply text-3xl font-semibold tracking-tight;
 	}
