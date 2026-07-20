@@ -51,7 +51,7 @@
 			</Table.Header>
 			<Table.Body>
 				{#if filteredLeaderboard && filteredLeaderboard.length > 0}
-					{#each filteredLeaderboard as item, index (item.userId)}
+					{#each filteredLeaderboard as item, index (`${item.userId}-${item.gradeLevel}`)}
 						{#if item.score && Number(item.score) >= scoreThreshold}
 							<Table.Row
 								class="
