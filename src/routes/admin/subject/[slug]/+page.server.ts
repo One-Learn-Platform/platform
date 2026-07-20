@@ -59,6 +59,12 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	edit: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(403, { message: "You are not allowed to edit a subject" });
+		}
 		const db = getDb(event);
 		const params = event.params;
 		const { slug } = params;
@@ -70,6 +76,29 @@ export const actions: Actions = {
 			setError(form, "", "Invalid subject ID, please try again");
 			return fail(400, {
 				edit: { success: false, data: null, message: "Invalid subject ID, please try again" },
+				form,
+			});
+		}
+
+		const existingSubject = await db.select().from(subject).where(eq(subject.id, subjectId)).get();
+		if (!existingSubject) {
+			setError(form, "", "Subject not found, please try again");
+			return fail(404, {
+				edit: { success: false, data: null, message: "Subject not found, please try again" },
+				form,
+			});
+		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || existingSubject.schoolId !== event.locals.user.school)
+		) {
+			setError(form, "", "You are not allowed to edit a subject from a different school");
+			return fail(403, {
+				edit: {
+					success: false,
+					data: null,
+					message: "You are not allowed to edit a subject from a different school",
+				},
 				form,
 			});
 		}
@@ -151,6 +180,12 @@ export const actions: Actions = {
 		}
 	},
 	delete: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(403, { message: "You are not allowed to delete a subject" });
+		}
 		const db = getDb(event);
 		const form = await event.request.formData();
 		const id = form.get("id");
@@ -166,17 +201,29 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
-		const subjectForum = await db.select().from(forum).where(eq(forum.subjectId, numberId));
-		const subjectAssignment = await db
-			.select()
-			.from(assignment)
-			.where(eq(assignment.subjectId, numberId));
 		const name = await db.select().from(subject).where(eq(subject.id, numberId)).get();
 		if (!name) {
 			return fail(400, {
 				delete: { success: false, data: null, message: "Subject not found. Please try again." },
 			});
 		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || name.schoolId !== event.locals.user.school)
+		) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete a subject from a different school.",
+				},
+			});
+		}
+		const subjectForum = await db.select().from(forum).where(eq(forum.subjectId, numberId));
+		const subjectAssignment = await db
+			.select()
+			.from(assignment)
+			.where(eq(assignment.subjectId, numberId));
 		try {
 			await db.delete(comment).where(
 				inArray(

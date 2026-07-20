@@ -32,11 +32,17 @@ export const load: PageServerLoad = async (event) => {
 	} else {
 		return error(404, { message: "Not Found" });
 	}
-	return redirect(302, "/sigin");
+	return redirect(302, "/signin");
 };
 
 export const actions: Actions = {
 	delete: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(404, { message: "Not Found" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const id = formData.get("id");
@@ -55,6 +61,18 @@ export const actions: Actions = {
 		const name = await db.select().from(forum).where(eq(forum.id, numberId)).get();
 		if (!name) {
 			return fail(404, { delete: { success: false, data: null, message: "Forum not found" } });
+		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || name.schoolId !== event.locals.user.school)
+		) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete a forum post from a different school.",
+				},
+			});
 		}
 		try {
 			await db.delete(comment).where(eq(comment.forumId, numberId));
@@ -81,6 +99,12 @@ export const actions: Actions = {
 		};
 	},
 	multidelete: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(404, { message: "Not Found" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const ids = formData.get("ids");
@@ -101,14 +125,14 @@ export const actions: Actions = {
 			.where(or(...idArray.map((id) => eq(forum.id, id))));
 		const forumNameArray = forumArray.map((forum) => forum.title);
 
-		idArray.forEach(async (id) => {
+		for (const id of idArray) {
 			if (isNaN(id)) {
 				return fail(400, {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 				});
 			}
-			const forumExists = forumArray.some((forum) => forum.id === id);
-			if (!forumExists) {
+			const matchingForum = forumArray.find((forum) => forum.id === id);
+			if (!matchingForum) {
 				return fail(404, {
 					delete: {
 						success: false,
@@ -117,7 +141,19 @@ export const actions: Actions = {
 					},
 				});
 			}
-		});
+			if (
+				event.locals.user.role === 2 &&
+				(!event.locals.user.school || matchingForum.schoolId !== event.locals.user.school)
+			) {
+				return fail(403, {
+					delete: {
+						success: false,
+						data: null,
+						message: "You are not allowed to delete a forum post from a different school.",
+					},
+				});
+			}
+		}
 
 		try {
 			await db.delete(comment).where(inArray(comment.forumId, idArray));

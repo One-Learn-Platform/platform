@@ -9,9 +9,12 @@
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 
+	import { sanitizeHtml } from "$lib/functions/sanitize";
+
 	let { data, form }: PageProps = $props();
 
 	const forumDetail = $derived(data.forumData);
+	const sanitizedDescription = $derived(sanitizeHtml(forumDetail.description));
 
 	$effect(() => {
 		if (form?.delete) {
@@ -30,7 +33,8 @@
 		</Card.Header>
 
 		<Card.Content class="space-y-2">
-			{@html forumDetail.description}
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
+			{@html sanitizedDescription}
 		</Card.Content>
 		<Card.Footer>
 			<p class="text-sm text-muted-foreground">

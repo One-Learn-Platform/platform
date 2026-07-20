@@ -78,6 +78,15 @@ export const formSchemaWithPass = formSchema
 		{ error: "Grades is required", path: ["gradesId"] },
 	);
 
+export const ALLOWED_AVATAR_MIME_TYPES = [
+	"image/png",
+	"image/jpeg",
+	"image/webp",
+	"image/gif",
+	"image/heic",
+	"image/heif",
+] as const;
+
 export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 	avatar: z
 		.instanceof(File, {
@@ -85,6 +94,9 @@ export const formSchemaUploadImage = formSchema.pick({ avatar: true }).extend({
 		})
 		.refine((file) => file.size > 0 && file.size < 5 * 1024 * 1024, {
 			error: "Logo must be less than 5MB",
+		})
+		.refine((file) => (ALLOWED_AVATAR_MIME_TYPES as readonly string[]).includes(file.type), {
+			error: "Only PNG, JPEG, WebP, GIF, HEIC, and HEIF images are allowed",
 		}),
 });
 

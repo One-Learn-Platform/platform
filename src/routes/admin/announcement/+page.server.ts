@@ -87,6 +87,12 @@ export const actions: Actions = {
 	},
 
 	delete: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(404, { message: "Not Found" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const id = formData.get("id");
@@ -102,8 +108,29 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		const name = await db.select().from(announcement).where(eq(announcement.id, numberId)).get();
+		if (!name) {
+			return fail(404, {
+				delete: {
+					success: false,
+					data: null,
+					message: "Announcement not found. Please try again.",
+				},
+			});
+		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || name.schoolId !== event.locals.user.school)
+		) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete an announcement from a different school.",
+				},
+			});
+		}
 		try {
-			const name = await db.select().from(announcement).where(eq(announcement.id, numberId)).get();
 			await db.delete(announcement).where(eq(announcement.id, numberId));
 			return {
 				delete: {

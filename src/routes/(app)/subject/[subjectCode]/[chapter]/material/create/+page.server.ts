@@ -1,4 +1,4 @@
-import { redirect } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { material, subject } from "$lib/schema/db";
@@ -24,6 +24,9 @@ export const actions: Actions = {
 	create: async (event) => {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 2 && event.locals.user.role !== 3) {
+			return error(403, "Forbidden");
 		}
 		const db = getDb(event);
 		const r2 = getR2(event);

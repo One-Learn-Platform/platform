@@ -19,7 +19,7 @@ import {
 } from "$lib/schema/db";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
-import { getFileName, getTimeStamp } from "$lib/utils";
+import { getFileName, getImageExtensionFromMimeType, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -115,6 +115,24 @@ export const actions: Actions = {
 			});
 		}
 
+		const targetSchoolId = form.data.schoolId ? Number(form.data.schoolId) : undefined;
+
+		if (
+			event.locals.user.role === 2 &&
+			targetSchoolId !== undefined &&
+			targetSchoolId !== event.locals.user.school
+		) {
+			setError(form, "schoolId", "You are not allowed to assign a user to a different school");
+			return fail(403, {
+				edit: {
+					success: false,
+					data: null,
+					message: "You are not allowed to assign a user to a different school",
+				},
+				form,
+			});
+		}
+
 		const prevUserData = await db.select().from(user).where(eq(user.id, userId)).get();
 		if (!prevUserData) return fail(404, { message: "User not found" });
 
@@ -132,26 +150,25 @@ export const actions: Actions = {
 							form,
 						});
 					}
-				} catch (error) {
-					console.error(error);
+				} catch (err) {
+					console.error(err);
 					setError(
 						form,
 						"",
-						error instanceof Error ? error.message : "Unknown error. Please try again.",
+						err instanceof Error ? err.message : "Unknown error. Please try again.",
 						{ status: 500 },
 					);
+					return fail(500, {
+						edit: {
+							success: false,
+							data: null,
+							message: err instanceof Error ? err.message : "Unknown error. Please try again.",
+						},
+						form,
+					});
 				}
-				return fail(500, {
-					edit: {
-						success: false,
-						data: null,
-						message: error instanceof Error ? error.message : "Unknown error. Please try again.",
-					},
-					form,
-				});
 			}
 		}
-		const targetSchoolId = form.data.schoolId ? Number(form.data.schoolId) : undefined;
 		try {
 			await db
 				.update(user)
@@ -195,6 +212,12 @@ export const actions: Actions = {
 	},
 
 	upload: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(403, { message: "You are not allowed to upload a user's avatar" });
+		}
 		const db = getDb(event);
 		const r2 = getR2(event);
 		const params = event.params;
@@ -214,12 +237,39 @@ export const actions: Actions = {
 			setError(form, "", "User not found");
 			return fail(404, { upload: { success: false, data: null, message: "User not found" }, form });
 		}
-		const uniqueFileName = `user/avatar/${getFileName(prevUserData?.username)}-${getTimeStamp()}.png`;
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || prevUserData.schoolId !== event.locals.user.school)
+		) {
+			setError(
+				form,
+				"",
+				"You are not allowed to upload an avatar for a user from a different school",
+			);
+			return fail(403, {
+				upload: {
+					success: false,
+					data: null,
+					message: "You are not allowed to upload an avatar for a user from a different school",
+				},
+				form,
+			});
+		}
+		const validatedContentType = form.data.avatar.type;
+		const extension = getImageExtensionFromMimeType(validatedContentType);
+		if (!extension) {
+			setError(form, "avatar", "Unsupported image type");
+			return fail(400, {
+				upload: { success: false, data: null, message: "Unsupported image type" },
+				form,
+			});
+		}
+		const uniqueFileName = `user/avatar/${getFileName(prevUserData?.username)}-${getTimeStamp()}.${extension}`;
 		const fileBuffer = await form.data.avatar.arrayBuffer();
 		try {
 			await r2.put(uniqueFileName, fileBuffer, {
 				httpMetadata: {
-					contentType: form.data.avatar.type,
+					contentType: validatedContentType,
 				},
 			});
 		} catch (r2Error) {
@@ -227,14 +277,14 @@ export const actions: Actions = {
 			setError(
 				form,
 				"",
-				error instanceof Error ? error.message : "Unknown error. Please try again.",
+				r2Error instanceof Error ? r2Error.message : "Unknown error. Please try again.",
 				{ status: 500 },
 			);
 			return fail(500, {
 				upload: {
 					success: false,
 					data: null,
-					message: error instanceof Error ? error.message : "Unknown error. Please try again.",
+					message: r2Error instanceof Error ? r2Error.message : "Unknown error. Please try again.",
 				},
 				form,
 			});
@@ -279,8 +329,17 @@ export const actions: Actions = {
 		});
 	},
 	deleteAvatar: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(403, { message: "You are not allowed to delete a user's avatar" });
+		}
 		const db = getDb(event);
 		const r2 = getR2(event);
+		const params = event.params;
+		const { slug } = params;
+		const targetUserId = parseInt(slug, 10);
 		const formData = await event.request.formData();
 		const id = formData.get("avatarId");
 
@@ -295,6 +354,15 @@ export const actions: Actions = {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 			});
 		}
+		if (isNaN(targetUserId) || numberId !== targetUserId) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete this avatar.",
+				},
+			});
+		}
 		const prevUserData = await db.select().from(user).where(eq(user.id, numberId)).get();
 		if (!prevUserData) {
 			return fail(404, {
@@ -302,6 +370,18 @@ export const actions: Actions = {
 					success: false,
 					data: null,
 					message: "User not found. Please try again.",
+				},
+			});
+		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || prevUserData.schoolId !== event.locals.user.school)
+		) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete this user's avatar.",
 				},
 			});
 		}
@@ -357,6 +437,12 @@ export const actions: Actions = {
 		}
 	},
 	delete: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
+			return error(403, { message: "You are not allowed to delete a user" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const id = formData.get("id");
@@ -400,6 +486,18 @@ export const actions: Actions = {
 					success: false,
 					data: null,
 					message: "User not found. Please try again.",
+				},
+			});
+		}
+		if (
+			event.locals.user.role === 2 &&
+			(!event.locals.user.school || name.schoolId !== event.locals.user.school)
+		) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete a user from a different school.",
 				},
 			});
 		}

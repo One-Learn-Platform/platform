@@ -29,6 +29,9 @@ export const actions: Actions = {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
 		}
+		if (event.locals.user.role !== 1) {
+			return error(403, { message: "You are not allowed to create a grade" });
+		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchema));
 
@@ -59,6 +62,9 @@ export const actions: Actions = {
 	},
 
 	delete: async (event) => {
+		if (event.locals.user?.role !== 1) {
+			return error(403, { message: "You are not allowed to delete a grade" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const id = formData.get("id");
@@ -104,6 +110,9 @@ export const actions: Actions = {
 		};
 	},
 	multidelete: async (event) => {
+		if (event.locals.user?.role !== 1) {
+			return error(403, { message: "You are not allowed to delete grades" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const ids = formData.get("ids");
@@ -124,13 +133,13 @@ export const actions: Actions = {
 			.where(or(...idArray.map((id) => eq(grades.id, id))));
 		const gradeNameArray = gradeArray.map((grade) => grade.level);
 
-		idArray.forEach(async (id) => {
+		for (const id of idArray) {
 			if (isNaN(id)) {
 				return fail(400, {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
 				});
 			}
-		});
+		}
 		try {
 			await db.delete(grades).where(inArray(grades.id, idArray));
 		} catch (error) {

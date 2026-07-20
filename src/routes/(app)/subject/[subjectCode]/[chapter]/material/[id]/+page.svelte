@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { enhance } from "$app/forms";
 	import { invalidateAll } from "$app/navigation";
 	import { PUBLIC_R2_URL } from "$env/static/public";
@@ -15,8 +14,7 @@
 	import Trash from "@lucide/svelte/icons/trash";
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
-
-	import DOMpurify from "dompurify";
+	import { sanitizeHtml } from "$lib/functions/sanitize";
 
 	const { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } =
 		$props();
@@ -53,9 +51,7 @@
 </div>
 <div class="space-y-2">
 	{#if data.material?.content}
-		{@const sanitizedContent = browser
-			? DOMpurify.sanitize(data.material.content)
-			: data.material.content}
+		{@const sanitizedContent = sanitizeHtml(data.material.content)}
 		<div class="space-y-0">
 			<p class="text-2xl font-medium tracking-tight">{data.material.title}</p>
 			<Separator />
@@ -63,6 +59,7 @@
 		</div>
 
 		<div class="raw">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
 			{@html sanitizedContent}
 		</div>
 	{/if}

@@ -8,7 +8,7 @@
 	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
 	import { formSchemaEdit } from "$lib/schema/forum/schema";
-	import Dompurify from "dompurify";
+	import { sanitizeHtml } from "$lib/functions/sanitize";
 	import type { default as Quill } from "quill";
 	import { toast } from "svelte-sonner";
 	import { superForm, fileProxy } from "sveltekit-superforms";
@@ -76,9 +76,7 @@
 		timeStyle: "medium",
 	});
 	const localeDate = $derived(new Date(data.forum.createdAt + "Z"));
-	const sanitizedDescription = $derived(
-		browser ? Dompurify.sanitize(data.forum.description) : data.forum.description,
-	);
+	const sanitizedDescription = $derived(sanitizeHtml(data.forum.description));
 
 	let quillInstanceComment: Quill | null = null;
 	let editorElementComment: HTMLElement | undefined = $state();
@@ -398,7 +396,8 @@
 				</div>
 			</form>
 		{:else}
-			<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
+			<div class="raw max-w-full **:wrap-break-word **:whitespace-break-spaces">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
 				{@html sanitizedDescription}
 			</div>
 			<div class="flex w-full flex-row items-center justify-between gap-2">
@@ -573,9 +572,7 @@
 			</div>
 		</div>
 		{#each commentGrouped[currentPage - 1] as comment (comment.id)}
-			{@const sanitizedDescription = browser
-				? Dompurify.sanitize(comment.content)
-				: comment.content}
+			{@const sanitizedDescription = sanitizeHtml(comment.content)}
 			<div animate:flip={{ duration: 200, easing: cubicOut }}>
 				<Card.Root class="">
 					<Card.Content class="space-y-2">
@@ -622,6 +619,7 @@
 							</form>
 						{:else}
 							<div class="raw max-w-full **:break-words **:whitespace-break-spaces">
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
 								{@html sanitizedDescription}
 							</div>
 							<div class="flex w-full flex-row items-center justify-end gap-2">

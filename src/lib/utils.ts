@@ -31,6 +31,24 @@ export function getFileExtension(name: string) {
 }
 
 /**
+ * Maps a validated image MIME type to a safe file extension.
+ * Used instead of trusting a client-supplied filename/extension so the
+ * stored object key always matches the actual (schema-validated) content type.
+ */
+const IMAGE_MIME_TO_EXTENSION: Record<string, string> = {
+	"image/png": "png",
+	"image/jpeg": "jpg",
+	"image/webp": "webp",
+	"image/gif": "gif",
+	"image/heic": "heic",
+	"image/heif": "heif",
+};
+
+export function getImageExtensionFromMimeType(mimeType: string) {
+	return IMAGE_MIME_TO_EXTENSION[mimeType] ?? null;
+}
+
+/**
  * Returns a timestamp string in UTC format without slashes or colons.
  *
  * The timestamp is formed by concatenating the current UTC date and time,

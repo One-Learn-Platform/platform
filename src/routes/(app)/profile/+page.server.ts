@@ -15,7 +15,7 @@ import * as table from "$lib/schema/db";
 import { validatePassword } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
-import { getFileName, getTimeStamp } from "$lib/utils";
+import { getFileName, getImageExtensionFromMimeType, getTimeStamp } from "$lib/utils";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -160,12 +160,21 @@ export const actions: Actions = {
 		if (!user) {
 			return fail(404, { message: "User not found" });
 		}
-		const uniqueFileName = `user/avatar/${getFileName(user?.username)}-${getTimeStamp()}.png`;
+		const validatedContentType = form.data.avatar.type;
+		const extension = getImageExtensionFromMimeType(validatedContentType);
+		if (!extension) {
+			setError(form, "avatar", "Unsupported image type");
+			return fail(400, {
+				upload: { success: false, data: null, message: "Unsupported image type" },
+				form,
+			});
+		}
+		const uniqueFileName = `user/avatar/${getFileName(user?.username)}-${getTimeStamp()}.${extension}`;
 		const fileBuffer = await form.data.avatar.arrayBuffer();
 		try {
 			await r2.put(uniqueFileName, fileBuffer, {
 				httpMetadata: {
-					contentType: form.data.avatar.type,
+					contentType: validatedContentType,
 				},
 			});
 		} catch (r2Error) {
@@ -334,6 +343,9 @@ export const actions: Actions = {
 		};
 	},
 	deleteAvatar: async (event) => {
+		if (!event.locals.user) {
+			return redirect(302, "/signin");
+		}
 		const db = getDb(event);
 		const r2 = getR2(event);
 		const formData = await event.request.formData();
@@ -348,6 +360,15 @@ export const actions: Actions = {
 		if (isNaN(numberId)) {
 			return fail(400, {
 				delete: { success: false, data: null, message: "ID is not a number. Please try again." },
+			});
+		}
+		if (numberId !== event.locals.user.id) {
+			return fail(403, {
+				delete: {
+					success: false,
+					data: null,
+					message: "You are not allowed to delete this avatar.",
+				},
 			});
 		}
 		const user = await db.select().from(table.user).where(eq(table.user.id, numberId)).get();

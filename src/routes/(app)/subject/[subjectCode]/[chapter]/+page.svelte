@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { browser } from "$app/environment";
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
 	import { PUBLIC_R2_URL } from "$env/static/public";
@@ -31,7 +30,7 @@
 
 	import { getFileCategory, getFileIcon } from "$lib/functions/material";
 	import { QuestionType } from "$lib/types/assignment";
-	import DOMpurify from "dompurify";
+	import { sanitizeHtml } from "$lib/functions/sanitize";
 	import { toast } from "svelte-sonner";
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -286,9 +285,7 @@
 	<Separator />
 
 	{#if firstMaterial}
-		{@const sanitizedContent = browser
-			? DOMpurify.sanitize(firstMaterial.content)
-			: firstMaterial.content}
+		{@const sanitizedContent = sanitizeHtml(firstMaterial.content)}
 
 		<div class="space-y-1">
 			<div>
@@ -304,6 +301,7 @@
 			<p class="text-sm text-muted-foreground">{firstMaterial.description}</p>
 
 			<div class="raw">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
 				{@html sanitizedContent}
 			</div>
 

@@ -36,9 +36,4 @@ export default defineConfig(
 			},
 		},
 	},
-	{
-		rules: {
-			"svelte/no-at-html-tags": "off",
-		},
-	},
 );

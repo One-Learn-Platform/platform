@@ -8,14 +8,26 @@ import { and, eq, exists, getTableColumns, sql } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
-		const { id } = event.params;
+		const { id, subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
 		const assignmentId = Number(id);
+		const schoolId = event.locals.user.school;
 		if (event.locals.user.role !== 4) {
 			return error(404, "Not Found");
 		}
 		if (isNaN(assignmentId) || isNaN(chapter)) {
 			return error(400, "Invalid assignment or chapter ID");
+		}
+		if (!schoolId) {
+			return error(400, "Invalid school ID");
+		}
+		const selectedSubject = await db
+			.select()
+			.from(subject)
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
+			.get();
+		if (!selectedSubject) {
+			return error(404, "Subject not found");
 		}
 		const assignmentColumns = getTableColumns(assignment);
 		const assignmentData = await db
@@ -34,7 +46,7 @@ export const load: PageServerLoad = async (event) => {
 				)}`,
 			})
 			.from(assignment)
-			.where(eq(assignment.id, assignmentId))
+			.where(and(eq(assignment.id, assignmentId), eq(assignment.subjectId, selectedSubject.id)))
 			.get();
 		if (!assignmentData) {
 			return error(404, "Assignment not found");
@@ -47,8 +59,16 @@ export const load: PageServerLoad = async (event) => {
 			return error(403, "You have already submitted this assignment");
 		}
 
+		const questionColumns = getTableColumns(assignmentQuestion);
 		const questions = await db
-			.select()
+			.select({
+				id: questionColumns.id,
+				assignmentId: questionColumns.assignmentId,
+				question: questionColumns.question,
+				questionType: questionColumns.questionType,
+				choice: questionColumns.choice,
+				attachment: questionColumns.attachment,
+			})
 			.from(assignmentQuestion)
 			.where(eq(assignmentQuestion.assignmentId, assignmentId));
 		if (!questions || questions.length === 0) {
@@ -79,13 +99,35 @@ export const actions: Actions = {
 		if (!schoolId) {
 			return error(400, "Invalid school ID");
 		}
+		const selectedSubject = await db
+			.select()
+			.from(subject)
+			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
+			.get();
+		if (!selectedSubject) {
+			return error(404, "Subject not found");
+		}
 		const assignmentData = await db
 			.select()
 			.from(assignment)
-			.where(eq(assignment.id, assignmentId))
+			.where(and(eq(assignment.id, assignmentId), eq(assignment.subjectId, selectedSubject.id)))
 			.get();
 		if (!assignmentData) {
 			return error(404, "Assignment not found");
+		}
+		const dueDate = assignmentData.dueDate + "Z";
+		if (dueDate && new Date(dueDate).getTime() < Date.now()) {
+			return error(403, "This assignment is already closed");
+		}
+		const existingSubmission = await db
+			.select({ id: submission.id })
+			.from(submission)
+			.where(
+				and(eq(submission.assignmentId, assignmentId), eq(submission.userId, event.locals.user.id)),
+			)
+			.get();
+		if (existingSubmission) {
+			return error(403, "You have already submitted this assignment");
 		}
 
 		const questions = await db
@@ -105,15 +147,6 @@ export const actions: Actions = {
 		const processedFormData = Object.fromEntries(
 			Array.from(formData.entries()).map(([key, value]) => [Number(key.replace("q-", "")), value]),
 		);
-
-		const selectedSubject = await db
-			.select()
-			.from(subject)
-			.where(and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId)))
-			.get();
-		if (!selectedSubject) {
-			return error(404, "Subject not found");
-		}
 
 		try {
 			const { id: submissionId, ...submissionColumns } = getTableColumns(submission);

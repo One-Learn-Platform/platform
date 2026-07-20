@@ -14,16 +14,45 @@ import { zod4 } from "sveltekit-superforms/adapters";
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
+		const { subjectCode } = event.params;
 		const chapter = Number(event.params.chapter);
 		const id = Number(event.params.id);
+		const schoolId = event.locals.user.school;
 
 		if (isNaN(chapter) || chapter < 1) {
 			return error(400, "Invalid chapter");
 		}
+		if (isNaN(id) || id < 1) {
+			return error(400, "Invalid material ID");
+		}
+		if (!subjectCode) {
+			return error(400, "Invalid subject");
+		}
+		if (event.locals.user.role !== 1 && !schoolId) {
+			return error(403, "Forbidden");
+		}
+		const selectedSubject = await db
+			.select()
+			.from(subject)
+			.where(
+				event.locals.user.role === 1
+					? eq(subject.code, subjectCode)
+					: and(eq(subject.code, subjectCode), eq(subject.schoolId, schoolId!)),
+			)
+			.get();
+		if (!selectedSubject) {
+			return error(404, "Subject not found");
+		}
 		const selectedMaterial = await db
 			.select()
 			.from(material)
-			.where(and(eq(material.id, id), eq(material.chapter, chapter)))
+			.where(
+				and(
+					eq(material.id, id),
+					eq(material.chapter, chapter),
+					eq(material.subjectId, selectedSubject.id),
+				),
+			)
 			.get();
 		if (!selectedMaterial) {
 			return error(404, "Material not found");
@@ -40,6 +69,9 @@ export const actions: Actions = {
 	edit: async (event) => {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 2 && event.locals.user.role !== 3) {
+			return error(403, "Forbidden");
 		}
 		const db = getDb(event);
 		const r2 = getR2(event);
@@ -165,6 +197,9 @@ export const actions: Actions = {
 	delete: async (event) => {
 		if (!event.locals.user) {
 			return redirect(302, "/signin");
+		}
+		if (event.locals.user.role !== 2 && event.locals.user.role !== 3) {
+			return error(403, "Forbidden");
 		}
 		const db = getDb(event);
 		const r2 = getR2(event);

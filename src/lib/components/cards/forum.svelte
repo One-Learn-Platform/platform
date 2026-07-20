@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { resolve } from "$app/paths";
 	import { PUBLIC_R2_URL } from "$env/static/public";
 	import type { Forum } from "$lib/schema/db";
 
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
-	import Dompurify from "dompurify";
+	import { sanitizeHtml } from "$lib/functions/sanitize";
 	dayjs.extend(relativeTime);
 
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
@@ -24,12 +23,7 @@
 		try {
 			let content = forum.description;
 			content = content.replace(/<a[^>]*>/gi, "<span>").replace(/<\/a>/gi, "</span>");
-			if (browser) {
-				content = Dompurify.sanitize(content, {
-					RETURN_DOM: false,
-					RETURN_DOM_FRAGMENT: false,
-				});
-			}
+			content = sanitizeHtml(content);
 
 			return content;
 		} catch (error) {
@@ -56,6 +50,7 @@
 		<div
 			class="raw h-20 max-w-full overflow-clip bg-transparent text-muted-foreground [&_p]:truncate"
 		>
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitized via sanitizeHtml (dompurify) above -->
 			{@html sanitizedDescription}
 		</div>
 	</div>

@@ -21,6 +21,12 @@ import { validateToken } from "$lib/server/turnstile";
 
 const throttler = new Throttler([1, 2, 4, 8, 16, 30, 60, 180, 300]); //in seconds
 
+// A precomputed bcrypt hash (cost 10, matching real password hashes) with no
+// corresponding password. Compared against on unknown usernames so the login
+// response takes the same time whether or not the username exists, preventing
+// username enumeration via timing.
+const DUMMY_PASSWORD_HASH = "$2b$10$xSPVlHAbo/3.Z3gkomMtUOdDkA3ec7/Di3czhopNit09BFbpGlq7G";
+
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user?.id) {
 		return { user: event.locals.user, form: await superValidate(zod4(formSchema)) };
@@ -85,20 +91,23 @@ export const actions: Actions = {
 		const existingUser = await db.select().from(user).where(eq(user.username, username)).get();
 
 		const ip = event.getClientAddress();
-		// const ip = "192.168.0"; //for testing
 
-		if (!existingUser) {
-			if (!throttler.consume(ip)) {
-				setError(form, "", "Too many requests, please try again later.");
-				return fail(429, {
-					login: {
-						success: false,
-						data: null,
-						message: "Too many requests, Please try again later.",
-					},
-					form,
-				});
-			}
+		if (!throttler.consume(ip)) {
+			setError(form, "", "Too many requests, please try again later.");
+			return fail(429, {
+				login: {
+					success: false,
+					data: null,
+					message: "Too many requests, Please try again later.",
+				},
+				form,
+			});
+		}
+
+		if (!existingUser?.password) {
+			// Still run the (slow) bcrypt compare against a dummy hash so the
+			// response time doesn't reveal whether the username exists.
+			await bcryptjs.compare(password, DUMMY_PASSWORD_HASH);
 			setError(form, "", "Incorrect username or password");
 			return fail(400, {
 				login: { success: false, data: null, message: "Incorrect username or password" },
@@ -106,35 +115,15 @@ export const actions: Actions = {
 			});
 		}
 
-		if (existingUser.password) {
-			if (!throttler.consume(ip)) {
-				setError(form, "", "Too many requests, please try again later.");
-				return fail(429, {
-					login: {
-						success: false,
-						data: null,
-						message: "Too many requests, Please try again later.",
-					},
-					form,
-				});
-			}
-
-			const validPassword = await bcryptjs.compare(password, existingUser.password);
-			if (!validPassword) {
-				setError(form, "", "Incorrect username or password");
-				return fail(400, {
-					login: { success: false, data: null, message: "Incorrect username or password" },
-					form,
-				});
-			}
-			throttler.reset(ip);
-		} else {
-			setError(form, "", "Unknown Error, please try again later");
+		const validPassword = await bcryptjs.compare(password, existingUser.password);
+		if (!validPassword) {
+			setError(form, "", "Incorrect username or password");
 			return fail(400, {
-				login: { success: false, data: null, message: "Unknown Error" },
+				login: { success: false, data: null, message: "Incorrect username or password" },
 				form,
 			});
 		}
+		throttler.reset(ip);
 
 		const sessionToken = generateSessionToken();
 		const session = await createSession(event, sessionToken, existingUser.id);

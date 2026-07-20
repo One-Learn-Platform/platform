@@ -109,6 +109,7 @@ export class Throttler {
 	}
 
 	public consume(ipAddress: string): boolean {
+		this.evictStale();
 		let counter = this.storage.get(ipAddress) ?? null;
 		const now = Date.now();
 		if (counter === null) {
@@ -127,6 +128,19 @@ export class Throttler {
 		counter.index = Math.min(counter.index + 1, this.timeoutSeconds.length - 1);
 		this.storage.set(ipAddress, counter);
 		return true;
+	}
+
+	// Entries whose longest backoff has already elapsed no longer affect
+	// throttling decisions, so drop them to keep this per-isolate Map from
+	// growing unbounded over the isolate's lifetime.
+	private evictStale(): void {
+		const now = Date.now();
+		const maxTimeoutMs = this.timeoutSeconds[this.timeoutSeconds.length - 1] * 1000;
+		for (const [ipAddress, counter] of this.storage) {
+			if (now - counter.updatedAt >= maxTimeoutMs) {
+				this.storage.delete(ipAddress);
+			}
+		}
 	}
 
 	public reset(ipAddress: string): void {

@@ -26,6 +26,9 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	create: async (event) => {
+		if (event.locals.user?.role !== 1) {
+			return error(403, { message: "You are not allowed to create a subject type" });
+		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchema));
 
@@ -60,6 +63,9 @@ export const actions: Actions = {
 	},
 
 	delete: async (event) => {
+		if (event.locals.user?.role !== 1) {
+			return error(403, { message: "You are not allowed to delete a subject type" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const id = formData.get("id");
@@ -100,6 +106,9 @@ export const actions: Actions = {
 		}
 	},
 	multidelete: async (event) => {
+		if (!event.locals.user || event.locals.user.role !== 1) {
+			return error(403, { message: "You are not allowed to delete subject types" });
+		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
 		const ids = formData.get("ids");
@@ -120,7 +129,7 @@ export const actions: Actions = {
 			.where(or(...idArray.map((id) => eq(subjectType.id, id))));
 		const subjectNameArray = subjectArray.map((subject) => subject.name);
 
-		idArray.forEach(async (id) => {
+		for (const id of idArray) {
 			if (isNaN(id)) {
 				return fail(400, {
 					delete: { success: false, data: null, message: "ID is not a number. Please try again." },
@@ -128,17 +137,17 @@ export const actions: Actions = {
 			}
 			try {
 				await db.delete(subjectType).where(eq(subjectType.id, id));
-			} catch (error) {
-				console.error(error);
+			} catch (err) {
+				console.error(err);
 				return fail(500, {
 					delete: {
 						success: false,
 						data: null,
-						message: error instanceof Error ? error.message : "Unknown error, please try again.",
+						message: err instanceof Error ? err.message : "Unknown error, please try again.",
 					},
 				});
 			}
-		});
+		}
 
 		return {
 			delete: {
