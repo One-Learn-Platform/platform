@@ -114,10 +114,10 @@
 								}}
 							>
 								<div
-									class="flex size-6 items-center justify-center rounded-md border border-primary/20 bg-accent"
+									class="flex size-6 items-center justify-center rounded-md border border-primary/20 bg-accent group-hover/dropdown-menu-item:bg-background"
 								>
 									<span
-										class="flex size-3.5 shrink-0 items-center justify-center font-display text-sm font-extrabold text-primary tabular-nums"
+										class="flex size-3.5 shrink-0 items-center justify-center font-display text-sm font-extrabold text-background tabular-nums group-hover/dropdown-menu-item:text-accent!"
 									>
 										{item.number}
 									</span>
