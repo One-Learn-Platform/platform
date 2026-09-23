@@ -79,7 +79,7 @@
 						{#snippet child({ props })}
 							<Sidebar.MenuButton
 								{...props}
-								size="md"
+								size="lg"
 								class="border p-1.5 shadow-xs transition group-data-[collapsible=icon]:border-none data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 							>
 								<div
