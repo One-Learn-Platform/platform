@@ -1,4 +1,4 @@
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { renderComponent } from "$lib/components/ui/data-table/index.js";
 import DataTableActions from "./enrollment-table-action.svelte";
 
@@ -9,7 +9,7 @@ import type { User } from "$lib/schema/db";
 type StudentWithGrades = Omit<User, "password"> & {
 	grades: number | null;
 };
-export const columns: ColumnDef<StudentWithGrades>[] = [
+export const columns: DataTableColumnDef<StudentWithGrades>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>

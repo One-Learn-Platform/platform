@@ -1,5 +1,5 @@
 import type { Subject } from "$lib/schema/db";
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
@@ -12,7 +12,7 @@ type SubjectWithTeacher = Subject & {
 	teacherName: string | null;
 	subjectTypeName: string | null;
 };
-export const columns: ColumnDef<SubjectWithTeacher>[] = [
+export const columns: DataTableColumnDef<SubjectWithTeacher>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>

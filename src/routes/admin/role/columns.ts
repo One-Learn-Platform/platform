@@ -1,5 +1,5 @@
 import type { UserRole } from "$lib/schema/db";
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
@@ -8,7 +8,7 @@ import DataTableActions from "$lib/components/table/data-table-actions.svelte";
 import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
-export const columns: ColumnDef<UserRole>[] = [
+export const columns: DataTableColumnDef<UserRole>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>

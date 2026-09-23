@@ -1,4 +1,4 @@
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 import type { PageServerData } from "./$types.js";
 
@@ -9,7 +9,7 @@ import { Badge } from "$lib/components/ui/badge/index.js";
 
 type UserWithSubmission = PageServerData["userList"][0];
 
-export const columns: ColumnDef<UserWithSubmission>[] = [
+export const columns: DataTableColumnDef<UserWithSubmission>[] = [
 	{
 		accessorKey: "fullname",
 		header: ({ column }) =>

@@ -1,5 +1,5 @@
 import type { Forum } from "$lib/schema/db";
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
@@ -12,7 +12,7 @@ type ForumWithUser = Forum & {
 	user: string | null;
 	subject: string | null;
 };
-export const columns: ColumnDef<ForumWithUser>[] = [
+export const columns: DataTableColumnDef<ForumWithUser>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>

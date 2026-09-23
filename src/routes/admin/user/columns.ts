@@ -1,7 +1,7 @@
 import { PUBLIC_R2_URL } from "$env/static/public";
 
 import type { User } from "$lib/schema/db";
-import type { ColumnDef } from "@tanstack/table-core";
+import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 
 import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
@@ -11,7 +11,7 @@ import sortable from "$lib/components/table/sortable-header.svelte";
 import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
 
 type SafeUser = Omit<User, "password"> & { gradeLevel?: number; schoolName?: string };
-export const columns: ColumnDef<SafeUser>[] = [
+export const columns: DataTableColumnDef<SafeUser>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>

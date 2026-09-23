@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComponentProps } from "svelte";
-	import type { SortDirection } from "@tanstack/table-core";
+	import type { SortDirection } from "@tanstack/svelte-table";
 
 	import { cn } from "$lib/utils.js";
 
