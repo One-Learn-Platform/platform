@@ -16,7 +16,8 @@
 	data-slot="input-otp"
 	spellcheck={false}
 	class={cn(
-		"cn-input-otp-input flex items-center gap-2 disabled:cursor-not-allowed has-disabled:opacity-50",
+		"cn-input-otp flex items-center has-disabled:opacity-50",
+		"disabled:cursor-not-allowed",
 		className,
 	)}
 	{...restProps}

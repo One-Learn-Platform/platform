@@ -64,7 +64,7 @@
 	]}
 >
 	<Sidebar.Trigger class="z-50 size-8 h-10 bg-sidebar text-primary" />
-	<Separator orientation="vertical" class="mr-2 -ml-px h-4" />
+	<Separator orientation="vertical" class="mr-2 -ml-px" />
 	<Breadcrumb.Root class="hidden grow sm:block">
 		<Breadcrumb.List>
 			{#each url as segment, index (segment)}
