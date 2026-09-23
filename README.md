@@ -61,7 +61,7 @@ one-learn
 ├── svelte.config.js
 ├── tsconfig.json
 ├── vite.config.ts
-└── wrangler.toml
+└── wrangler.json
 ```
 
 **Important Files:**
@@ -69,7 +69,7 @@ one-learn
 - `src/app.css` - Global CSS styles
 - `drizzle.config.ts` - Database schema and migration configuration
 - `env.example` - Environment variables for development that mirror the production
-- `wrangler.toml` - This contains the environment variables for Cloudflare Workers. Including the ones we set in `.env` file. Except the secret keys.
+- `wrangler.json` - This contains the environment variables for Cloudflare Workers. Including the ones we set in `.env` file. Except the secret keys.
 
 ### Configuration
 
@@ -89,7 +89,7 @@ one-learn
 
    Key information:
    - `d1` - This is the name of the Cloudflare product for the database that One Learn uses.
-   - `prod-db` - This is the name of the database that One Learn uses in production. This name mirror the one we use in production, but don't worry the data is totally separated because we use `--local`. If you want to change the database name, you can do so in the `wrangler.toml` file.
+   - `prod-db` - This is the name of the database that One Learn uses in production. This name mirror the one we use in production, but don't worry the data is totally separated because we use `--local`. If you want to change the database name, you can do so in the `wrangler.json` file.
    - `--local` - This flag tells Wrangler to run the command locally instead of in the Cloudflare environment.
 
 4. Seed the local database\
