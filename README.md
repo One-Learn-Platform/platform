@@ -12,7 +12,6 @@ https://github.com/One-Learn-Platform/platform
 - Visual Studio Code (Recommended IDE) ([Download](https://code.visualstudio.com/Download))
 - DB Browser (SQLite) ([Download](https://sqlitebrowser.org/))
 - Cloudflare Account (For deployment) ([Sign Up](https://dash.cloudflare.com/sign-up))
-- Bun (Optional, for local development) ([Download](https://bun.sh/))
 
 ### Cloning the Repository
 
@@ -36,7 +35,6 @@ Inside the project, you will find the following folder structure:
 ```text
 one-learn
 ├── e2e
-├── r2-server         -> for running R2 locally
 ├── src               -> main application code
 │   ├── lib
 │   ├── routes
@@ -109,14 +107,11 @@ one-learn
 
    This will start the development server and you should be able to access the application at `http://localhost:5173`.
 
-6. (Optional) Because we're using Cloudflare R2, we need to run the R2 server locally to test the file upload function
+   File uploads use Cloudflare R2. The `MEDIA` bucket is a remote binding (`"remote": true` in `wrangler.json`), so the dev server reads and writes the real bucket and images load from `PUBLIC_R2_URL`. You must log in to Wrangler first:
 
    ```bash
-   cd r2-server
-   bun run start
+   pnpm wrangler login
    ```
-
-   This command will start the R2 server and you should be able to access the R2 server at `http://localhost:3000`.
 
 ## How To Self Host
 

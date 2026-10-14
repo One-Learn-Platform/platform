@@ -29,7 +29,8 @@
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "media"
+			"bucket_name": "media",
+			"remote": true
 		}
 	],
 	"env": {
