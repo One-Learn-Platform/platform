@@ -1,95 +1,95 @@
 {
-  "version": 1,
-  "skills": {
-    "better-auth-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/best-practices/SKILL.md",
-      "computedHash": "f35281e7a0c07b3fd3c4e96c7833dafb294a3a8662cb68a8544f4225008d6568"
-    },
-    "better-auth-security-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "security/SKILL.md",
-      "computedHash": "087c1094fa5f1834af4785c058dcc8c9abe4c1321b853883c76ea46c93a21cfe"
-    },
-    "cloudflare": {
-      "source": "cloudflare/skills",
-      "sourceType": "github",
-      "skillPath": "skills/cloudflare/SKILL.md",
-      "computedHash": "de1b572d8e9805de532f1b3dd5cccfe29c18972b4f9eff72fec436dac9052f4a"
-    },
-    "create-auth": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/create-auth/SKILL.md",
-      "computedHash": "d101953fda9452eb4e59d4eb50aa829c1961cdd7d0587d26a2b1871abe885e07"
-    },
-    "email-and-password-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/emailAndPassword/SKILL.md",
-      "computedHash": "ac9f9b0a549390f157ec62f5421a0bc90ac622c7e425af13155953847e0b68ea"
-    },
-    "frontend-design": {
-      "source": "anthropics/skills",
-      "sourceType": "github",
-      "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
-    },
-    "organization-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/organization/SKILL.md",
-      "computedHash": "f03e41bc2995c4fceec98f3db85f9638d71cc391fb10f9d85460304d6642efc2"
-    },
-    "shadcn-svelte": {
-      "source": "huntabyte/shadcn-svelte",
-      "sourceType": "github",
-      "skillPath": "skills/shadcn-svelte/SKILL.md",
-      "computedHash": "95672fb24e9a9bd860d15ab3652d1fdbe422af9c1f08080e1199925fed809be1"
-    },
-    "svelte-code-writer": {
-      "source": "sveltejs/ai-tools",
-      "sourceType": "github",
-      "skillPath": "plugins/claude/svelte/skills/svelte-code-writer/SKILL.md",
-      "computedHash": "abe888cce357ab0fa0104ff2266edaf9c3a8382320b303f920cd777762a6bc85"
-    },
-    "svelte-core-bestpractices": {
-      "source": "sveltejs/ai-tools",
-      "sourceType": "github",
-      "skillPath": "plugins/claude/svelte/skills/svelte-core-bestpractices/SKILL.md",
-      "computedHash": "3cd6c1f1a92b8bf52af8120e5cb3a93b5512f83b905fd902b895adafb7225456"
-    },
-    "turborepo": {
-      "source": "vercel/turborepo",
-      "sourceType": "github",
-      "skillPath": "skills/turborepo/SKILL.md",
-      "computedHash": "9681d8dfeb5e6cdff767f1bcaba5d7ac55732a9d6c02ee120f44229f8ec25e7e"
-    },
-    "two-factor-authentication-best-practices": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/twoFactor/SKILL.md",
-      "computedHash": "ca66fbdc0281f43065a6c890a9982afba774565085e773863ce31280324d9425"
-    },
-    "vitest": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "skillPath": "skills/vitest/SKILL.md",
-      "computedHash": "62206e8e58bdad39fcdd4bd962dd592a6939ab13c068fd0618ff4304735d5e0b"
-    },
-    "workers-best-practices": {
-      "source": "cloudflare/skills",
-      "sourceType": "github",
-      "skillPath": "skills/workers-best-practices/SKILL.md",
-      "computedHash": "70f0d8f00982c6b3b2688447079c8e06b0cfc1be4a3f3a555528623ee97498f4"
-    },
-    "wrangler": {
-      "source": "cloudflare/skills",
-      "sourceType": "github",
-      "skillPath": "skills/wrangler/SKILL.md",
-      "computedHash": "9eed4d658a9e8741d17cd4666701d25d4ca302a253dd62080338f473d051c50e"
-    }
-  }
+	"version": 1,
+	"skills": {
+		"better-auth-best-practices": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "better-auth/best-practices/SKILL.md",
+			"computedHash": "f35281e7a0c07b3fd3c4e96c7833dafb294a3a8662cb68a8544f4225008d6568"
+		},
+		"better-auth-security-best-practices": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "security/SKILL.md",
+			"computedHash": "087c1094fa5f1834af4785c058dcc8c9abe4c1321b853883c76ea46c93a21cfe"
+		},
+		"cloudflare": {
+			"source": "cloudflare/skills",
+			"sourceType": "github",
+			"skillPath": "skills/cloudflare/SKILL.md",
+			"computedHash": "b2728f312765a471f7cac26e3df02b97520c597adccaee943c7c373223b9a0f2"
+		},
+		"create-auth": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "better-auth/create-auth/SKILL.md",
+			"computedHash": "d101953fda9452eb4e59d4eb50aa829c1961cdd7d0587d26a2b1871abe885e07"
+		},
+		"email-and-password-best-practices": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "better-auth/emailAndPassword/SKILL.md",
+			"computedHash": "ac9f9b0a549390f157ec62f5421a0bc90ac622c7e425af13155953847e0b68ea"
+		},
+		"frontend-design": {
+			"source": "anthropics/skills",
+			"sourceType": "github",
+			"skillPath": "skills/frontend-design/SKILL.md",
+			"computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
+		},
+		"organization-best-practices": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "better-auth/organization/SKILL.md",
+			"computedHash": "f03e41bc2995c4fceec98f3db85f9638d71cc391fb10f9d85460304d6642efc2"
+		},
+		"shadcn-svelte": {
+			"source": "huntabyte/shadcn-svelte",
+			"sourceType": "github",
+			"skillPath": "skills/shadcn-svelte/SKILL.md",
+			"computedHash": "95672fb24e9a9bd860d15ab3652d1fdbe422af9c1f08080e1199925fed809be1"
+		},
+		"svelte-code-writer": {
+			"source": "sveltejs/ai-tools",
+			"sourceType": "github",
+			"skillPath": "plugins/claude/svelte/skills/svelte-code-writer/SKILL.md",
+			"computedHash": "abe888cce357ab0fa0104ff2266edaf9c3a8382320b303f920cd777762a6bc85"
+		},
+		"svelte-core-bestpractices": {
+			"source": "sveltejs/ai-tools",
+			"sourceType": "github",
+			"skillPath": "plugins/claude/svelte/skills/svelte-core-bestpractices/SKILL.md",
+			"computedHash": "3cd6c1f1a92b8bf52af8120e5cb3a93b5512f83b905fd902b895adafb7225456"
+		},
+		"turborepo": {
+			"source": "vercel/turborepo",
+			"sourceType": "github",
+			"skillPath": "skills/turborepo/SKILL.md",
+			"computedHash": "9681d8dfeb5e6cdff767f1bcaba5d7ac55732a9d6c02ee120f44229f8ec25e7e"
+		},
+		"two-factor-authentication-best-practices": {
+			"source": "better-auth/skills",
+			"sourceType": "github",
+			"skillPath": "better-auth/twoFactor/SKILL.md",
+			"computedHash": "ca66fbdc0281f43065a6c890a9982afba774565085e773863ce31280324d9425"
+		},
+		"vitest": {
+			"source": "antfu/skills",
+			"sourceType": "github",
+			"skillPath": "skills/vitest/SKILL.md",
+			"computedHash": "62206e8e58bdad39fcdd4bd962dd592a6939ab13c068fd0618ff4304735d5e0b"
+		},
+		"workers-best-practices": {
+			"source": "cloudflare/skills",
+			"sourceType": "github",
+			"skillPath": "skills/workers-best-practices/SKILL.md",
+			"computedHash": "70f0d8f00982c6b3b2688447079c8e06b0cfc1be4a3f3a555528623ee97498f4"
+		},
+		"wrangler": {
+			"source": "cloudflare/skills",
+			"sourceType": "github",
+			"skillPath": "skills/wrangler/SKILL.md",
+			"computedHash": "9eed4d658a9e8741d17cd4666701d25d4ca302a253dd62080338f473d051c50e"
+		}
+	}
 }

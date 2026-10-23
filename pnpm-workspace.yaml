@@ -3,5 +3,5 @@ allowBuilds:
   sharp: true
   workerd: true
 permissions:
-  '@tanstack/svelte-table':
+  "@tanstack/svelte-table":
     skills: true
