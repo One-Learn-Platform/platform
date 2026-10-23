@@ -167,11 +167,11 @@
 			<AlertDialog.Header>
 				<AlertDialog.Description class="flex items-center gap-2">
 					<Avatar.Root class="">
-						<Avatar.Image src={user?.avatar ?? undefined} />
+						<Avatar.Image src="{PUBLIC_R2_URL}/{user?.avatar}" />
 						<Avatar.Fallback>{initials ?? "ID"}</Avatar.Fallback>
 					</Avatar.Root>
 					<div class="flex flex-col">
-						<p class="text-base font-medium text-accent-foreground">{user?.fullname}</p>
+						<p class="text-base font-medium">{user?.fullname}</p>
 						<p class="text-xs">{user?.username}</p>
 					</div>
 				</AlertDialog.Description>

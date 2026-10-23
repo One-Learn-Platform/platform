@@ -454,7 +454,6 @@
 			</div>
 		{/if}
 	</Card.Content>
-	<Separator />
 	<Card.Footer class="flex items-center gap-2">
 		<Avatar.Root>
 			<Avatar.Image src="{PUBLIC_R2_URL}/{data.forum.avatar}" alt={data.forum.fullname} />
@@ -672,7 +671,6 @@
 							</div>
 						{/if}
 					</Card.Content>
-					<Separator />
 					<Card.Footer class="flex flex-row items-center gap-4 sm:gap-2">
 						<Avatar.Root>
 							<Avatar.Image src="{PUBLIC_R2_URL}/{comment.avatar}" alt={comment.fullname} />
