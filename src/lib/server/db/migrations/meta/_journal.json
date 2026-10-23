@@ -260,6 +260,20 @@
 			"when": 1752949479790,
 			"tag": "0036_tranquil_lifeguard",
 			"breakpoints": true
+		},
+		{
+			"idx": 37,
+			"version": "6",
+			"when": 1791989540792,
+			"tag": "0037_better_auth",
+			"breakpoints": true
+		},
+		{
+			"idx": 38,
+			"version": "6",
+			"when": 1791993062321,
+			"tag": "0038_better_auth_admin",
+			"breakpoints": true
 		}
 	]
 }

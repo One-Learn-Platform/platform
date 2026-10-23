@@ -32,7 +32,7 @@ export const load: LayoutServerLoad = async (event) => {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			const schoolId = event.locals.user.school;
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...restUserColumn } = getTableColumns(user);
+			const { email, ...restUserColumn } = getTableColumns(user);
 			const allUsers = await db
 				.select({ ...restUserColumn })
 				.from(user)

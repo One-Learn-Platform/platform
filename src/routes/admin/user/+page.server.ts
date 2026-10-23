@@ -2,11 +2,11 @@ import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 import { formSchemaWithPass } from "$lib/schema/user/schema";
-import bcryptjs from "bcryptjs";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
+	account,
 	comment,
 	enrollment,
 	forum,
@@ -18,6 +18,7 @@ import {
 	user,
 	userRole,
 } from "$lib/schema/db";
+import { authRoleFor, hashPassword, placeholderEmail } from "$lib/server/auth";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getTimeStamp } from "$lib/utils";
@@ -28,7 +29,7 @@ export const load: PageServerLoad = async (event) => {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			const db = getDb(event);
 			// eslint-disable-next-line
-			const { password, ...rest } = getTableColumns(user);
+			const { email, ...rest } = getTableColumns(user);
 			const schoolList = await db.select().from(school);
 			let roleList;
 			if (event.locals.user.role !== 1) {
@@ -96,7 +97,7 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const passwordHash = await bcryptjs.hash(form.data.password, 10);
+		const passwordHash = await hashPassword(form.data.password);
 		let roleId = 0;
 		switch (form.data.roleId) {
 			case "super admin":
@@ -181,27 +182,48 @@ export const actions: Actions = {
 			});
 		}
 		try {
+			let newUser: { id: number };
 			if (roleId === 4) {
-				await db.insert(user).values({
-					roleId: roleId,
-					avatar: imageUrl,
-					fullname: form.data.fullname,
-					dob: form.data.dob,
-					username: form.data.username,
-					gradesId: form.data.gradesId ? Number(form.data.gradesId) : null,
-					password: passwordHash,
-					schoolId: schoolId,
-				});
+				[newUser] = await db
+					.insert(user)
+					.values({
+						roleId: roleId,
+						authRole: authRoleFor(roleId),
+						avatar: imageUrl,
+						fullname: form.data.fullname,
+						dob: form.data.dob,
+						username: form.data.username,
+						gradesId: form.data.gradesId ? Number(form.data.gradesId) : null,
+						email: placeholderEmail(),
+						schoolId: schoolId,
+					})
+					.returning({ id: user.id });
 			} else {
-				await db.insert(user).values({
-					roleId: roleId,
-					avatar: imageUrl,
-					fullname: form.data.fullname,
-					dob: form.data.dob,
-					username: form.data.username,
+				[newUser] = await db
+					.insert(user)
+					.values({
+						roleId: roleId,
+						authRole: authRoleFor(roleId),
+						avatar: imageUrl,
+						fullname: form.data.fullname,
+						dob: form.data.dob,
+						username: form.data.username,
+						email: placeholderEmail(),
+						schoolId: schoolId,
+					})
+					.returning({ id: user.id });
+			}
+			try {
+				await db.insert(account).values({
+					accountId: String(newUser.id),
+					providerId: "credential",
+					userId: newUser.id,
 					password: passwordHash,
-					schoolId: schoolId,
 				});
+			} catch (accountError) {
+				// Don't leave a user behind that can never sign in.
+				await db.delete(user).where(eq(user.id, newUser.id));
+				throw accountError;
 			}
 		} catch (error) {
 			await getR2(event).delete(uniqueFileName);
@@ -293,6 +315,7 @@ export const actions: Actions = {
 			await db.delete(forum).where(eq(forum.userId, numberId));
 			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
+			await db.delete(account).where(eq(account.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
 		} catch (error) {
 			console.error(error);
@@ -386,6 +409,7 @@ export const actions: Actions = {
 			await db.delete(forum).where(inArray(forum.userId, idArray));
 			await db.delete(enrollment).where(inArray(enrollment.userId, idArray));
 			await db.delete(session).where(inArray(session.userId, idArray));
+			await db.delete(account).where(inArray(account.userId, idArray));
 			await db.delete(user).where(inArray(user.id, idArray));
 		} catch (error) {
 			console.error(error);

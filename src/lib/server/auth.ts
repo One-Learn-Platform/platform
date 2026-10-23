@@ -1,149 +1,187 @@
 import type { RequestEvent } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { sha256 } from "@oslojs/crypto/sha2";
-import { encodeBase64url, encodeHexLowerCase } from "@oslojs/encoding";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { parseSetCookieHeader, toCookieOptions } from "better-auth/cookies";
+import { admin } from "better-auth/plugins/admin";
+import { username } from "better-auth/plugins/username";
+import { sveltekitCookies } from "better-auth/svelte-kit";
+import bcryptjs from "bcryptjs";
+import { env } from "$env/dynamic/private";
+import { getRequestEvent } from "$app/server";
 import { getDb } from "$lib/server/db";
+import { validateUsername } from "$lib/server/auth-function";
 import * as table from "$lib/schema/db";
 
-const DAY_IN_MS = 1000 * 60 * 60 * 24;
+const DAY_IN_SECONDS = 60 * 60 * 24;
+const SUPER_ADMIN_ROLE_ID = 1;
 
-export const sessionCookieName = "auth-session";
-
-export function generateSessionToken() {
-	const bytes = crypto.getRandomValues(new Uint8Array(18));
-	const token = encodeBase64url(bytes);
-	return token;
+// Super admins are better-auth admins; every other app role is a plain user.
+export function authRoleFor(roleId: number) {
+	return roleId === SUPER_ADMIN_ROLE_ID ? "admin" : "user";
 }
 
-export async function createSession(event: RequestEvent, token: string, userId: number) {
-	const db = getDb(event);
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const session: table.Session = {
-		id: sessionId,
-		userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
-	};
-	await db.insert(table.session).values({
-		id: sessionId,
-		userId: userId,
-		expiresAt: new Date(Date.now() + DAY_IN_MS * 30),
-	});
-	return session;
+// Existing passwords are bcrypt (cost 10); better-auth reuses them as-is.
+export function hashPassword(password: string) {
+	return bcryptjs.hash(password, 10);
 }
 
-export async function validateSessionToken(event: RequestEvent, token: string) {
-	const db = getDb(event);
-	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const [result] = await db
-		.select({
-			// Adjust user table here to tweak returned data
-			user: {
-				id: table.user.id,
-				avatar: table.user.avatar,
-				username: table.user.username,
-				fullname: table.user.fullname,
-				role: table.user.roleId,
-				school: table.user.schoolId,
+// Users sign in by username, but better-auth requires a unique email.
+export function placeholderEmail() {
+	return `user-${crypto.randomUUID()}@lms.invalid`;
+}
+
+function createAuth(event: RequestEvent) {
+	return betterAuth({
+		baseURL: event.url.origin,
+		secret: env.BETTER_AUTH_SECRET,
+		database: drizzleAdapter(getDb(event), {
+			provider: "sqlite",
+			schema: {
+				user: table.user,
+				session: table.session,
+				account: table.account,
+				verification: table.verification,
+				rateLimit: table.rateLimit,
 			},
-			session: table.session,
-		})
-		.from(table.session)
-		.innerJoin(table.user, eq(table.session.userId, table.user.id))
-		.where(eq(table.session.id, sessionId));
+		}),
+		advanced: {
+			database: { generateId: "serial" },
+			ipAddress: { ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for"] },
+		},
+		// Only applies to requests that go through `auth.handler`, not direct `auth.api` calls.
+		rateLimit: {
+			enabled: true,
+			// Workers isolates don't share memory, so keep counters in D1.
+			storage: "database",
+			customRules: {
+				"/sign-in/username": { window: 60, max: 5 },
+			},
+		},
+		user: {
+			fields: {
+				name: "fullname",
+				image: "avatar",
+				createdAt: "authCreatedAt",
+				updatedAt: "authUpdatedAt",
+			},
+			additionalFields: {
+				roleId: { type: "number", required: true, input: false },
+				schoolId: { type: "number", required: false, input: false },
+				gradesId: { type: "number", required: false, input: false },
+				dob: { type: "string", required: true, input: false },
+			},
+		},
+		emailAndPassword: {
+			enabled: true,
+			// Accounts are created by admins only.
+			disableSignUp: true,
+			minPasswordLength: 6,
+			maxPasswordLength: 255,
+			password: {
+				hash: hashPassword,
+				verify: ({ hash, password }) => bcryptjs.compare(password, hash),
+			},
+		},
+		session: {
+			expiresIn: DAY_IN_SECONDS * 30,
+			updateAge: DAY_IN_SECONDS * 15,
+		},
+		plugins: [
+			username({
+				usernameNormalization: false,
+				usernameValidator: validateUsername,
+				minUsernameLength: 3,
+				maxUsernameLength: 30,
+			}),
+			admin({
+				defaultRole: "user",
+				adminRoles: ["admin"],
+				// `role` on locals.user is the app's numeric role; keep better-auth's apart.
+				schema: { user: { fields: { role: "authRole" } } },
+			}),
+			// Must stay last so cookies set by auth.api calls reach SvelteKit.
+			sveltekitCookies(getRequestEvent),
+		],
+	});
+}
 
+export type Auth = ReturnType<typeof createAuth>;
+export type AuthUser = Auth["$Infer"]["Session"]["user"];
+
+const authCache = new WeakMap<RequestEvent, Auth>();
+
+// D1 is bound per request, so the auth instance is too.
+export function getAuth(event: RequestEvent): Auth {
+	let auth = authCache.get(event);
+	if (!auth) {
+		auth = createAuth(event);
+		authCache.set(event, auth);
+	}
+	return auth;
+}
+
+type SignInResult =
+	{ ok: true; user: AuthUser } | { ok: false; reason: "rate-limited" | "invalid-credentials" };
+
+// Runs through `auth.handler` (not `auth.api`) so better-auth's rate limiter applies.
+// No public /api/auth route is mounted; the request never leaves this worker.
+export async function signInUsername(
+	event: RequestEvent,
+	body: { username: string; password: string },
+): Promise<SignInResult> {
+	const auth = getAuth(event);
+	const headers = new Headers(event.request.headers);
+	headers.set("content-type", "application/json");
+	headers.delete("content-length");
+	const response = await auth.handler(
+		new Request(new URL("/api/auth/sign-in/username", event.url.origin), {
+			method: "POST",
+			headers,
+			body: JSON.stringify(body),
+		}),
+	);
+
+	if (response.status === 429) {
+		return { ok: false, reason: "rate-limited" };
+	}
+	if (!response.ok) {
+		return { ok: false, reason: "invalid-credentials" };
+	}
+
+	// sveltekitCookies skips router calls, so copy the session cookie over here.
+	for (const [name, attributes] of parseSetCookieHeader(response.headers.get("set-cookie") ?? "")) {
+		event.cookies.set(name, attributes.value, {
+			...toCookieOptions(attributes),
+			path: attributes.path || "/",
+		});
+	}
+	const { user } = (await response.json()) as { user: AuthUser };
+	return { ok: true, user };
+}
+
+type AuthSession = NonNullable<Awaited<ReturnType<Auth["api"]["getSession"]>>>;
+
+// Keeps the `locals.user` / `locals.session` shape the rest of the app relies on.
+export function toLocals(result: AuthSession | null) {
 	if (!result) {
-		return { session: null, user: null };
+		return { user: null, session: null };
 	}
-	const { session, user } = result;
-
-	const sessionExpired = Date.now() >= session.expiresAt.getTime();
-	if (sessionExpired) {
-		await db.delete(table.session).where(eq(table.session.id, session.id));
-		return { session: null, user: null };
-	}
-
-	const renewSession = Date.now() >= session.expiresAt.getTime() - DAY_IN_MS * 15;
-	if (renewSession) {
-		session.expiresAt = new Date(Date.now() + DAY_IN_MS * 30);
-		await db
-			.update(table.session)
-			.set({ expiresAt: session.expiresAt })
-			.where(eq(table.session.id, session.id));
-	}
-
-	return { session, user };
+	const { user, session } = result;
+	return {
+		user: {
+			id: Number(user.id),
+			avatar: user.image ?? null,
+			username: user.username as string,
+			fullname: user.name,
+			role: user.roleId,
+			school: user.schoolId ?? null,
+		},
+		session: {
+			id: session.id,
+			userId: Number(session.userId),
+			expiresAt: session.expiresAt,
+		},
+	};
 }
 
-export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
-
-export async function invalidateSession(event: RequestEvent, sessionId: string) {
-	const db = getDb(event);
-	await db.delete(table.session).where(eq(table.session.id, sessionId));
-}
-
-export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
-	event.cookies.set(sessionCookieName, token, {
-		expires: expiresAt,
-		path: "/",
-	});
-}
-
-export function deleteSessionTokenCookie(event: RequestEvent) {
-	event.cookies.delete(sessionCookieName, {
-		path: "/",
-	});
-}
-
-interface ThrottlingCounter {
-	index: number;
-	updatedAt: number;
-}
-
-export class Throttler {
-	public timeoutSeconds: number[];
-
-	private readonly storage = new Map<string, ThrottlingCounter>();
-
-	constructor(timeoutSeconds: number[]) {
-		this.timeoutSeconds = timeoutSeconds;
-	}
-
-	public consume(ipAddress: string): boolean {
-		this.evictStale();
-		let counter = this.storage.get(ipAddress) ?? null;
-		const now = Date.now();
-		if (counter === null) {
-			counter = {
-				index: 0,
-				updatedAt: now,
-			};
-			this.storage.set(ipAddress, counter);
-			return true;
-		}
-		const allowed = now - counter.updatedAt >= this.timeoutSeconds[counter.index] * 1000;
-		if (!allowed) {
-			return false;
-		}
-		counter.updatedAt = now;
-		counter.index = Math.min(counter.index + 1, this.timeoutSeconds.length - 1);
-		this.storage.set(ipAddress, counter);
-		return true;
-	}
-
-	// Entries whose longest backoff has already elapsed no longer affect
-	// throttling decisions, so drop them to keep this per-isolate Map from
-	// growing unbounded over the isolate's lifetime.
-	private evictStale(): void {
-		const now = Date.now();
-		const maxTimeoutMs = this.timeoutSeconds[this.timeoutSeconds.length - 1] * 1000;
-		for (const [ipAddress, counter] of this.storage) {
-			if (now - counter.updatedAt >= maxTimeoutMs) {
-				this.storage.delete(ipAddress);
-			}
-		}
-	}
-
-	public reset(ipAddress: string): void {
-		this.storage.delete(ipAddress);
-	}
-}
+export type SessionValidationResult = ReturnType<typeof toLocals>;

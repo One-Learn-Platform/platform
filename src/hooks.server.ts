@@ -1,5 +1,5 @@
 import { building } from "$app/environment";
-import * as auth from "$lib/server/auth.js";
+import { getAuth, toLocals } from "$lib/server/auth.js";
 import type { Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
@@ -9,19 +9,10 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	}
 	event.locals.DB = event.platform?.env.DB;
 	event.locals.R2 = event.platform?.env.MEDIA;
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
-	if (!sessionToken) {
-		event.locals.user = null;
-		event.locals.session = null;
-		return resolve(event);
-	}
 
-	const { session, user } = await auth.validateSessionToken(event, sessionToken);
-	if (session) {
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-	} else {
-		auth.deleteSessionTokenCookie(event);
-	}
+	// Refreshing and clearing the session cookie is handled by better-auth.
+	const result = await getAuth(event).api.getSession({ headers: event.request.headers });
+	const { user, session } = toLocals(result);
 
 	event.locals.user = user;
 	event.locals.session = session;

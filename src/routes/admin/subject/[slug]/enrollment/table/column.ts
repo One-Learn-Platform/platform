@@ -6,7 +6,7 @@ import SortableHeader from "$lib/components/table/sortable-header.svelte";
 import { Checkbox } from "$lib/components/ui/checkbox/index.js";
 
 import type { User } from "$lib/schema/db";
-type StudentWithGrades = Omit<User, "password"> & {
+type StudentWithGrades = Omit<User, "email"> & {
 	grades: number | null;
 };
 export const columns: DataTableColumnDef<StudentWithGrades>[] = [

@@ -42,7 +42,7 @@ export const load: PageServerLoad = async (event) => {
 			const { id: submissionId, ...submissionColumn } = getTableColumns(submission);
 			const assignmentColumn = getTableColumns(assignment);
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { id: userId, password, ...userColumn } = getTableColumns(user);
+			const { id: userId, email, ...userColumn } = getTableColumns(user);
 			const submissionsList = await db
 				.select({
 					submissionId,

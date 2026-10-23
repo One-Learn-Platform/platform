@@ -7,6 +7,7 @@ import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import {
+	account,
 	comment,
 	enrollment,
 	forum,
@@ -17,6 +18,7 @@ import {
 	submission,
 	user,
 } from "$lib/schema/db";
+import { authRoleFor } from "$lib/server/auth";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
 import { getFileName, getImageExtensionFromMimeType, getTimeStamp } from "$lib/utils";
@@ -36,7 +38,6 @@ export const load: PageServerLoad = async (event) => {
 				const schoolList = await db.select().from(school);
 				const gradesList = await db.select().from(grades);
 				if (userData) {
-					userData.password = "";
 					return {
 						gradesList: gradesList,
 						userData: userData,
@@ -179,6 +180,7 @@ export const actions: Actions = {
 					gradesId: form.data.gradesId ? Number(form.data.gradesId) : undefined,
 					dob: form.data.dob,
 					roleId: roleId,
+					authRole: authRoleFor(roleId),
 				})
 				.where(eq(user.id, userId));
 		} catch (error) {
@@ -513,6 +515,7 @@ export const actions: Actions = {
 			await db.delete(forum).where(eq(forum.userId, numberId));
 			await db.delete(enrollment).where(eq(enrollment.userId, numberId));
 			await db.delete(session).where(eq(session.userId, numberId));
+			await db.delete(account).where(eq(account.userId, numberId));
 			await db.delete(user).where(eq(user.id, numberId));
 		} catch (error) {
 			console.error(error);

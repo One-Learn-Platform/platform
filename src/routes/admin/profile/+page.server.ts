@@ -6,12 +6,13 @@ import {
 	formSchemaUploadImage,
 	formSchemaProfile,
 } from "$lib/schema/user/schema";
-import bcryptjs from "bcryptjs";
+import { APIError } from "better-auth/api";
 import { eq, getTableColumns } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 import * as table from "$lib/schema/db";
+import { getAuth } from "$lib/server/auth";
 import { validatePassword } from "$lib/server/auth-function";
 import { getDb } from "$lib/server/db";
 import { getR2 } from "$lib/server/r2";
@@ -21,7 +22,7 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		const db = getDb(event);
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, ...rest } = getTableColumns(table.user);
+		const { email, ...rest } = getTableColumns(table.user);
 		const user = await db
 			.select({ ...rest })
 			.from(table.user)
@@ -252,18 +253,6 @@ export const actions: Actions = {
 				form,
 			});
 		}
-		const validPassword = await bcryptjs.compare(form.data.passwordOld, user.password);
-		if (!validPassword) {
-			setError(form, "passwordOld", "Incorrect password");
-			return fail(400, {
-				changePassword: {
-					success: false,
-					data: null,
-					message: "Incorrect password",
-				},
-				form,
-			});
-		}
 		if (!validatePassword(form.data.password)) {
 			setError(
 				form,
@@ -299,13 +288,22 @@ export const actions: Actions = {
 		}
 
 		try {
-			await db
-				.update(table.user)
-				.set({
-					password: await bcryptjs.hash(form.data.password, 10),
-				})
-				.where(eq(table.user.id, event.locals.user.id));
+			await getAuth(event).api.changePassword({
+				body: { currentPassword: form.data.passwordOld, newPassword: form.data.password },
+				headers: event.request.headers,
+			});
 		} catch (error) {
+			if (error instanceof APIError && error.body?.code === "INVALID_PASSWORD") {
+				setError(form, "passwordOld", "Incorrect password");
+				return fail(400, {
+					changePassword: {
+						success: false,
+						data: null,
+						message: "Incorrect password",
+					},
+					form,
+				});
+			}
 			console.error(error);
 			setError(
 				form,

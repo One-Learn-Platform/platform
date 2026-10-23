@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL, PUBLIC_TURNSTILE_SITE_KEY } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$env/static/public";
 	import type { ActionData, PageServerData } from "./$types";
 
-	import { Turnstile } from "svelte-turnstile";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 	import { formSchema } from "./schema";
@@ -96,9 +95,6 @@
 				<Form.FieldErrors />
 			</Form.Field>
 
-			<div class="leading-none">
-				<Turnstile siteKey={PUBLIC_TURNSTILE_SITE_KEY} size="flexible" appearance="always" />
-			</div>
 			{#if $formErrors._errors}
 				<!-- <FormErrors
 					message="Lorem, ipsum dolor sit amet consectetur adipisicing elit. Rerum minus recusandae, voluptas quo aut consequuntur quis voluptatum dolorem ipsa earum nobis voluptate consequatur nesciunt, sapiente, saepe distinctio reprehenderit soluta asperiores."

@@ -1,5 +1,5 @@
 import * as schema from "$lib/schema/db";
-import { grades, user, userRole } from "$lib/schema/db";
+import { account, grades, user, userRole } from "$lib/schema/db";
 import { createClient } from "@libsql/client";
 import bcryptjs from "bcryptjs";
 import { count } from "drizzle-orm";
@@ -73,13 +73,17 @@ export async function seedDatabase() {
 				id: 1,
 				fullname: "Super Administrator",
 				username: "superadmin",
-				password: defaultPassword,
+				email: "user-1@lms.invalid",
+				authRole: "admin",
 				dob: "1990-01-01",
 				roleId: 1,
 				schoolId: null,
 				gradesId: null,
 			},
 		]);
+		await db
+			.insert(account)
+			.values([{ accountId: "1", providerId: "credential", userId: 1, password: defaultPassword }]);
 		console.log("✅ Default users seeded");
 
 		// 4. Seed Subject Types

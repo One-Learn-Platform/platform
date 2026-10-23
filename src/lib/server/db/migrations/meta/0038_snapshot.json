@@ -1,0 +1,1563 @@
+{
+	"version": "6",
+	"dialect": "sqlite",
+	"id": "d7343488-4906-4b4a-94ca-303784d8f241",
+	"prevId": "27811fa1-1928-4de2-a314-aef07f42af45",
+	"tables": {
+		"account": {
+			"name": "account",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"account_id": {
+					"name": "account_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"provider_id": {
+					"name": "provider_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"access_token": {
+					"name": "access_token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"refresh_token": {
+					"name": "refresh_token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"id_token": {
+					"name": "id_token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"access_token_expires_at": {
+					"name": "access_token_expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"refresh_token_expires_at": {
+					"name": "refresh_token_expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"scope": {
+					"name": "scope",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"password": {
+					"name": "password",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"account_user_index": {
+					"name": "account_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"account_user_id_user_user_id_fk": {
+					"name": "account_user_id_user_user_id_fk",
+					"tableFrom": "account",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"announcement": {
+			"name": "announcement",
+			"columns": {
+				"announcement_id": {
+					"name": "announcement_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"title": {
+					"name": "title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"start_date": {
+					"name": "start_date",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"end_date": {
+					"name": "end_date",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"announcement_school_index": {
+					"name": "announcement_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"announcement_school_id_school_school_id_fk": {
+					"name": "announcement_school_id_school_school_id_fk",
+					"tableFrom": "announcement",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"assignment": {
+			"name": "assignment",
+			"columns": {
+				"assignment_id": {
+					"name": "assignment_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"chapter": {
+					"name": "chapter",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"subject_id": {
+					"name": "subject_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"title": {
+					"name": "title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"attachment": {
+					"name": "attachment",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"quiz": {
+					"name": "quiz",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"start_date": {
+					"name": "start_date",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"limit_user": {
+					"name": "limit_user",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"due_date": {
+					"name": "due_date",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"assignment_subject_index": {
+					"name": "assignment_subject_index",
+					"columns": ["subject_id"],
+					"isUnique": false
+				},
+				"assignment_school_index": {
+					"name": "assignment_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"assignment_subject_id_subject_subject_id_fk": {
+					"name": "assignment_subject_id_subject_subject_id_fk",
+					"tableFrom": "assignment",
+					"tableTo": "subject",
+					"columnsFrom": ["subject_id"],
+					"columnsTo": ["subject_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"assignment_school_id_school_school_id_fk": {
+					"name": "assignment_school_id_school_school_id_fk",
+					"tableFrom": "assignment",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"assignment_question": {
+			"name": "assignment_question",
+			"columns": {
+				"question_id": {
+					"name": "question_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"assignment_id": {
+					"name": "assignment_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"question": {
+					"name": "question",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"question_type": {
+					"name": "question_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"choice": {
+					"name": "choice",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"answer": {
+					"name": "answer",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"clue": {
+					"name": "clue",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"attachment": {
+					"name": "attachment",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"assignment_question_assignment_index": {
+					"name": "assignment_question_assignment_index",
+					"columns": ["assignment_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"assignment_question_assignment_id_assignment_assignment_id_fk": {
+					"name": "assignment_question_assignment_id_assignment_assignment_id_fk",
+					"tableFrom": "assignment_question",
+					"tableTo": "assignment",
+					"columnsFrom": ["assignment_id"],
+					"columnsTo": ["assignment_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"comment": {
+			"name": "comment",
+			"columns": {
+				"comment_id": {
+					"name": "comment_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"forum_id": {
+					"name": "forum_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"comment_forum_index": {
+					"name": "comment_forum_index",
+					"columns": ["forum_id"],
+					"isUnique": false
+				},
+				"comment_user_index": {
+					"name": "comment_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"comment_school_index": {
+					"name": "comment_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"comment_forum_id_forum_forum_id_fk": {
+					"name": "comment_forum_id_forum_forum_id_fk",
+					"tableFrom": "comment",
+					"tableTo": "forum",
+					"columnsFrom": ["forum_id"],
+					"columnsTo": ["forum_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"comment_user_id_user_user_id_fk": {
+					"name": "comment_user_id_user_user_id_fk",
+					"tableFrom": "comment",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"comment_school_id_school_school_id_fk": {
+					"name": "comment_school_id_school_school_id_fk",
+					"tableFrom": "comment",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"enrollment": {
+			"name": "enrollment",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"subject_id": {
+					"name": "subject_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"score": {
+					"name": "score",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"enrollment_user_index": {
+					"name": "enrollment_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"enrollment_subject_index": {
+					"name": "enrollment_subject_index",
+					"columns": ["subject_id"],
+					"isUnique": false
+				},
+				"enrollment_school_index": {
+					"name": "enrollment_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"enrollment_user_id_user_user_id_fk": {
+					"name": "enrollment_user_id_user_user_id_fk",
+					"tableFrom": "enrollment",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"enrollment_subject_id_subject_subject_id_fk": {
+					"name": "enrollment_subject_id_subject_subject_id_fk",
+					"tableFrom": "enrollment",
+					"tableTo": "subject",
+					"columnsFrom": ["subject_id"],
+					"columnsTo": ["subject_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"enrollment_school_id_school_school_id_fk": {
+					"name": "enrollment_school_id_school_school_id_fk",
+					"tableFrom": "enrollment",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"enrollment_user_id_subject_id_pk": {
+					"columns": ["user_id", "subject_id"],
+					"name": "enrollment_user_id_subject_id_pk"
+				}
+			},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"forum": {
+			"name": "forum",
+			"columns": {
+				"forum_id": {
+					"name": "forum_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"subject_id": {
+					"name": "subject_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"chapter": {
+					"name": "chapter",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"title": {
+					"name": "title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"attachment": {
+					"name": "attachment",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"forum_user_index": {
+					"name": "forum_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"forum_school_index": {
+					"name": "forum_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				},
+				"forum_subject_index": {
+					"name": "forum_subject_index",
+					"columns": ["subject_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"forum_subject_id_subject_subject_id_fk": {
+					"name": "forum_subject_id_subject_subject_id_fk",
+					"tableFrom": "forum",
+					"tableTo": "subject",
+					"columnsFrom": ["subject_id"],
+					"columnsTo": ["subject_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"forum_user_id_user_user_id_fk": {
+					"name": "forum_user_id_user_user_id_fk",
+					"tableFrom": "forum",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"forum_school_id_school_school_id_fk": {
+					"name": "forum_school_id_school_school_id_fk",
+					"tableFrom": "forum",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"grades": {
+			"name": "grades",
+			"columns": {
+				"grades_id": {
+					"name": "grades_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"level": {
+					"name": "level",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"material": {
+			"name": "material",
+			"columns": {
+				"material_id": {
+					"name": "material_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"subject_id": {
+					"name": "subject_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"chapter": {
+					"name": "chapter",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"title": {
+					"name": "title",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"description": {
+					"name": "description",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"attachment": {
+					"name": "attachment",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"material_subject_index": {
+					"name": "material_subject_index",
+					"columns": ["subject_id"],
+					"isUnique": false
+				},
+				"material_school_index": {
+					"name": "material_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"material_subject_id_subject_subject_id_fk": {
+					"name": "material_subject_id_subject_subject_id_fk",
+					"tableFrom": "material",
+					"tableTo": "subject",
+					"columnsFrom": ["subject_id"],
+					"columnsTo": ["subject_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"material_school_id_school_school_id_fk": {
+					"name": "material_school_id_school_school_id_fk",
+					"tableFrom": "material",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"rate_limit": {
+			"name": "rate_limit",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"key": {
+					"name": "key",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"count": {
+					"name": "count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"last_request": {
+					"name": "last_request",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"rate_limit_key_unique": {
+					"name": "rate_limit_key_unique",
+					"columns": ["key"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"school": {
+			"name": "school",
+			"columns": {
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"logo": {
+					"name": "logo",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"session": {
+			"name": "session",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"token": {
+					"name": "token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"ip_address": {
+					"name": "ip_address",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"user_agent": {
+					"name": "user_agent",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"impersonated_by": {
+					"name": "impersonated_by",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"session_token_unique": {
+					"name": "session_token_unique",
+					"columns": ["token"],
+					"isUnique": true
+				},
+				"session_user_index": {
+					"name": "session_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"session_user_id_user_user_id_fk": {
+					"name": "session_user_id_user_user_id_fk",
+					"tableFrom": "session",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"subject": {
+			"name": "subject",
+			"columns": {
+				"subject_id": {
+					"name": "subject_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"subject_code": {
+					"name": "subject_code",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"grades_id": {
+					"name": "grades_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"teacher_id": {
+					"name": "teacher_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"subject_type_id": {
+					"name": "subject_type_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"chapter_count": {
+					"name": "chapter_count",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"teacher_index": {
+					"name": "teacher_index",
+					"columns": ["teacher_id"],
+					"isUnique": false
+				},
+				"subject_school_index": {
+					"name": "subject_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				},
+				"subject_grades_index": {
+					"name": "subject_grades_index",
+					"columns": ["grades_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"subject_grades_id_grades_grades_id_fk": {
+					"name": "subject_grades_id_grades_grades_id_fk",
+					"tableFrom": "subject",
+					"tableTo": "grades",
+					"columnsFrom": ["grades_id"],
+					"columnsTo": ["grades_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"subject_teacher_id_user_user_id_fk": {
+					"name": "subject_teacher_id_user_user_id_fk",
+					"tableFrom": "subject",
+					"tableTo": "user",
+					"columnsFrom": ["teacher_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"subject_subject_type_id_subject_type_subject_type_id_fk": {
+					"name": "subject_subject_type_id_subject_type_subject_type_id_fk",
+					"tableFrom": "subject",
+					"tableTo": "subject_type",
+					"columnsFrom": ["subject_type_id"],
+					"columnsTo": ["subject_type_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"subject_school_id_school_school_id_fk": {
+					"name": "subject_school_id_school_school_id_fk",
+					"tableFrom": "subject",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"subject_type": {
+			"name": "subject_type",
+			"columns": {
+				"subject_type_id": {
+					"name": "subject_type_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"type_name": {
+					"name": "type_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"submission": {
+			"name": "submission",
+			"columns": {
+				"submission_id": {
+					"name": "submission_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"assignment_id": {
+					"name": "assignment_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"score": {
+					"name": "score",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"content": {
+					"name": "content",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"attachment": {
+					"name": "attachment",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				}
+			},
+			"indexes": {
+				"submission_user_index": {
+					"name": "submission_user_index",
+					"columns": ["user_id"],
+					"isUnique": false
+				},
+				"submission_assignment_index": {
+					"name": "submission_assignment_index",
+					"columns": ["assignment_id"],
+					"isUnique": false
+				},
+				"submission_school_index": {
+					"name": "submission_school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"submission_user_id_user_user_id_fk": {
+					"name": "submission_user_id_user_user_id_fk",
+					"tableFrom": "submission",
+					"tableTo": "user",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["user_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"submission_assignment_id_assignment_assignment_id_fk": {
+					"name": "submission_assignment_id_assignment_assignment_id_fk",
+					"tableFrom": "submission",
+					"tableTo": "assignment",
+					"columnsFrom": ["assignment_id"],
+					"columnsTo": ["assignment_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"submission_school_id_school_school_id_fk": {
+					"name": "submission_school_id_school_school_id_fk",
+					"tableFrom": "submission",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"user": {
+			"name": "user",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"avatar": {
+					"name": "avatar",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"school_id": {
+					"name": "school_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"role_id": {
+					"name": "role_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"fullname": {
+					"name": "fullname",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"dob": {
+					"name": "dob",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"grades_id": {
+					"name": "grades_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"username": {
+					"name": "username",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "(current_timestamp)"
+				},
+				"email": {
+					"name": "email",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"email_verified": {
+					"name": "email_verified",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": false
+				},
+				"display_username": {
+					"name": "display_username",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"auth_created_at": {
+					"name": "auth_created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"auth_updated_at": {
+					"name": "auth_updated_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"auth_role": {
+					"name": "auth_role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "'user'"
+				},
+				"banned": {
+					"name": "banned",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": false
+				},
+				"ban_reason": {
+					"name": "ban_reason",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"ban_expires": {
+					"name": "ban_expires",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"user_username_unique": {
+					"name": "user_username_unique",
+					"columns": ["username"],
+					"isUnique": true
+				},
+				"user_email_unique": {
+					"name": "user_email_unique",
+					"columns": ["email"],
+					"isUnique": true
+				},
+				"school_index": {
+					"name": "school_index",
+					"columns": ["school_id"],
+					"isUnique": false
+				},
+				"role_index": {
+					"name": "role_index",
+					"columns": ["role_id"],
+					"isUnique": false
+				},
+				"grades_index": {
+					"name": "grades_index",
+					"columns": ["grades_id"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {
+				"user_school_id_school_school_id_fk": {
+					"name": "user_school_id_school_school_id_fk",
+					"tableFrom": "user",
+					"tableTo": "school",
+					"columnsFrom": ["school_id"],
+					"columnsTo": ["school_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"user_role_id_user_role_role_id_fk": {
+					"name": "user_role_id_user_role_role_id_fk",
+					"tableFrom": "user",
+					"tableTo": "user_role",
+					"columnsFrom": ["role_id"],
+					"columnsTo": ["role_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"user_grades_id_grades_grades_id_fk": {
+					"name": "user_grades_id_grades_grades_id_fk",
+					"tableFrom": "user",
+					"tableTo": "grades",
+					"columnsFrom": ["grades_id"],
+					"columnsTo": ["grades_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"user_role": {
+			"name": "user_role",
+			"columns": {
+				"role_id": {
+					"name": "role_id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"role_name": {
+					"name": "role_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"verification": {
+			"name": "verification",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "integer",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": true
+				},
+				"identifier": {
+					"name": "identifier",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"value": {
+					"name": "value",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"verification_identifier_index": {
+					"name": "verification_identifier_index",
+					"columns": ["identifier"],
+					"isUnique": false
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		}
+	},
+	"views": {},
+	"enums": {},
+	"_meta": {
+		"schemas": {},
+		"tables": {},
+		"columns": {}
+	},
+	"internal": {
+		"indexes": {}
+	}
+}

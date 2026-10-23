@@ -1,6 +1,6 @@
 import type { User } from "$lib/schema/db";
 
-type UserWithoutPassword = Omit<User, "password">;
+type UserWithoutPassword = Omit<User, "email">;
 type GroupedUser = {
 	period: string;
 	count: number;

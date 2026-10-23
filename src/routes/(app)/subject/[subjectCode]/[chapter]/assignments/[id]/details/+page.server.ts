@@ -57,7 +57,7 @@ export const load: PageServerLoad = async (event) => {
 				.where(eq(assignmentQuestion.assignmentId, currentAssignment.id));
 
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...userColumns } = getTableColumns(user);
+			const { email, ...userColumns } = getTableColumns(user);
 			const { id: submissionId, ...submissionColumns } = getTableColumns(submission);
 
 			const userList = await db

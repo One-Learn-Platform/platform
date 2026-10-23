@@ -25,7 +25,7 @@ export const load: PageServerLoad = async (event) => {
 			return error(404, "Subject not found");
 		}
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { password, ...userColumns } = getTableColumns(user);
+		const { email, ...userColumns } = getTableColumns(user);
 		const students = await db
 			.select({
 				...userColumns,

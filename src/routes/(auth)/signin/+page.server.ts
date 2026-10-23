@@ -1,31 +1,12 @@
 import type { Actions, PageServerLoad } from "./$types";
 
 import { redirect } from "@sveltejs/kit";
-import bcryptjs from "bcryptjs";
-import { eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchema } from "./schema";
 
-import { TURNSTILE_SECRET_KEY } from "$env/static/private";
-import { user } from "$lib/schema/db";
-import {
-	createSession,
-	generateSessionToken,
-	setSessionTokenCookie,
-	Throttler,
-} from "$lib/server/auth";
+import { signInUsername } from "$lib/server/auth";
 import { validatePassword, validateUsername } from "$lib/server/auth-function";
-import { getDb } from "$lib/server/db";
-import { validateToken } from "$lib/server/turnstile";
-
-const throttler = new Throttler([1, 2, 4, 8, 16, 30, 60, 180, 300]); //in seconds
-
-// A precomputed bcrypt hash (cost 10, matching real password hashes) with no
-// corresponding password. Compared against on unknown usernames so the login
-// response takes the same time whether or not the username exists, preventing
-// username enumeration via timing.
-const DUMMY_PASSWORD_HASH = "$2b$10$xSPVlHAbo/3.Z3gkomMtUOdDkA3ec7/Di3czhopNit09BFbpGlq7G";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user?.id) {
@@ -36,25 +17,9 @@ export const load: PageServerLoad = async (event) => {
 
 export const actions: Actions = {
 	signin: async (event) => {
-		const db = getDb(event);
-
 		const form = await superValidate(event, zod4(formSchema));
 		const username = form.data.username;
 		const password = form.data.password;
-		const captcha = form.data["cf-turnstile-response"];
-
-		const { success } = await validateToken(captcha, TURNSTILE_SECRET_KEY);
-		if (!success) {
-			setError(form, "", "CAPTCHA Failed! Please refresh the page");
-			return fail(403, {
-				login: {
-					success: false,
-					data: null,
-					message: "CAPTCHA Failed! Please refresh the page",
-				},
-				form,
-			});
-		}
 
 		if (!form.valid) {
 			setError(form, "", "Content is invalid, please try again");
@@ -88,11 +53,10 @@ export const actions: Actions = {
 			});
 		}
 
-		const existingUser = await db.select().from(user).where(eq(user.username, username)).get();
-
-		const ip = event.getClientAddress();
-
-		if (!throttler.consume(ip)) {
+		// better-auth hashes the password even for unknown usernames, so the
+		// response time doesn't reveal whether the username exists.
+		const result = await signInUsername(event, { username, password });
+		if (!result.ok && result.reason === "rate-limited") {
 			setError(form, "", "Too many requests, please try again later.");
 			return fail(429, {
 				login: {
@@ -103,33 +67,16 @@ export const actions: Actions = {
 				form,
 			});
 		}
-
-		if (!existingUser?.password) {
-			// Still run the (slow) bcrypt compare against a dummy hash so the
-			// response time doesn't reveal whether the username exists.
-			await bcryptjs.compare(password, DUMMY_PASSWORD_HASH);
+		if (!result.ok) {
 			setError(form, "", "Incorrect username or password");
 			return fail(400, {
 				login: { success: false, data: null, message: "Incorrect username or password" },
 				form,
 			});
 		}
+		const { roleId } = result.user;
 
-		const validPassword = await bcryptjs.compare(password, existingUser.password);
-		if (!validPassword) {
-			setError(form, "", "Incorrect username or password");
-			return fail(400, {
-				login: { success: false, data: null, message: "Incorrect username or password" },
-				form,
-			});
-		}
-		throttler.reset(ip);
-
-		const sessionToken = generateSessionToken();
-		const session = await createSession(event, sessionToken, existingUser.id);
-		setSessionTokenCookie(event, sessionToken, session.expiresAt);
-
-		if (existingUser.roleId === 1 || existingUser.roleId === 2) return redirect(302, "/admin");
+		if (roleId === 1 || roleId === 2) return redirect(302, "/admin");
 
 		return redirect(302, "/");
 	},

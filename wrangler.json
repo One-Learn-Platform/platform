@@ -14,7 +14,6 @@
 		"not_found_handling": "single-page-application"
 	},
 	"vars": {
-		"PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAA5h5cmpBN6IvbtJ",
 		"PUBLIC_R2_URL": "https://media.onelearn.id"
 	},
 	"d1_databases": [

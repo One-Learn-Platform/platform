@@ -36,10 +36,25 @@ export const user = sqliteTable(
 		dob: text("dob").notNull(),
 		gradesId: integer("grades_id").references(() => grades.id),
 		username: text("username").unique().notNull(),
-		password: text("password").notNull(),
 		createdAt: text("created_at")
 			.notNull()
 			.default(sql`(current_timestamp)`),
+		// better-auth fields. Users sign in by username; email is a unique placeholder.
+		email: text("email").notNull().unique(),
+		emailVerified: integer("email_verified", { mode: "boolean" }).notNull().default(false),
+		displayUsername: text("display_username"),
+		authCreatedAt: integer("auth_created_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date()),
+		authUpdatedAt: integer("auth_updated_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdate(() => new Date()),
+		// better-auth admin plugin. "admin" for super admins, "user" for everyone else.
+		authRole: text("auth_role").notNull().default("user"),
+		banned: integer("banned", { mode: "boolean" }).notNull().default(false),
+		banReason: text("ban_reason"),
+		banExpires: integer("ban_expires", { mode: "timestamp_ms" }),
 	},
 	(table) => [
 		index("school_index").on(table.schoolId),
@@ -278,20 +293,81 @@ export const announcement = sqliteTable(
 export const session = sqliteTable(
 	"session",
 	{
-		id: text("id").primaryKey(),
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		token: text("token").notNull().unique(),
 		userId: integer("user_id")
 			.notNull()
-			.references(() => user.id),
-		expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-		createdAt: text("created_at")
+			.references(() => user.id, { onDelete: "cascade" }),
+		expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+		ipAddress: text("ip_address"),
+		userAgent: text("user_agent"),
+		impersonatedBy: integer("impersonated_by"),
+		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.notNull()
-			.default(sql`(current_timestamp)`),
+			.$defaultFn(() => new Date()),
+		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdate(() => new Date()),
 	},
 	(table) => [index("session_user_index").on(table.userId)],
 );
 
+export const account = sqliteTable(
+	"account",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		accountId: text("account_id").notNull(),
+		providerId: text("provider_id").notNull(),
+		userId: integer("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		accessToken: text("access_token"),
+		refreshToken: text("refresh_token"),
+		idToken: text("id_token"),
+		accessTokenExpiresAt: integer("access_token_expires_at", { mode: "timestamp_ms" }),
+		refreshTokenExpiresAt: integer("refresh_token_expires_at", { mode: "timestamp_ms" }),
+		scope: text("scope"),
+		password: text("password"),
+		createdAt: integer("created_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date()),
+		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index("account_user_index").on(table.userId)],
+);
+
+export const verification = sqliteTable(
+	"verification",
+	{
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		identifier: text("identifier").notNull(),
+		value: text("value").notNull(),
+		expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+		createdAt: integer("created_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date()),
+		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+			.notNull()
+			.$defaultFn(() => new Date())
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index("verification_identifier_index").on(table.identifier)],
+);
+
+export const rateLimit = sqliteTable("rate_limit", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	key: text("key").notNull().unique(),
+	count: integer("count").notNull(),
+	lastRequest: integer("last_request").notNull(),
+});
+
 export type User = typeof user.$inferSelect;
 export type Session = typeof session.$inferSelect;
+export type Account = typeof account.$inferSelect;
 export type UserRole = typeof userRole.$inferSelect;
 export type School = typeof school.$inferSelect;
 export type Grades = typeof grades.$inferSelect;

@@ -22,7 +22,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 			const { ...subjectColumn } = getTableColumns(subject);
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { password, ...restUser } = getTableColumns(user);
+			const { email, ...restUser } = getTableColumns(user);
 			const { ...enrollmentColumn } = getTableColumns(enrollment);
 			const teacherList = await db
 				.select({ ...restUser })

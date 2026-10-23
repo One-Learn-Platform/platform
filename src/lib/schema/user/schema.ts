@@ -26,21 +26,35 @@ export const formSchema = createInsertSchema(user, {
 		.refine((v) => /^[a-zA-Z0-9_]+$/.test(v), {
 			error: "Username must contain only letters, numbers, and underscores",
 		}),
-	password: z
-		.string()
-		.min(6, {
-			error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
-		})
-		.max(255, {
-			error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
-		}),
 	roleId: Role,
 	gradesId: z.number().int().optional(),
 	schoolId: z.string().optional(),
-}).omit({
-	id: true,
-	createdAt: true,
-});
+})
+	.omit({
+		id: true,
+		createdAt: true,
+		// Managed by better-auth
+		email: true,
+		emailVerified: true,
+		displayUsername: true,
+		authCreatedAt: true,
+		authUpdatedAt: true,
+		authRole: true,
+		banned: true,
+		banReason: true,
+		banExpires: true,
+	})
+	.extend({
+		// Stored hashed in the better-auth `account` table, not on `user`.
+		password: z
+			.string()
+			.min(6, {
+				error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+			})
+			.max(255, {
+				error: "Invalid password (min 6, max 255 characters, must contain letters and numbers)",
+			}),
+	});
 
 export const formSchemaWithPass = formSchema
 	.refine(
