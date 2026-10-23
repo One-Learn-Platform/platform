@@ -1,10 +1,5 @@
 import { now, today } from "@internationalized/date";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
+export { cn } from "cn";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
