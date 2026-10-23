@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import { page } from "$app/state";
 	import type { PageProps } from "./$types";
 
-	import { formSchema } from "$lib/schema/announcement/schema";
+	import { formSchema } from "#lib/schema/announcement/schema.js";
 	import { clsx } from "clsx";
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import { cn } from "$lib/utils.js";
+	import { cn } from "#lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -20,16 +20,16 @@
 	} from "@internationalized/date";
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import { Textarea } from "#lib/components/ui/textarea/index.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import Calendar from "#lib/components/ui/calendar/calendar.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -107,12 +107,12 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
 				toast.success(`Announcement ${form.edit.data?.title} edited successfully`);
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});

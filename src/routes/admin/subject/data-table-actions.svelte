@@ -9,9 +9,9 @@
 	import Logs from "@lucide/svelte/icons/logs";
 	import UserRoundPlus from "@lucide/svelte/icons/user-round-plus";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
 
 	let openDialog = $state(false);
 

@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/grades/schema";
+import { formSchema } from "#lib/schema/grades/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { grades } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { grades } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, inArray, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 				form: await superValidate(zod4(formSchema)),
 			};
 		}
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
@@ -30,7 +30,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1) {
-			return error(403, { message: "You are not allowed to create a grade" });
+			return error(403, "You are not allowed to create a grade");
 		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchema));
@@ -63,7 +63,7 @@ export const actions: Actions = {
 
 	delete: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to delete a grade" });
+			return error(403, "You are not allowed to delete a grade");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
@@ -111,7 +111,7 @@ export const actions: Actions = {
 	},
 	multidelete: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to delete grades" });
+			return error(403, "You are not allowed to delete grades");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

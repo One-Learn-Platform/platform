@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/subject-type/schema";
+import { formSchema } from "#lib/schema/subject-type/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { subjectType } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { subjectType } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 				form: await superValidate(zod4(formSchema)),
 			};
 		}
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to create a subject type" });
+			return error(403, "You are not allowed to create a subject type");
 		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchema));
@@ -64,7 +64,7 @@ export const actions: Actions = {
 
 	delete: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to delete a subject type" });
+			return error(403, "You are not allowed to delete a subject type");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
@@ -107,7 +107,7 @@ export const actions: Actions = {
 	},
 	multidelete: async (event) => {
 		if (!event.locals.user || event.locals.user.role !== 1) {
-			return error(403, { message: "You are not allowed to delete subject types" });
+			return error(403, "You are not allowed to delete subject types");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

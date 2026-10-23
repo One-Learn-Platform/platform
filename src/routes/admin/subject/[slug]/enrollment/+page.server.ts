@@ -1,8 +1,8 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { enrollment, grades, subject, user } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { enrollment, grades, subject, user } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { and, eq, getTableColumns, notExists } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -15,10 +15,10 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			if (isNaN(subjectId)) {
-				return error(400, { message: "Invalid Subject ID" });
+				return error(400, "Invalid Subject ID");
 			}
 			if (!schoolId) {
-				return error(400, { message: "School ID is required" });
+				return error(400, "School ID is required");
 			}
 			const { ...subjectColumn } = getTableColumns(subject);
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,7 +63,7 @@ export const load: PageServerLoad = async (event) => {
 					teacherList: teacherList,
 				};
 			} else {
-				return error(404, { message: "Subject Not Found" });
+				return error(404, "Subject Not Found");
 			}
 		}
 	}

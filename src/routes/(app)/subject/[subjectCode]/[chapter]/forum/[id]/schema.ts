@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { comment } from "$lib/schema/db";
+import { comment } from "#lib/schema/db.js";
 import { createInsertSchema } from "drizzle-zod";
 
 export const formSchema = createInsertSchema(comment, {

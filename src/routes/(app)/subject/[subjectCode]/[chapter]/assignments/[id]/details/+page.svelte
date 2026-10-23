@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { QuestionType } from "$lib/types/assignment";
+	import { QuestionType } from "#lib/types/assignment.js";
 	import type { PageServerData } from "./$types.js";
 
 	import { columns } from "./column";
 	import DataTable from "./data-table.svelte";
 
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Tabs from "$lib/components/ui/tabs/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Tabs from "#lib/components/ui/tabs/index.js";
 
 	let { data }: { data: PageServerData } = $props();
 </script>

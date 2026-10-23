@@ -1,8 +1,8 @@
 <script lang="ts">
-	import * as Alert from "$lib/components/ui/alert/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
 	import TriangleAlert from "@lucide/svelte/icons/triangle-alert";
 
-	import { cn } from "$lib/utils";
+	import { cn } from "#lib/utils.js";
 
 	const { message, class: className }: { message: string; class?: string } = $props();
 </script>

@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { refreshAll } from "$app/navigation";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
 	import { toast } from "svelte-sonner";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import Separator from "$lib/components/ui/separator/separator.svelte";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import Separator from "#lib/components/ui/separator/separator.svelte";
 
 	import Edit from "@lucide/svelte/icons/edit";
 	import Trash from "@lucide/svelte/icons/trash";
 
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
-	import { sanitizeHtml } from "$lib/functions/sanitize";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
+	import { sanitizeHtml } from "#lib/functions/sanitize.js";
 
 	const { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } =
 		$props();
@@ -25,7 +25,7 @@
 		if (form) {
 			if (form.delete?.success) {
 				toast.success("Material deleted successfully.");
-				invalidateAll();
+				refreshAll();
 				dialogOpen = false;
 			} else {
 				toast.error(form.delete.message);
@@ -37,16 +37,15 @@
 
 <div class="flex flex-col items-center justify-between gap-2 sm:flex-row">
 	{#if data.user.role === 3}
-		<Button variant="outline" href="{data.material?.id}/edit" class="w-full grow basis-0 sm:w-fit">
-			<Edit class="" />Edit
-		</Button>
+		<Button variant="outline" href="{data.material?.id}/edit" class="w-full grow basis-0 sm:w-fit"
+			><Edit class="" />Edit</Button
+		>
+
 		<Button
 			variant="destructive"
 			class="w-full grow basis-0 sm:w-fit"
-			onclick={() => (dialogOpen = true)}
+			onclick={() => (dialogOpen = true)}><Trash class="" />Delete Material</Button
 		>
-			<Trash class="" />Delete Material
-		</Button>
 	{/if}
 </div>
 <div class="space-y-2">

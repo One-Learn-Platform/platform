@@ -1,8 +1,15 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-import { assignment, enrollment, grades, subject, subjectType, submission } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import {
+	assignment,
+	enrollment,
+	grades,
+	subject,
+	subjectType,
+	submission,
+} from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { and, desc, eq, exists, getTableColumns, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {

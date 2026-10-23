@@ -1,5 +1,5 @@
-import type { Pathname } from "$app/types";
-import type { NavItem } from "$lib/types/nav";
+import type { Path } from "$app/types";
+import type { NavItem } from "#lib/types/nav.js";
 
 import type { Icon } from "@lucide/svelte";
 import BookMarked from "@lucide/svelte/icons/book-marked";
@@ -14,16 +14,8 @@ export const appNav: NavItem[] = [
 		icon: LayoutDashboard,
 		href: "/dashboard",
 	},
-	{
-		title: "Subject",
-		icon: BookMarked,
-		href: "/subject",
-	},
-	{
-		title: "Forum",
-		icon: MessagesSquare,
-		href: "/forum",
-	},
+	{ title: "Subject", icon: BookMarked, href: "/subject" },
+	{ title: "Forum", icon: MessagesSquare, href: "/forum" },
 	{
 		title: "Assignments",
 		icon: ClipboardList,

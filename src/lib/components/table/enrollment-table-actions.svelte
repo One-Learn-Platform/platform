@@ -3,8 +3,8 @@
 	import Pencil from "@lucide/svelte/icons/pencil";
 	import UserPen from "@lucide/svelte/icons/user-pen";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
 
 	let { id, name, href }: { id: string; name: string; href: string } = $props();
 </script>

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { PageServerData, PageParentData } from "./$types";
 
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 
 	let { data }: { data: PageServerData & PageParentData } = $props();
 </script>

@@ -5,8 +5,8 @@ import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { formSchema } from "./schema";
 
-import { signInUsername } from "$lib/server/auth";
-import { validatePassword, validateUsername } from "$lib/server/auth-function";
+import { signInUsername } from "#lib/server/auth.js";
+import { validatePassword, validateUsername } from "#lib/server/auth-function.js";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user?.id) {

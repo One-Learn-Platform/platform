@@ -1,8 +1,8 @@
 import { redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 
-import { grades, school, user } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { grades, school, user } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, inArray } from "drizzle-orm";
 
 export const load: LayoutServerLoad = async (event) => {

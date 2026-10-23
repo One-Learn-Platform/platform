@@ -2,12 +2,12 @@
 	import type { ComponentProps } from "svelte";
 	import type { SortDirection } from "@tanstack/svelte-table";
 
-	import { cn } from "$lib/utils.js";
+	import { cn } from "#lib/utils.js";
 
 	import ArrowUpDown from "@lucide/svelte/icons/arrow-up-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 
 	let {
 		name,

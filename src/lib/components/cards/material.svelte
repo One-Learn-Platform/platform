@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/state";
 
-	import type { Material } from "$lib/schema/db";
+	import type { Material } from "#lib/schema/db.js";
 
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 
 	const { material }: { material: Material } = $props();
 </script>

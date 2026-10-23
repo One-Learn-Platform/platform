@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { us } from "../../data/about";
 
-	import { Separator } from "$lib/components/ui/separator/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 </script>
 
 <svelte:head>

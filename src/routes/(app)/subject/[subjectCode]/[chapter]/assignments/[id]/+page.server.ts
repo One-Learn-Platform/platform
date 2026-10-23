@@ -1,15 +1,15 @@
-import type { QuestionType } from "$lib/types/assignment";
+import type { QuestionType } from "#lib/types/assignment.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/assignment/schema";
+import { formSchema } from "#lib/schema/assignment/schema.js";
 import { setError, fail as superFail, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { assignment, assignmentQuestion, subject, submission } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
+import { assignment, assignmentQuestion, subject, submission } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileExtension, getFileName, getTimeStamp } from "#lib/utils.js";
 import { and, count, eq, exists, getTableColumns, inArray, sql } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {

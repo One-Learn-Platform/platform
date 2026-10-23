@@ -9,10 +9,10 @@
 	import MessagesSquare from "@lucide/svelte/icons/messages-square";
 	import Users from "@lucide/svelte/icons/users";
 
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 
-	import { subjectColor } from "$lib/functions/subject";
+	import { subjectColor } from "#lib/functions/subject.js";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
 	const urlException = new Set([`/subject/${data.params}/people`]);

@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { enhance } from "$app/forms";
-	import type { NavItem } from "$lib/types/nav";
+	import type { NavItem } from "#lib/types/nav.js";
 
 	import { page } from "$app/state";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import { resetMode, setMode, userPrefersMode } from "mode-watcher";
 
-	import type { SessionValidationResult } from "$lib/server/auth";
+	import type { SessionValidationResult } from "#lib/server/auth.js";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+	import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+	import { useSidebar } from "#lib/components/ui/sidebar/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
 
-	import { appNav } from "$lib/assets/nav/app";
-	import { acronym } from "$lib/utils";
+	import { appNav } from "#lib/assets/nav/app.js";
+	import { acronym } from "#lib/utils.js";
 
 	import BadgeInfo from "@lucide/svelte/icons/badge-info";
 	import BookCopy from "@lucide/svelte/icons/book-copy";
@@ -268,7 +268,7 @@
 				<DropdownMenu.Group>
 					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
-							<a {...props} href={resolve(role === 1 ? "/admin/profile" : "/profile")}>
+							<a {...props} href={resolve(role === 1 ? "admin/profile" : "profile")}>
 								<CircleUser />
 								<span>Profile</span>
 							</a>

@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaEdit } from "$lib/schema/subject/schema";
+import { formSchemaEdit } from "#lib/schema/subject/schema.js";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
@@ -17,8 +17,8 @@ import {
 	subjectType,
 	submission,
 	user,
-} from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+} from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, getTableColumns, inArray } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -29,7 +29,7 @@ export const load: PageServerLoad = async (event) => {
 
 	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
 		if (isNaN(schoolId)) {
-			return error(400, { message: "Invalid School ID" });
+			return error(400, "Invalid School ID");
 		} else {
 			const { ...rest } = getTableColumns(subject);
 			const gradesList = await db.select().from(grades);
@@ -50,11 +50,11 @@ export const load: PageServerLoad = async (event) => {
 					form: await superValidate(zod4(formSchemaEdit)),
 				};
 			} else {
-				return error(404, { message: "Subject Not Found" });
+				return error(404, "Subject Not Found");
 			}
 		}
 	}
-	return error(404, { message: "Not Found" });
+	return error(404, "Not Found");
 };
 
 export const actions: Actions = {
@@ -63,7 +63,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to edit a subject" });
+			return error(403, "You are not allowed to edit a subject");
 		}
 		const db = getDb(event);
 		const params = event.params;
@@ -184,7 +184,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to delete a subject" });
+			return error(403, "You are not allowed to delete a subject");
 		}
 		const db = getDb(event);
 		const form = await event.request.formData();

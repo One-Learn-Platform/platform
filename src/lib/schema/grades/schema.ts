@@ -1,4 +1,4 @@
-import { grades } from "$lib/schema/db";
+import { grades } from "#lib/schema/db.js";
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
 

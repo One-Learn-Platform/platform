@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { PageServerData } from "./$types";
 
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Table from "#lib/components/ui/table/index.js";
 
 	import BookMarked from "@lucide/svelte/icons/book-marked";
 	import Crown from "@lucide/svelte/icons/crown";
@@ -13,7 +13,7 @@
 	import Trophy from "@lucide/svelte/icons/trophy";
 	import Users from "@lucide/svelte/icons/users";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 	import { PersistedState } from "runed";
 
 	let { data }: { data: PageServerData } = $props();
@@ -118,7 +118,7 @@
 			<Table.Caption>Don't give up and keep pushing forward!</Table.Caption>
 			<Table.Header>
 				<Table.Row>
-					<Table.Head class="w-[50px]"></Table.Head>
+					<Table.Head class="w-[50px]" />
 					<Table.Head class="w-[100px]">Avatar</Table.Head>
 					<Table.Head class="">Name</Table.Head>
 					<Table.Head class="">Score</Table.Head>

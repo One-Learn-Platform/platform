@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import { onMount } from "svelte";
 	import type { ActionData, PageServerData } from "./$types.js";
 
-	import { formSchemaEdit } from "$lib/schema/material/schema";
+	import { formSchemaEdit } from "#lib/schema/material/schema.js";
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Textarea } from "#lib/components/ui/textarea/index.js";
+	import * as Tooltip from "#lib/components/ui/tooltip/index.js";
 	import { toast } from "svelte-sonner";
 
 	import X from "@lucide/svelte/icons/x";
 
 	import type { default as Quill } from "quill";
 
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
 
 	const { data, form }: { data: PageServerData; form: ActionData } = $props();
 
@@ -94,7 +94,7 @@
 		if (form?.create) {
 			if (form.create?.success) {
 				toast.success(form.create.message || "Material created successfully!");
-				invalidateAll().then(() => {
+				refreshAll().then(() => {
 					if (quillInstance) {
 						quillInstance.clipboard.convert({ html: data.material?.content || "" });
 					}
@@ -107,7 +107,7 @@
 			}
 		} else if (form?.delete) {
 			if (form.delete?.success) {
-				invalidateAll();
+				refreshAll();
 				toast.success(form.delete.message || "Material deleted successfully!");
 			} else {
 				toast.error(form.delete.message || "Failed to delete material.");

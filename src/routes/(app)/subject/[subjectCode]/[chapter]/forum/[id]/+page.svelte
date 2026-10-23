@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
+	import { browser } from "$app/env";
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import { onMount } from "svelte";
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
 	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
-	import { formSchemaEdit } from "$lib/schema/forum/schema";
-	import { sanitizeHtml } from "$lib/functions/sanitize";
+	import { formSchemaEdit } from "#lib/schema/forum/schema.js";
+	import { sanitizeHtml } from "#lib/functions/sanitize.js";
 	import type { default as Quill } from "quill";
 	import { toast } from "svelte-sonner";
 	import { superForm, fileProxy } from "sveltekit-superforms";
@@ -19,20 +19,20 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	dayjs.extend(relativeTime);
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as Pagination from "$lib/components/ui/pagination/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as Pagination from "#lib/components/ui/pagination/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
-	import { invalidateAll } from "$app/navigation";
-	import { acronym } from "$lib/utils";
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import { refreshAll } from "$app/navigation";
+	import { acronym } from "#lib/utils.js";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
@@ -243,9 +243,11 @@
 	);
 
 	let perPage = $state(Number(browser ? (sessionStorage.getItem("forum_perPage") ?? "10") : "10"));
+
 	let currentPage = $state(
 		Number(browser ? (sessionStorage.getItem("forum_selectedPage") ?? "1") : "1"),
 	);
+
 	const commentGrouped = $derived.by(() => {
 		const comments = sortedComments;
 		const group = [];
@@ -269,7 +271,7 @@
 			if (form.comment) {
 				if (form.comment.success) {
 					toast.success("Comment added successfully");
-					invalidateAll();
+					refreshAll();
 					quillInstanceComment?.setText("");
 				} else {
 					toast.error(form.comment.message ?? "Unknown error");
@@ -278,7 +280,7 @@
 				if (form.deleteforum.success) {
 					dialogForumOpen = false;
 					toast.success("Forum deleted successfully");
-					invalidateAll();
+					refreshAll();
 				} else {
 					toast.error(form.deleteforum.message ?? "Unknown error");
 				}
@@ -286,7 +288,7 @@
 				if (form.deletecomment.success) {
 					dialogCommentOpen = false;
 					toast.success("Comment deleted successfully");
-					invalidateAll();
+					refreshAll();
 				} else {
 					toast.error(form.deletecomment.message ?? "Unknown error");
 				}
@@ -389,9 +391,10 @@
 					{/if}
 				</Form.Field>
 				<div class="flex flex-row justify-end gap-2">
-					<Button variant="outline" type="button" onclick={() => (edit = false)} size="sm">
-						Cancel
-					</Button>
+					<Button variant="outline" type="button" onclick={() => (edit = false)} size="sm"
+						>Cancel</Button
+					>
+
 					<Form.Button class="self-end" size="sm">Edit</Form.Button>
 				</div>
 			</form>
@@ -510,6 +513,7 @@
 						<ArrowUp />Ascending
 					{/if}
 				</Button>
+
 				<Select.Root value={sortBy} type="single" onValueChange={(value) => (sortBy = value)}>
 					<Select.Trigger class="grow sm:grow-0">{sortContent}</Select.Trigger>
 					<Select.Content>
@@ -556,11 +560,11 @@
 										<Pagination.Ellipsis />
 									</Pagination.Item>
 								{:else}
-									<Pagination.Item>
-										<Pagination.Link {page} isActive={currentPage === page.value}>
-											{page.value}
-										</Pagination.Link>
-									</Pagination.Item>
+									<Pagination.Item
+										><Pagination.Link {page} isActive={currentPage === page.value}
+											>{page.value}</Pagination.Link
+										></Pagination.Item
+									>
 								{/if}
 							{/each}
 							<Pagination.Item>

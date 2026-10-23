@@ -8,8 +8,8 @@ import {
 	subject,
 	submission,
 	user,
-} from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+} from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { and, eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {

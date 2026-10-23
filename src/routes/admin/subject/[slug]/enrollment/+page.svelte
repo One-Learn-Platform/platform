@@ -1,23 +1,23 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
-	import type { Enrollment } from "$lib/schema/db";
+	import { refreshAll } from "$app/navigation";
+	import type { Enrollment } from "#lib/schema/db.js";
 	import type { PageProps } from "./$types";
 
-	import { cn } from "$lib/utils.js";
+	import { cn } from "#lib/utils.js";
 	import CheckIcon from "@lucide/svelte/icons/check";
 	import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
 	import X from "@lucide/svelte/icons/x";
 	import { tick } from "svelte";
 	import { toast } from "svelte-sonner";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Command from "$lib/components/ui/command/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
-	import * as Tabs from "$lib/components/ui/tabs/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Command from "#lib/components/ui/command/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import * as Table from "#lib/components/ui/table/index.js";
+	import * as Tabs from "#lib/components/ui/tabs/index.js";
 
 	import { columns } from "./table/column";
 	import DataTable from "./table/enrollment-table.svelte";
@@ -43,14 +43,14 @@
 		if (form) {
 			if (form.enroll) {
 				if (form.enroll.success) {
-					invalidateAll();
+					refreshAll();
 					toast.success("Student enrolled successfully.");
 				} else if (form.enroll?.message) {
 					toast.error(form.enroll.message);
 				}
 			} else if (form.unenroll) {
 				if (form.unenroll.success) {
-					invalidateAll();
+					refreshAll();
 					dialogOpen = false;
 					toast.success("Student unenrolled successfully.");
 				} else if (form.unenroll?.message) {

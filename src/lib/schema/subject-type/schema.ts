@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { subjectType } from "$lib/schema/db";
+import { subjectType } from "#lib/schema/db.js";
 
 export const formSchema = createInsertSchema(subjectType, {
 	name: z.string().min(1, { error: "Subject type name is required" }),

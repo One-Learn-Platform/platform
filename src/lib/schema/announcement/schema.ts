@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { announcement } from "$lib/schema/db";
+import { announcement } from "#lib/schema/db.js";
 
 export const formSchema = createInsertSchema(announcement, {
 	title: z.string().min(1, { error: "Title is required" }),

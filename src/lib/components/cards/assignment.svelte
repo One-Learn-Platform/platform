@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import type { Assignment } from "$lib/schema/db";
+	import type { Assignment } from "#lib/schema/db.js";
 
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
 	dayjs.extend(relativeTime);
 
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 	import BadgeCheck from "@lucide/svelte/icons/badge-check";
 	import OctagonAlert from "@lucide/svelte/icons/octagon-alert";
 
@@ -39,7 +39,7 @@
 
 <a
 	href={resolve(
-		`/subject/${assignment.subjectCode}/${assignment.chapter}/assignments/${assignment.id}`,
+		`subject/${assignment.subjectCode}/${assignment.chapter}/assignments/${assignment.id}`,
 	)}
 	class="flex h-fit flex-col gap-2 overflow-hidden rounded-sm border bg-background p-4 duration-150 hover:bg-accent/90"
 >

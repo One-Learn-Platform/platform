@@ -2,21 +2,21 @@
 	import { onMount } from "svelte";
 	import type { PageServerData } from "./$types.js";
 
-	import { formSchema } from "$lib/schema/material/schema";
+	import { formSchema } from "#lib/schema/material/schema.js";
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Textarea } from "#lib/components/ui/textarea/index.js";
+	import * as Tooltip from "#lib/components/ui/tooltip/index.js";
 
 	import X from "@lucide/svelte/icons/x";
 
 	import type { default as Quill } from "quill";
 
-	import { getFileIcon } from "$lib/functions/material";
+	import { getFileIcon } from "#lib/functions/material.js";
 
 	const { data }: { data: PageServerData } = $props();
 

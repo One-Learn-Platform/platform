@@ -1,14 +1,14 @@
 import { error } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaCreate } from "$lib/schema/school/schema";
+import { formSchemaCreate } from "#lib/schema/school/schema.js";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileName, getTimeStamp } from "$lib/utils";
+import { school } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileName, getTimeStamp } from "#lib/utils.js";
 import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -22,13 +22,13 @@ export const load: PageServerLoad = async (event) => {
 			form: await superValidate(zod4(formSchemaCreate)),
 		};
 	}
-	return error(404, { message: "Not Found" });
+	return error(404, "Not Found");
 };
 
 export const actions: Actions = {
 	create: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to create a school" });
+			return error(403, "You are not allowed to create a school");
 		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchemaCreate));
@@ -96,7 +96,7 @@ export const actions: Actions = {
 
 	delete: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to delete a school" });
+			return error(403, "You are not allowed to delete a school");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
@@ -139,7 +139,7 @@ export const actions: Actions = {
 	},
 	multidelete: async (event) => {
 		if (!event.locals.user || event.locals.user.role !== 1) {
-			return error(403, { message: "You are not allowed to delete schools" });
+			return error(403, "You are not allowed to delete schools");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

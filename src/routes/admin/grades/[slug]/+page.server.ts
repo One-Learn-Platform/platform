@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/grades/schema";
+import { formSchema } from "#lib/schema/grades/schema.js";
 import { setError, superValidate, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { grades } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { grades } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		if (event.locals.user.role === 1) {
 			if (isNaN(userId)) {
-				return error(400, { message: "Invalid User ID" });
+				return error(400, "Invalid User ID");
 			} else {
 				const role = await db.select().from(grades).where(eq(grades.id, userId)).get();
 				if (role) {
@@ -27,11 +27,11 @@ export const load: PageServerLoad = async (event) => {
 						form: await superValidate(zod4(formSchema)),
 					};
 				} else {
-					return error(404, { message: "Role Not Found" });
+					return error(404, "Role Not Found");
 				}
 			}
 		} else {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 	}
 	return redirect(302, "/signin");

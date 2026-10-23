@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/announcement/schema";
+import { formSchema } from "#lib/schema/announcement/schema.js";
 import { setError, superValidate, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { announcement } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { announcement } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async (event) => {
 			const { slug } = event.params;
 			const announcementId = Number(slug);
 			if (isNaN(announcementId)) {
-				return error(400, { message: "Invalid Announcement ID" });
+				return error(400, "Invalid Announcement ID");
 			} else {
 				const db = getDb(event);
 				const selectedAnnouncement = await db
@@ -29,11 +29,11 @@ export const load: PageServerLoad = async (event) => {
 						form: await superValidate(zod4(formSchema)),
 					};
 				} else {
-					return error(404, { message: "Announcement Not Found" });
+					return error(404, "Announcement Not Found");
 				}
 			}
 		} else {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 	}
 	return redirect(302, "/signin");

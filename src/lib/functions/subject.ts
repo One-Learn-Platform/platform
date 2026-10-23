@@ -1,4 +1,4 @@
-import type { BadgeFill, BadgeVariant } from "$lib/components/ui/badge";
+import type { BadgeFill, BadgeVariant } from "#lib/components/ui/badge/index.js";
 import {
 	Atom,
 	BookUser,

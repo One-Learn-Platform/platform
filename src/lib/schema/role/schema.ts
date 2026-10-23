@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { userRole } from "$lib/schema/db";
+import { userRole } from "#lib/schema/db.js";
 
 export const formSchema = createInsertSchema(userRole, {
 	name: z.string().min(1, { error: "Role name is required" }),

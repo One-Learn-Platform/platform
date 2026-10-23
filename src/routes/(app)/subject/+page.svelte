@@ -4,10 +4,10 @@
 	import { fade } from "svelte/transition";
 	import type { PageServerData } from "./$types";
 
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Tooltip from "#lib/components/ui/tooltip/index.js";
 
 	import {
 		subjectAbbreviation,
@@ -15,7 +15,7 @@
 		subjectColor,
 		subjectIcon,
 		subjectTextColor,
-	} from "$lib/functions/subject";
+	} from "#lib/functions/subject.js";
 
 	let { data }: { data: PageServerData } = $props();
 

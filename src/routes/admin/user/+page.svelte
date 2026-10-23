@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import type { ActionData, PageServerData, PageServerParentData } from "./$types";
 
 	import {
@@ -8,8 +8,8 @@
 		RoleWithoutSuperAdmin,
 		type RoleEnum,
 		type RoleWithoutSuperAdminEnum,
-	} from "$lib/schema/user/schema";
-	import { cn } from "$lib/utils.js";
+	} from "#lib/schema/user/schema.js";
+	import { cn } from "#lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -24,16 +24,16 @@
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import DataTable from "$lib/components/table/data-table.svelte";
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import DataTable from "#lib/components/table/data-table.svelte";
+	import Calendar from "#lib/components/ui/calendar/calendar.svelte";
 	import { columns } from "./columns.js";
 
 	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
@@ -55,13 +55,13 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 				toast.success(`User ${form.delete.data?.fullname} deleted`);
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
 				if (form.create.success) {
-					invalidateAll();
+					refreshAll();
 					toast.success(`User ${form.create.data?.fullname} created`);
 				} else toast.error(form.create.message ?? "Unknown error");
 			}

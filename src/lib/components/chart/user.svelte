@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { User } from "$lib/schema/db";
+	import type { User } from "#lib/schema/db.js";
 	import { cubicInOut } from "svelte/easing";
 
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Chart from "$lib/components/ui/chart/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { Switch } from "$lib/components/ui/switch/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Chart from "#lib/components/ui/chart/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
+	import { Switch } from "#lib/components/ui/switch/index.js";
 
 	import { scaleBand } from "d3-scale";
 	import { BarChart, Highlight } from "layerchart";
 
-	import { groupUsers } from "$lib/functions/db";
+	import { groupUsers } from "#lib/functions/db.js";
 
 	let { userList, role }: { userList: Omit<User, "email">[]; role?: number } = $props();
 

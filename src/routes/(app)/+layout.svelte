@@ -2,9 +2,9 @@
 	import type { Snippet } from "svelte";
 	import type { LayoutServerData } from "./$types";
 
-	import AppSidebar from "$lib/components/layout/sidebar.svelte";
-	import Topbar from "$lib/components/layout/topbar.svelte";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import AppSidebar from "#lib/components/layout/sidebar.svelte";
+	import Topbar from "#lib/components/layout/topbar.svelte";
+	import * as Sidebar from "#lib/components/ui/sidebar/index.js";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
 </script>

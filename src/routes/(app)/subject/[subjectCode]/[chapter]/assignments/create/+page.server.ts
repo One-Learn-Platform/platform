@@ -1,14 +1,14 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/assignment/schema";
+import { formSchema } from "#lib/schema/assignment/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { assignment, subject } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
+import { assignment, subject } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileExtension, getFileName, getTimeStamp } from "#lib/utils.js";
 import { and, eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {

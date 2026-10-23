@@ -1,20 +1,20 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 
 	import Plus from "@lucide/svelte/icons/plus";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import { formSchema } from "$lib/schema/role/schema";
+	import { formSchema } from "#lib/schema/role/schema.js";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 	import { toast } from "svelte-sonner";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import DataTable from "$lib/components/table/data-table.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import DataTable from "#lib/components/table/data-table.svelte";
 	import { columns } from "./columns";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
@@ -26,13 +26,13 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 				toast.success(`Role ${form.delete.data?.name} successfully deleted`);
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
 				if (form.create.success) {
-					invalidateAll();
+					refreshAll();
 					toast.success(`Role ${form.create.data?.name} successfully created`);
 				} else {
 					toast.error(form.create.message ?? "Unknown error");

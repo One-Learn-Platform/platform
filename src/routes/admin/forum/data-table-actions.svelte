@@ -7,9 +7,9 @@
 	import Trash from "@lucide/svelte/icons/trash";
 	import { toast } from "svelte-sonner";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
 
 	let openDialog = $state(false);
 

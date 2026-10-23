@@ -56,7 +56,6 @@ one-learn
 ├── pnpm-lock.yaml
 ├── prettier.config.js
 ├── README.md
-├── svelte.config.js
 ├── tsconfig.json
 ├── vite.config.ts
 └── wrangler.json

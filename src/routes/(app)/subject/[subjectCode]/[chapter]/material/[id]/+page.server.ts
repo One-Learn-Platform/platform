@@ -1,9 +1,9 @@
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { material, subject } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
+import { material, subject } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
 import { and, eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {

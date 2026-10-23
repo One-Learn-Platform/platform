@@ -2,23 +2,23 @@
 	import { resolve } from "$app/paths";
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
 	import type { ActionData, PageData } from "./$types";
 	dayjs.extend(relativeTime);
 
-	import Material from "$lib/components/cards/material.svelte";
-	import Forum from "$lib/components/page/forum.svelte";
+	import Material from "#lib/components/cards/material.svelte";
+	import Forum from "#lib/components/page/forum.svelte";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as RadioGroup from "#lib/components/ui/radio-group/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
 	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
 	import ArrowRight from "@lucide/svelte/icons/arrow-right";
@@ -28,9 +28,9 @@
 	import Plus from "@lucide/svelte/icons/plus";
 	import SendHorizontal from "@lucide/svelte/icons/send-horizontal";
 
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
-	import { QuestionType } from "$lib/types/assignment";
-	import { sanitizeHtml } from "$lib/functions/sanitize";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
+	import { QuestionType } from "#lib/types/assignment.js";
+	import { sanitizeHtml } from "#lib/functions/sanitize.js";
 	import { toast } from "svelte-sonner";
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -179,11 +179,9 @@
 							size="default"
 							class="h-full min-h-10 text-sm"
 							disabled={currentQuestion === 0}
-							onclick={() => (currentQuestion = currentQuestion - 1)}
+							onclick={() => (currentQuestion = currentQuestion - 1)}><ArrowLeft />Previous</Button
 						>
-							<ArrowLeft />
-							Previous
-						</Button>
+
 						<Alert.Root
 							variant="destructive"
 							class="border-destructive transition duration-150 ease-out max-sm:hidden
@@ -199,11 +197,8 @@
 								size="default"
 								class="h-full min-h-10 text-sm"
 								disabled={currentQuestion === questionAmount - 1}
-								onclick={() => (currentQuestion = currentQuestion + 1)}
+								onclick={() => (currentQuestion = currentQuestion + 1)}>Next <ArrowRight /></Button
 							>
-								Next
-								<ArrowRight />
-							</Button>
 						{:else}
 							<AlertDialog.Root bind:open={dialogSubmitOpen}>
 								<AlertDialog.Trigger>

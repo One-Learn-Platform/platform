@@ -2,15 +2,15 @@
 	import { resolve } from "$app/paths";
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import * as Breadcrumb from "#lib/components/ui/breadcrumb/index.js";
+	import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
+	import * as Sidebar from "#lib/components/ui/sidebar/index.js";
 	import { resetMode, setMode, userPrefersMode } from "mode-watcher";
 
 	import ChevronDown from "@lucide/svelte/icons/chevron-down";
@@ -21,8 +21,8 @@
 	import SunIcon from "@lucide/svelte/icons/sun";
 	import UserCog from "@lucide/svelte/icons/user-cog";
 
-	import type { SessionValidationResult } from "$lib/server/auth";
-	import { acronym } from "$lib/utils";
+	import type { SessionValidationResult } from "#lib/server/auth.js";
+	import { acronym } from "#lib/utils.js";
 
 	let { user }: { user: SessionValidationResult["user"] } = $props();
 	const initials = acronym(user?.fullname ?? "", 2);
@@ -49,11 +49,9 @@
 				})
 				.join("-");
 
-			breadcrumbs.push({
-				url: urlPath,
-				name: formattedName,
-			});
+			breadcrumbs.push({ url: urlPath, name: formattedName });
 		});
+
 		return breadcrumbs;
 	});
 </script>
@@ -101,10 +99,7 @@
 				<DropdownMenu.Group>
 					<DropdownMenu.Item class="cursor-pointer">
 						{#snippet child({ props })}
-							<a {...props} href={resolve("/profile")}>
-								<CircleUser />
-								<span>Profile</span>
-							</a>
+							<a {...props} href={resolve("profile")}><CircleUser /><span>Profile</span></a>
 						{/snippet}
 					</DropdownMenu.Item>
 				</DropdownMenu.Group>

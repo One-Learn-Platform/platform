@@ -4,23 +4,23 @@
 	import { fade, slide } from "svelte/transition";
 	import type { PageServerData } from "./$types";
 
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { Switch } from "$lib/components/ui/switch/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
+	import { Switch } from "#lib/components/ui/switch/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 
-	import Assignment from "$lib/components/cards/assignment.svelte";
+	import Assignment from "#lib/components/cards/assignment.svelte";
 	import {
 		subjectBgColor,
 		subjectColor,
 		subjectIcon,
 		subjectTextColor,
-	} from "$lib/functions/subject";
+	} from "#lib/functions/subject.js";
 
 	import { SvelteMap } from "svelte/reactivity";
 

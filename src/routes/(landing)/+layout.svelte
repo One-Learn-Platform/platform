@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
-	import { buttonVariants, Button } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import { buttonVariants, Button } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
 	import { resetMode, setMode, userPrefersMode } from "mode-watcher";
 
 	import Contrast from "@lucide/svelte/icons/contrast";
@@ -9,8 +9,8 @@
 	import SunIcon from "@lucide/svelte/icons/sun";
 	import { siGithub } from "simple-icons";
 
-	import Logo from "$lib/assets/logo.svg";
-	import LogoDark from "$lib/assets/logo_dark.svg";
+	import Logo from "#lib/assets/logo.svg";
+	import LogoDark from "#lib/assets/logo_dark.svg";
 
 	let { children }: { children: Snippet } = $props();
 	const bottomNav = [

@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { PageServerData, ActionData } from "./$types";
 	import { enhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 
-	import { QuestionType } from "$lib/types/assignment";
+	import { QuestionType } from "#lib/types/assignment.js";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as RadioGroup from "#lib/components/ui/radio-group/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
 
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
 
 	import { toast } from "svelte-sonner";
 	import ArrowLeft from "@lucide/svelte/icons/arrow-left";
@@ -46,7 +46,7 @@
 			toast.success("Your answers have been submitted successfully.");
 			dialogOpen = false;
 			currentQuestion = 0;
-			invalidateAll();
+			refreshAll();
 		} else if (form?.submit?.message) {
 			dialogOpen = false;
 			toast.error(form.submit.message);
@@ -137,11 +137,9 @@
 			size="lg"
 			class="h-full min-h-10 text-base"
 			disabled={currentQuestion === 0}
-			onclick={() => (currentQuestion = currentQuestion - 1)}
+			onclick={() => (currentQuestion = currentQuestion - 1)}><ArrowLeft />Previous</Button
 		>
-			<ArrowLeft />
-			Previous
-		</Button>
+
 		<Alert.Root
 			variant="destructive"
 			class="
@@ -161,11 +159,8 @@
 				size="lg"
 				class="h-full min-h-10 text-base"
 				disabled={currentQuestion === questionAmount - 1}
-				onclick={() => (currentQuestion = currentQuestion + 1)}
+				onclick={() => (currentQuestion = currentQuestion + 1)}>Next <ArrowRight /></Button
 			>
-				Next
-				<ArrowRight />
-			</Button>
 		{:else}
 			<AlertDialog.Root bind:open={dialogOpen}>
 				<AlertDialog.Trigger>

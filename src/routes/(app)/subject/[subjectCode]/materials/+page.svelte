@@ -5,17 +5,17 @@
 	import { fade } from "svelte/transition";
 	import type { PageServerData, PageServerParentData } from "./$types.js";
 
-	import type { Material } from "$lib/schema/db";
+	import type { Material } from "#lib/schema/db.js";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 	import Plus from "@lucide/svelte/icons/plus";
 
-	import MaterialComp from "$lib/components/cards/material.svelte";
+	import MaterialComp from "#lib/components/cards/material.svelte";
 
 	type SortKey = keyof Material;
 	const sortableFields: Partial<Record<SortKey, string>> = {

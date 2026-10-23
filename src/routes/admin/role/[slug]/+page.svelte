@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import { page } from "$app/state";
 	import type { PageProps } from "./$types";
 
@@ -8,15 +8,15 @@
 	import { toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import { formSchema } from "$lib/schema/role/schema";
+	import { formSchema } from "#lib/schema/role/schema.js";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -51,14 +51,14 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 			} else {
 				toast.error(form.delete.message ?? "Unknown error");
 			}
 		} else if (form?.edit) {
 			if (form.edit.success) {
 				toast.success(`Role ${form.edit.data?.name} edited successfully`);
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.edit.message ?? "Unknown error");
 		}
 	});

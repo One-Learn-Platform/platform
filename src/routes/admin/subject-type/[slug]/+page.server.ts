@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/subject-type/schema";
+import { formSchema } from "#lib/schema/subject-type/schema.js";
 import { setError, superValidate, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { subjectType } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { subjectType } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -17,7 +17,7 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		if (event.locals.user.role === 1) {
 			if (isNaN(userId)) {
-				return error(400, { message: "Invalid User ID" });
+				return error(400, "Invalid User ID");
 			} else {
 				const subject = await db.select().from(subjectType).where(eq(subjectType.id, userId)).get();
 				if (subject) {
@@ -26,11 +26,11 @@ export const load: PageServerLoad = async (event) => {
 						form: await superValidate(zod4(formSchema)),
 					};
 				} else {
-					return error(404, { message: "Subject Not Found" });
+					return error(404, "Subject Not Found");
 				}
 			}
 		}
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
