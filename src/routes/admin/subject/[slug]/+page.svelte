@@ -155,11 +155,13 @@
 										: "Select a grades ID"}
 								</Select.Trigger>
 								<Select.Content>
-									{#each data.gradesList as grade (grade.id)}
-										<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
-											{grade.level}
-										</Select.Item>
-									{/each}
+									<Select.Group>
+										{#each data.gradesList as grade (grade.id)}
+											<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
+												{grade.level}
+											</Select.Item>
+										{/each}
+									</Select.Group>
 								</Select.Content>
 							</Select.Root>
 						{/snippet}
@@ -211,11 +213,13 @@
 										: "Select a subject type"}
 								</Select.Trigger>
 								<Select.Content>
-									{#each data.subjectTypeList as subjectType (subjectType.id)}
-										<Select.Item value={subjectType.id.toString()} label={subjectType.name}>
-											{subjectType.name}
-										</Select.Item>
-									{/each}
+									<Select.Group>
+										{#each data.subjectTypeList as subjectType (subjectType.id)}
+											<Select.Item value={subjectType.id.toString()} label={subjectType.name}>
+												{subjectType.name}
+											</Select.Item>
+										{/each}
+									</Select.Group>
 								</Select.Content>
 							</Select.Root>
 						{/snippet}
@@ -244,11 +248,13 @@
 										: "Select a teacher"}
 								</Select.Trigger>
 								<Select.Content>
-									{#each data.teacherList as teacher (teacher.id)}
-										<Select.Item value={teacher.id.toString()} label={teacher.fullname}>
-											{teacher.fullname}
-										</Select.Item>
-									{/each}
+									<Select.Group>
+										{#each data.teacherList as teacher (teacher.id)}
+											<Select.Item value={teacher.id.toString()} label={teacher.fullname}>
+												{teacher.fullname}
+											</Select.Item>
+										{/each}
+									</Select.Group>
 								</Select.Content>
 							</Select.Root>
 						{/snippet}

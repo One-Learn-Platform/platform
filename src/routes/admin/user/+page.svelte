@@ -213,11 +213,13 @@
 												: "Select a school"}
 										</Select.Trigger>
 										<Select.Content>
-											{#each data.schoolList as school (school)}
-												<Select.Item value={school.id.toString()} label={school.name}>
-													{school.name}
-												</Select.Item>
-											{/each}
+											<Select.Group>
+												{#each data.schoolList as school (school)}
+													<Select.Item value={school.id.toString()} label={school.name}>
+														{school.name}
+													</Select.Item>
+												{/each}
+											</Select.Group>
 										</Select.Content>
 									</Select.Root>
 								{/snippet}
@@ -249,11 +251,13 @@
 											: "Select a grades ID"}
 									</Select.Trigger>
 									<Select.Content>
-										{#each data.gradesList as grade (grade.id)}
-											<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
-												{grade.level}
-											</Select.Item>
-										{/each}
+										<Select.Group>
+											{#each data.gradesList as grade (grade.id)}
+												<Select.Item value={grade.id.toString()} label={grade.level.toString()}>
+													{grade.level}
+												</Select.Item>
+											{/each}
+										</Select.Group>
 									</Select.Content>
 								</Select.Root>
 							{/snippet}

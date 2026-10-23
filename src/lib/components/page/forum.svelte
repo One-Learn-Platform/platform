@@ -59,8 +59,10 @@
 		<Select.Root bind:value={sortBy} type="single" onValueChange={(value) => (sortBy = value)}>
 			<Select.Trigger>Sort By</Select.Trigger>
 			<Select.Content>
-				<Select.Item value="date">Date</Select.Item>
-				<Select.Item value="name">Name</Select.Item>
+				<Select.Group>
+					<Select.Item value="date">Date</Select.Item>
+					<Select.Item value="name">Name</Select.Item>
+				</Select.Group>
 			</Select.Content>
 		</Select.Root>
 	</div>

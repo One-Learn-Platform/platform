@@ -117,9 +117,12 @@
 					>{groupBy.replace(/^\w/, (c) => c.toUpperCase())}</Select.Trigger
 				>
 				<Select.Content>
-					{#each ["date", "month", "year"] as value (value)}
-						<Select.Item {value}>{value.replace(/^\w/, (c) => c.toUpperCase())}</Select.Item>
-					{/each}
+					<Select.Group>
+						<Select.Label>Group by</Select.Label>
+						{#each ["date", "month", "year"] as value (value)}
+							<Select.Item {value}>{value.replace(/^\w/, (c) => c.toUpperCase())}</Select.Item>
+						{/each}
+					</Select.Group>
 				</Select.Content>
 			</Select.Root>
 		</div>

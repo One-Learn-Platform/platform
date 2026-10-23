@@ -84,9 +84,11 @@
 			<Select.Root type="single" bind:value={sortBy}>
 				<Select.Trigger class="w-full">{selectedSort?.label}</Select.Trigger>
 				<Select.Content>
-					{#each sortChoice as { label, value } (value)}
-						<Select.Item {value}>{label}</Select.Item>
-					{/each}
+					<Select.Group>
+						{#each sortChoice as { label, value } (value)}
+							<Select.Item {value}>{label}</Select.Item>
+						{/each}
+					</Select.Group>
 				</Select.Content>
 			</Select.Root>
 			<Button

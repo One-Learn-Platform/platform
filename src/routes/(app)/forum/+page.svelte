@@ -54,9 +54,11 @@
 		<Select.Root type="single" bind:value={sortBy}>
 			<Select.Trigger class="grow sm:grow-0">{selectedSort?.label}</Select.Trigger>
 			<Select.Content>
-				{#each sortChoice as { label, value } (value)}
-					<Select.Item {value}>{label}</Select.Item>
-				{/each}
+				<Select.Group>
+					{#each sortChoice as { label, value } (value)}
+						<Select.Item {value}>{label}</Select.Item>
+					{/each}
+				</Select.Group>
 			</Select.Content>
 		</Select.Root>
 		<Button
