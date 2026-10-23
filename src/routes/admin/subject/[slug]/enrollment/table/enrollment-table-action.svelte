@@ -4,8 +4,8 @@
 	import Logs from "@lucide/svelte/icons/logs";
 	import { toast } from "svelte-sonner";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
 
 	let { id, name }: { id: string; name: string } = $props();
 </script>

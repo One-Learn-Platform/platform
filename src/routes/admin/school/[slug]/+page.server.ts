@@ -1,14 +1,14 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaEdit } from "$lib/schema/school/schema";
+import { formSchemaEdit } from "#lib/schema/school/schema.js";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { school } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileName, getTimeStamp } from "$lib/utils";
+import { school } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileName, getTimeStamp } from "#lib/utils.js";
 import { eq } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 
 	if (event.locals.user && event.locals.user.role === 1) {
 		if (isNaN(schoolId)) {
-			return error(400, { message: "Invalid School ID" });
+			return error(400, "Invalid School ID");
 		} else {
 			const schoolData = await db.select().from(school).where(eq(school.id, schoolId)).get();
 			if (schoolData) {
@@ -28,11 +28,11 @@ export const load: PageServerLoad = async (event) => {
 					form: await superValidate(zod4(formSchemaEdit)),
 				};
 			} else {
-				return error(404, { message: "School Not Found" });
+				return error(404, "School Not Found");
 			}
 		}
 	}
-	return error(404, { message: "Not Found" });
+	return error(404, "Not Found");
 };
 
 export const actions: Actions = {

@@ -2,10 +2,10 @@
 	import type { PageServerData } from "./$types.js";
 	import { page } from "$app/state";
 
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Table from "#lib/components/ui/table/index.js";
 
 	let { data }: { data: PageServerData } = $props();
 

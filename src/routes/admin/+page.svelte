@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { PageData } from "./$types";
 
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
-	import UserChart from "$lib/components/chart/user.svelte";
+	import UserChart from "#lib/components/chart/user.svelte";
 
 	let { data }: { data: PageData } = $props();
 	const stats = $derived.by(() => {

@@ -1,11 +1,11 @@
-import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
+import type { DataTableColumnDef } from "#lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 import type { PageServerData } from "./$types.js";
 
-import SortableHeader from "$lib/components/table/sortable-header.svelte";
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table/index.js";
+import SortableHeader from "#lib/components/table/sortable-header.svelte";
+import { renderComponent, renderSnippet } from "#lib/components/ui/data-table/index.js";
 
-import { Badge } from "$lib/components/ui/badge/index.js";
+import { Badge } from "#lib/components/ui/badge/index.js";
 
 type UserWithSubmission = PageServerData["userList"][0];
 

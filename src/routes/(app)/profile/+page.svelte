@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import { page } from "$app/state";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { PageProps } from "./$types";
-
 	import {
 		formSchemaPassOnly,
 		formSchemaUploadImage,
 		formSchemaProfile,
-	} from "$lib/schema/user/schema";
-	import { cn } from "$lib/utils.js";
+	} from "#lib/schema/user/schema.js";
+	import { cn } from "#lib/utils.js";
+
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -25,19 +25,19 @@
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import Calendar from "#lib/components/ui/calendar/calendar.svelte";
 
 	let { data, form }: PageProps = $props();
 
@@ -128,12 +128,12 @@
 		if (form?.delete) {
 			if (form.delete.success) {
 				toast.success(`User ${form.delete.data?.fullname} deleted`);
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else if (form?.edit) {
 			if (form.edit.success) {
 				toast.success(`User ${form.edit.data?.fullname} edited successfully`);
-				invalidateAll();
+				refreshAll();
 				changes.fullname = false;
 				changes.username = false;
 				changes.dob = false;
@@ -143,12 +143,12 @@
 		} else if (form?.upload) {
 			if (form.upload.success) {
 				toast.success(`Avatar updated successfully`);
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.upload.message ?? "Unknown error");
 		} else if (form?.changePassword) {
 			if (form.changePassword.success) {
 				toast.success(`Password changed successfully`);
-				invalidateAll();
+				refreshAll();
 			} else toast.error(form.changePassword.message ?? "Unknown error");
 		}
 	});
@@ -235,6 +235,7 @@
 					</form>
 				</Dialog.Content>
 			</Dialog.Root>
+
 			<AlertDialog.Root open={alertDialogOpen} onOpenChange={(open) => (alertDialogOpen = open)}>
 				<AlertDialog.Trigger
 					class={buttonVariants({ variant: "destructive", outline: true })}
@@ -258,9 +259,10 @@
 						</AlertDialog.Header>
 						<AlertDialog.Footer>
 							<AlertDialog.Cancel type="button">Cancel</AlertDialog.Cancel>
-							<AlertDialog.Action type="submit" onclick={() => (alertDialogOpen = false)}>
-								Continue
-							</AlertDialog.Action>
+
+							<AlertDialog.Action type="submit" onclick={() => (alertDialogOpen = false)}
+								>Continue</AlertDialog.Action
+							>
 						</AlertDialog.Footer>
 					</form>
 				</AlertDialog.Content>

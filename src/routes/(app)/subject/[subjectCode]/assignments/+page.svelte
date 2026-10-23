@@ -5,19 +5,19 @@
 	import { fade } from "svelte/transition";
 	import type { PageServerData, PageServerParentData } from "./$types.js";
 
-	import type { Assignment } from "$lib/schema/db";
+	import type { Assignment } from "#lib/schema/db.js";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { Switch } from "$lib/components/ui/switch/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
+	import { Switch } from "#lib/components/ui/switch/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 	import Plus from "@lucide/svelte/icons/plus";
 
-	import AssignmentComp from "$lib/components/cards/assignment.svelte";
+	import AssignmentComp from "#lib/components/cards/assignment.svelte";
 	import FileChartColumnIncreasing from "@lucide/svelte/icons/file-chart-column-increasing";
 
 	type SortKey = keyof Assignment;

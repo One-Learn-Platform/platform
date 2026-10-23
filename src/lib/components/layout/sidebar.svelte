@@ -1,22 +1,22 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
-	import { browser } from "$app/environment";
+	import { browser } from "$app/env";
 	import { invalidate } from "$app/navigation";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 
-	import type { Grades, School } from "$lib/schema/db";
+	import type { Grades, School } from "#lib/schema/db.js";
 
 	import { PersistedState } from "runed";
 
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
+	import * as DropdownMenu from "#lib/components/ui/dropdown-menu/index.js";
+	import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+	import { useSidebar } from "#lib/components/ui/sidebar/index.js";
 	const sidebar = useSidebar();
 
 	import ChevronsUpDownIcon from "@lucide/svelte/icons/chevrons-up-down";
 
-	import { appNav } from "$lib/assets/nav/app";
+	import { appNav } from "#lib/assets/nav/app.js";
 	let { grades, school }: { grades: Grades[]; school: School } = $props();
 	const grade = $derived([
 		...grades.map((g) => ({
@@ -58,7 +58,7 @@
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton class="h-16 data-[slot=sidebar-menu-button]:p-1.5!">
 					{#snippet child({ props })}
-						<a href={resolve("/dashboard")} {...props}>
+						<a href={resolve("dashboard")} {...props}>
 							<img
 								src="{PUBLIC_R2_URL}/{school.logo}"
 								alt=""

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { forum } from "$lib/schema/db";
+import { forum } from "#lib/schema/db.js";
 
 const formSchema = createInsertSchema(forum, {
 	title: z.string().min(1, { error: "Forum title is required" }),

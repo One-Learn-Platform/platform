@@ -22,9 +22,9 @@ import {
 	type Subject,
 	type Submission,
 	type User,
-} from "$lib/schema/db";
+} from "#lib/schema/db.js";
 import { and, asc, eq, getTableColumns, ne } from "drizzle-orm";
-import { getDb } from "$lib/server/db";
+import { getDb } from "#lib/server/db/index.js";
 
 export const load: LayoutServerLoad = async (event) => {
 	const db = getDb(event);
@@ -103,7 +103,7 @@ export const load: LayoutServerLoad = async (event) => {
 				allUsers: allUsers,
 			};
 		} else {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 	}
 	return redirect(302, "/signin");

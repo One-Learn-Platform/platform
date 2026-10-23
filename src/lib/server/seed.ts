@@ -1,5 +1,5 @@
-import * as schema from "$lib/schema/db";
-import { account, grades, user, userRole } from "$lib/schema/db";
+import * as schema from "#lib/schema/db.js";
+import { account, grades, user, userRole } from "#lib/schema/db.js";
 import { createClient } from "@libsql/client";
 import bcryptjs from "bcryptjs";
 import { count } from "drizzle-orm";

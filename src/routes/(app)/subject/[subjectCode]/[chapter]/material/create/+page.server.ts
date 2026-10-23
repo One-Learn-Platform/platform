@@ -1,11 +1,11 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { material, subject } from "$lib/schema/db";
-import { formSchema } from "$lib/schema/material/schema";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileExtension, getFileName, getTimeStamp } from "$lib/utils";
+import { material, subject } from "#lib/schema/db.js";
+import { formSchema } from "#lib/schema/material/schema.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileExtension, getFileName, getTimeStamp } from "#lib/utils.js";
 
 import { and, eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";

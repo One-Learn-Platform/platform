@@ -1,4 +1,4 @@
-import RafliImage from "$lib/assets/landing/rafli_portrait.jpg";
+import RafliImage from "#lib/assets/landing/rafli_portrait.jpg";
 
 export const us = [
 	{

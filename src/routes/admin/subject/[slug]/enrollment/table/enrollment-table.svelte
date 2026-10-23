@@ -4,10 +4,10 @@
 		dataTableFeatures,
 		FlexRender,
 		type DataTableColumnDef,
-	} from "$lib/components/ui/data-table/index.js";
+	} from "#lib/components/ui/data-table/index.js";
 	import type { RowData } from "@tanstack/svelte-table";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Table from "$lib/components/ui/table/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Table from "#lib/components/ui/table/index.js";
 
 	type DataTableProps<TData extends RowData> = {
 		columns: DataTableColumnDef<TData>[];

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { subject } from "$lib/schema/db";
+import { subject } from "#lib/schema/db.js";
 
 const formSchema = createInsertSchema(subject, {
 	code: z

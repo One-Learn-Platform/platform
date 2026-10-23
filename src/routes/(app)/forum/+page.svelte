@@ -4,14 +4,14 @@
 	import { fade } from "svelte/transition";
 	import type { PageServerData } from "./$types";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
 
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 
-	import Forum from "$lib/components/cards/forum.svelte";
+	import Forum from "#lib/components/cards/forum.svelte";
 
 	const { data }: { data: PageServerData } = $props();
 	let searchQuery = $state("");

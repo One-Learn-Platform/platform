@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/state";
 
-	import { Button } from "$lib/components/ui/button/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
 
 	let { href }: { href: string } = $props();
 </script>

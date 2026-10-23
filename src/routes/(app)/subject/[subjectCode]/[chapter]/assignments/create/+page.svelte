@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
 
-	import { formSchema } from "$lib/schema/assignment/schema";
+	import { formSchema } from "#lib/schema/assignment/schema.js";
 	import { fileProxy, superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { invalidateAll } from "$app/navigation";
-	import { cn } from "$lib/utils.js";
+	import { refreshAll } from "$app/navigation";
+	import { cn } from "#lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -19,14 +19,14 @@
 	import CalendarIcon from "@lucide/svelte/icons/calendar";
 	import { toast } from "svelte-sonner";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import { Calendar } from "$lib/components/ui/calendar/index.js";
-	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import { Calendar } from "#lib/components/ui/calendar/index.js";
+	import { Checkbox } from "#lib/components/ui/checkbox/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const superform = superForm(data.form, {
@@ -52,7 +52,7 @@
 			if (form.create) {
 				if (form.create.success) {
 					toast.success(`Assignment successfully created`);
-					invalidateAll();
+					refreshAll();
 				} else {
 					toast.error(form.create.message ?? "Unknown error");
 				}

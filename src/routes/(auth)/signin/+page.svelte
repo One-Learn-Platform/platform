@@ -1,23 +1,23 @@
 <script lang="ts">
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import type { ActionData, PageServerData } from "./$types";
 
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 	import { formSchema } from "./schema";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
 
-	import logo from "$lib/assets/logo.svg";
-	import logo_dark from "$lib/assets/logo_dark.svg";
-	import backdrop from "$lib/assets/pattern.png?enhanced";
+	import logo from "#lib/assets/logo.svg";
+	import logo_dark from "#lib/assets/logo_dark.svg";
+	import backdrop from "#lib/assets/pattern.png?enhanced";
 
 	let { form, data }: { form: ActionData; data: PageServerData } = $props();
 	const initial = $derived(acronym(data?.user?.username ?? "ID"));
@@ -31,7 +31,7 @@
 
 <main class="flex h-dvh flex-col items-center justify-center gap-8 md:flex-row md:gap-0">
 	<div class="min-h-0 w-full grow md:h-full md:min-h-fit md:w-1/2 md:min-w-1/2 md:grow-0">
-		<enhanced:img src={backdrop} class="h-full w-full object-cover" alt="" />
+		<enhanced:img src={backdrop} class="h-full w-full object-cover" alt=""></enhanced:img>
 	</div>
 	<form
 		method="POST"

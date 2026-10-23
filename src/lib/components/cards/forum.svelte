@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { PUBLIC_R2_URL } from "$env/static/public";
-	import type { Forum } from "$lib/schema/db";
+	import { PUBLIC_R2_URL } from "$app/env/public";
+	import type { Forum } from "#lib/schema/db.js";
 
 	import dayjs from "dayjs";
 	import relativeTime from "dayjs/plugin/relativeTime";
-	import { sanitizeHtml } from "$lib/functions/sanitize";
+	import { sanitizeHtml } from "#lib/functions/sanitize.js";
 	dayjs.extend(relativeTime);
 
-	import * as Avatar from "$lib/components/ui/avatar/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Avatar from "#lib/components/ui/avatar/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
-	import { acronym } from "$lib/utils";
+	import { acronym } from "#lib/utils.js";
 
 	let {
 		forum,
@@ -41,7 +41,7 @@
 </script>
 
 <a
-	href={resolve(`/subject/${forum.subjectCode}/${forum.chapter}/forum/${forum.id}`)}
+	href={resolve(`subject/${forum.subjectCode}/${forum.chapter}/forum/${forum.id}`)}
 	class="flex h-fit flex-col gap-2 rounded-sm border bg-background p-4 duration-150 hover:bg-muted hover:shadow-xs"
 >
 	<div class="">

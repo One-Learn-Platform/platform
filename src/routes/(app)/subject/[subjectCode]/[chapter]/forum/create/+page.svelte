@@ -2,12 +2,12 @@
 	import { onMount } from "svelte";
 	import type { PageServerData } from "./$types.js";
 
-	import { formSchemaCreate } from "$lib/schema/forum/schema";
+	import { formSchemaCreate } from "#lib/schema/forum/schema.js";
 	import { superForm, fileProxy } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 
 	import type { default as Quill } from "quill";
 

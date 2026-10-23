@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
+	import { Badge } from "#lib/components/ui/badge/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 
-	import Logo from "$lib/assets/logosmall.svg";
-	import LogoDark from "$lib/assets/logosmall_dark.svg";
-	import HeroImage from "$lib/assets/landing/collaborating.jpg?enhanced";
+	import Logo from "#lib/assets/logosmall.svg";
+	import LogoDark from "#lib/assets/logosmall_dark.svg";
+	import HeroImage from "#lib/assets/landing/collaborating.jpg?enhanced";
 
 	import Zap from "@lucide/svelte/icons/zap";
 	import Shield from "@lucide/svelte/icons/shield";

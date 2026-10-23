@@ -1,11 +1,11 @@
-import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
-import { renderComponent } from "$lib/components/ui/data-table/index.js";
+import type { DataTableColumnDef } from "#lib/components/ui/data-table/index.js";
+import { renderComponent } from "#lib/components/ui/data-table/index.js";
 import DataTableActions from "./enrollment-table-action.svelte";
 
-import SortableHeader from "$lib/components/table/sortable-header.svelte";
-import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+import SortableHeader from "#lib/components/table/sortable-header.svelte";
+import { Checkbox } from "#lib/components/ui/checkbox/index.js";
 
-import type { User } from "$lib/schema/db";
+import type { User } from "#lib/schema/db.js";
 type StudentWithGrades = Omit<User, "email"> & {
 	grades: number | null;
 };

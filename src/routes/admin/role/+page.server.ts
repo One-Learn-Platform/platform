@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/role/schema";
+import { formSchema } from "#lib/schema/role/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { userRole } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { userRole } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async (event) => {
 				form: await superValidate(zod4(formSchema)),
 			};
 		}
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	create: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to create a role" });
+			return error(403, "You are not allowed to create a role");
 		}
 		const db = getDb(event);
 		const form = await superValidate(event, zod4(formSchema));
@@ -60,7 +60,7 @@ export const actions: Actions = {
 
 	delete: async (event) => {
 		if (event.locals.user?.role !== 1) {
-			return error(403, { message: "You are not allowed to delete a role" });
+			return error(403, "You are not allowed to delete a role");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
@@ -103,7 +103,7 @@ export const actions: Actions = {
 	},
 	multidelete: async (event) => {
 		if (!event.locals.user || event.locals.user.role !== 1) {
-			return error(403, { message: "You are not allowed to delete roles" });
+			return error(403, "You are not allowed to delete roles");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

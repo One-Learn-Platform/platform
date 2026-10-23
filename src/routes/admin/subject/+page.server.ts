@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaCreate } from "$lib/schema/subject/schema";
+import { formSchemaCreate } from "#lib/schema/subject/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
@@ -18,8 +18,8 @@ import {
 	submission,
 	user,
 	grades,
-} from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+} from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { and, eq, getTableColumns, inArray, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -68,7 +68,7 @@ export const load: PageServerLoad = async (event) => {
 			};
 		}
 	} else {
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
@@ -193,7 +193,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to delete a subject" });
+			return error(403, "You are not allowed to delete a subject");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();
@@ -283,7 +283,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to delete a subject" });
+			return error(403, "You are not allowed to delete a subject");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

@@ -6,13 +6,13 @@
 		dataTableFeatures,
 		FlexRender,
 		type DataTableColumnDef,
-	} from "$lib/components/ui/data-table/index.js";
+	} from "#lib/components/ui/data-table/index.js";
 	import type { RowData } from "@tanstack/svelte-table";
-	import * as Table from "$lib/components/ui/table/index.js";
+	import * as Table from "#lib/components/ui/table/index.js";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
 
 	type DataTableProps<TData extends RowData> = {
 		columns: DataTableColumnDef<TData>[];

@@ -1,15 +1,15 @@
 import { redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { forum, subject } from "$lib/schema/db";
-import { formSchemaCreate } from "$lib/schema/forum/schema";
-import { getR2 } from "$lib/server/r2";
-import { getDb } from "$lib/server/db";
+import { forum, subject } from "#lib/schema/db.js";
+import { formSchemaCreate } from "#lib/schema/forum/schema.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getDb } from "#lib/server/db/index.js";
 import { and, eq } from "drizzle-orm";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { getFileExtension, getTimeStamp } from "$lib/utils";
-import { getFileName } from "$lib/functions/material";
+import { getFileExtension, getTimeStamp } from "#lib/utils.js";
+import { getFileName } from "#lib/functions/material.js";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {

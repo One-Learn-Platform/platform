@@ -6,11 +6,11 @@ import { admin } from "better-auth/plugins/admin";
 import { username } from "better-auth/plugins/username";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 import bcryptjs from "bcryptjs";
-import { env } from "$env/dynamic/private";
+import { BETTER_AUTH_SECRET } from "$app/env/private";
 import { getRequestEvent } from "$app/server";
-import { getDb } from "$lib/server/db";
-import { validateUsername } from "$lib/server/auth-function";
-import * as table from "$lib/schema/db";
+import { getDb } from "#lib/server/db/index.js";
+import { validateUsername } from "#lib/server/auth-function.js";
+import * as table from "#lib/schema/db.js";
 
 const DAY_IN_SECONDS = 60 * 60 * 24;
 const SUPER_ADMIN_ROLE_ID = 1;
@@ -33,7 +33,7 @@ export function placeholderEmail() {
 function createAuth(event: RequestEvent) {
 	return betterAuth({
 		baseURL: event.url.origin,
-		secret: env.BETTER_AUTH_SECRET,
+		secret: BETTER_AUTH_SECRET,
 		database: drizzleAdapter(getDb(event), {
 			provider: "sqlite",
 			schema: {

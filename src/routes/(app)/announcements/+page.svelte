@@ -6,9 +6,9 @@
 
 	import dayjs from "dayjs";
 
-	import { Input } from "$lib/components/ui/input/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
 
-	import Announcement from "$lib/components/cards/announcement.svelte";
+	import Announcement from "#lib/components/cards/announcement.svelte";
 
 	const { data }: { data: PageServerData } = $props();
 	let search = $state("");

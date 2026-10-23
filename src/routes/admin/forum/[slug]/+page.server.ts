@@ -1,8 +1,8 @@
 import { error, redirect, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { comment, forum, user } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { comment, forum, user } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, getTableColumns } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async (event) => {
 
 	if (event.locals.user && (event.locals.user.role === 1 || event.locals.user.role === 2)) {
 		if (isNaN(slug) || slug <= 0) {
-			return error(400, { message: "Invalid Forum ID" });
+			return error(400, "Invalid Forum ID");
 		} else {
 			const { ...rest } = getTableColumns(forum);
 			const forumData = await db
@@ -25,11 +25,11 @@ export const load: PageServerLoad = async (event) => {
 					forumData: forumData,
 				};
 			} else {
-				return error(404, { message: "Forum Not Found" });
+				return error(404, "Forum Not Found");
 			}
 		}
 	}
-	return error(404, { message: "Not Found" });
+	return error(404, "Not Found");
 };
 
 export const actions: Actions = {

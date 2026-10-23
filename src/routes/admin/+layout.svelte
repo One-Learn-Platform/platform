@@ -2,8 +2,8 @@
 	import type { LayoutServerData } from "./$types";
 	import type { Snippet } from "svelte";
 
-	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import AppSidebar from "$lib/components/sidebar.svelte";
+	import * as Sidebar from "#lib/components/ui/sidebar/index.js";
+	import AppSidebar from "#lib/components/sidebar.svelte";
 
 	let { children, data }: { children: Snippet; data: LayoutServerData } = $props();
 	let role = data.user?.role ?? 1; //temporary placeholder

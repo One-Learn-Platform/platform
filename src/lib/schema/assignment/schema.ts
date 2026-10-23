@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { assignment } from "$lib/schema/db";
+import { assignment } from "#lib/schema/db.js";
 
 export const formSchema = createInsertSchema(assignment, {
 	title: z.string().min(3, { error: "Title must be at least 3 characters long" }).max(255),

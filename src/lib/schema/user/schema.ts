@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { user } from "$lib/schema/db";
+import { user } from "#lib/schema/db.js";
 
 // 0,1,2,3
 export const Role = z.enum(["admin", "teacher", "student", "super admin"], {

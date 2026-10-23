@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { PageParentData, PageServerData } from "./$types";
 
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
 	import SquareArrowOutUpRight from "@lucide/svelte/icons/square-arrow-out-up-right";
 

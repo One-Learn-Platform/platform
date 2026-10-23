@@ -1,4 +1,4 @@
-import type { User } from "$lib/schema/db";
+import type { User } from "#lib/schema/db.js";
 
 type UserWithoutPassword = Omit<User, "email">;
 type GroupedUser = {

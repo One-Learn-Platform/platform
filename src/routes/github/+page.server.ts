@@ -2,5 +2,5 @@ import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = () => {
-	return redirect(302, "https://github.com/One-Learn-Platform/platform");
+	return redirect(302, "https://github.com/One-Learn-Platform/platform", { external: true });
 };

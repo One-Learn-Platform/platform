@@ -6,7 +6,7 @@ export const load: PageServerLoad = async (event) => {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			return {};
 		} else {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 	}
 	return redirect(302, "/signin");

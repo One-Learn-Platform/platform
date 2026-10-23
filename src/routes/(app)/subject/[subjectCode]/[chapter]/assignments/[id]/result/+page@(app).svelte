@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { PageServerData } from "./$types";
 
-	import { QuestionType, type SubmissionContent } from "$lib/types/assignment";
+	import { QuestionType, type SubmissionContent } from "#lib/types/assignment.js";
 
-	import * as Alert from "$lib/components/ui/alert/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
 	import EyeOff from "@lucide/svelte/icons/eye-off";
 

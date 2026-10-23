@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import type { ActionData, PageServerData } from "./$types";
 
 	import Ellipsis from "@lucide/svelte/icons/ellipsis";
 	import Lightbulb from "@lucide/svelte/icons/lightbulb";
 	import Plus from "@lucide/svelte/icons/plus";
 
-	import { formSchemaCreate } from "$lib/schema/subject/schema";
+	import { formSchemaCreate } from "#lib/schema/subject/schema.js";
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Select from "$lib/components/ui/select/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
 	import { toast } from "svelte-sonner";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import DataTable from "$lib/components/table/data-table.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import DataTable from "#lib/components/table/data-table.svelte";
 	import { columns } from "./columns";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
@@ -32,13 +32,13 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 				toast.success(`Subject ${form.delete.data?.name} successfully deleted`);
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
 				if (form.create.success) {
-					invalidateAll();
+					refreshAll();
 					toast.success(`Subject ${form.create.data?.name} successfully created`);
 				} else toast.error(form.create.message ?? "Unknown error");
 			}

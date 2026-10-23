@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance as svelteEnhance } from "$app/forms";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 	import { page } from "$app/state";
-	import { PUBLIC_R2_URL } from "$env/static/public";
+	import { PUBLIC_R2_URL } from "$app/env/public";
 	import { untrack } from "svelte";
 	import { flip } from "svelte/animate";
 	import { cubicOut } from "svelte/easing";
@@ -13,10 +13,10 @@
 	import relativeTime from "dayjs/plugin/relativeTime";
 	dayjs.extend(relativeTime);
 
-	import type { Question } from "$lib/types/assignment";
+	import type { Question } from "#lib/types/assignment.js";
 
-	import { formSchema } from "$lib/schema/assignment/schema";
-	import { cn } from "$lib/utils.js";
+	import { formSchema } from "#lib/schema/assignment/schema.js";
+	import { cn } from "#lib/utils.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -43,33 +43,37 @@
 	import { toast } from "svelte-sonner";
 	import { v4 as uuidv4 } from "uuid";
 
-	import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-	import * as Alert from "$lib/components/ui/alert/index.js";
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
-	import { Calendar } from "$lib/components/ui/calendar/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { Checkbox } from "$lib/components/ui/checkbox/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import { Label } from "$lib/components/ui/label/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+	import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+	import * as Alert from "#lib/components/ui/alert/index.js";
+	import { Button, buttonVariants } from "#lib/components/ui/button/index.js";
+	import { Calendar } from "#lib/components/ui/calendar/index.js";
+	import * as Card from "#lib/components/ui/card/index.js";
+	import { Checkbox } from "#lib/components/ui/checkbox/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import { Label } from "#lib/components/ui/label/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import * as RadioGroup from "#lib/components/ui/radio-group/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
+	import { Textarea } from "#lib/components/ui/textarea/index.js";
+	import * as Tooltip from "#lib/components/ui/tooltip/index.js";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import { getFileCategory, getFileIcon } from "$lib/functions/material";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import { getFileCategory, getFileIcon } from "#lib/functions/material.js";
 
-	let { data, form }: { data: PageServerData & PageServerParentData; form: ActionData } = $props();
+	let {
+		data,
+		form,
+	}: {
+		data: PageServerData & PageServerParentData;
+		form: ActionData;
+	} = $props();
+
 	const assignmentData = $derived(data.assignment);
 	const isQuiz = $derived(
 		data.assignment.limitUser && data.assignment.limitUser > 0 ? true : false,
 	);
-
-	const superform = superForm(data.form, {
-		validators: zod4Client(formSchema),
-	});
+	const superform = superForm(data.form, { validators: zod4Client(formSchema) });
 	const { form: formData, enhance, errors, reset } = superform;
 	const attachmentProxies = fileProxy(formData, "attachment");
 	let attachmentNames = $state();
@@ -190,7 +194,7 @@
 			} else if (form.edit) {
 				if (form.edit.success) {
 					toast.success("Assignment edited successfully");
-					invalidateAll().then(() => {
+					refreshAll().then(() => {
 						reset({
 							data: {
 								title: assignmentData.title,
@@ -199,7 +203,7 @@
 								quiz: isQuiz,
 							},
 						});
-						invalidateAll().then(() => {
+						refreshAll().then(() => {
 							// Force update after data refresh
 							const assignment = data.assignment;
 							$formData.title = assignment.title;
@@ -1079,7 +1083,7 @@
 										disabled={question.choices.length >= 5}
 										onclick={() => {
 											const key = uuidv4();
-											question.choices.push({ key: key, value: "" });
+											question.choices.push({ key, value: "" });
 											if (!question.correctChoice || question.correctChoice === "") {
 												question.correctChoice = key;
 												question.answer = "";

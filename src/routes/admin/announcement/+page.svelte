@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from "./$types";
-	import { invalidateAll } from "$app/navigation";
+	import { refreshAll } from "$app/navigation";
 
-	import { formSchema } from "$lib/schema/announcement/schema";
+	import { formSchema } from "#lib/schema/announcement/schema.js";
 	import {
 		CalendarDate,
 		DateFormatter,
@@ -16,20 +16,20 @@
 	import { superForm } from "sveltekit-superforms";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 
-	import { buttonVariants } from "$lib/components/ui/button/index.js";
-	import * as Dialog from "$lib/components/ui/dialog/index.js";
-	import * as Form from "$lib/components/ui/form/index.js";
-	import { Input } from "$lib/components/ui/input/index.js";
-	import * as Popover from "$lib/components/ui/popover/index.js";
-	import { Textarea } from "$lib/components/ui/textarea/index.js";
+	import { buttonVariants } from "#lib/components/ui/button/index.js";
+	import * as Dialog from "#lib/components/ui/dialog/index.js";
+	import * as Form from "#lib/components/ui/form/index.js";
+	import { Input } from "#lib/components/ui/input/index.js";
+	import * as Popover from "#lib/components/ui/popover/index.js";
+	import { Textarea } from "#lib/components/ui/textarea/index.js";
 	import { toast } from "svelte-sonner";
 
-	import FormErrors from "$lib/components/error/form-errors.svelte";
-	import DataTable from "$lib/components/table/data-table.svelte";
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import FormErrors from "#lib/components/error/form-errors.svelte";
+	import DataTable from "#lib/components/table/data-table.svelte";
+	import Calendar from "#lib/components/ui/calendar/calendar.svelte";
 	import { columns } from "./columns";
 
-	import { cn } from "$lib/utils";
+	import { cn } from "#lib/utils.js";
 
 	let { data, form }: { data: PageServerData; form: ActionData } = $props();
 	const superform = superForm(data.form, {
@@ -52,13 +52,13 @@
 	$effect(() => {
 		if (form?.delete) {
 			if (form.delete.success) {
-				invalidateAll();
+				refreshAll();
 				toast.success(`Announcement ${form.delete.data?.name} successfully deleted`);
 			} else toast.error(form.delete.message ?? "Unknown error");
 		} else {
 			if (form?.create) {
 				if (form.create.success) {
-					invalidateAll();
+					refreshAll();
 					toast.success(`Announcement ${form.create.data?.name} successfully created`);
 				} else {
 					toast.error(form.create.message ?? "Unknown error");

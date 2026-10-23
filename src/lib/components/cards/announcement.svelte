@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import type { Announcement } from "$lib/schema/db";
+	import type { Announcement } from "#lib/schema/db.js";
 
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
 	let {
 		announcement,
@@ -12,7 +12,7 @@
 </script>
 
 <a
-	href={resolve(`/announcements/${announcement.id}`)}
+	href={resolve(`announcements/${announcement.id}`)}
 	class="flex h-36 flex-col gap-2 overflow-hidden rounded-sm border bg-background p-4 duration-150 hover:bg-accent/90"
 >
 	<div>

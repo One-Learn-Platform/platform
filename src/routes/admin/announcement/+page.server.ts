@@ -1,12 +1,12 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchema } from "$lib/schema/announcement/schema";
+import { formSchema } from "#lib/schema/announcement/schema.js";
 import { fail, setError, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
-import { announcement } from "$lib/schema/db";
-import { getDb } from "$lib/server/db";
+import { announcement } from "#lib/schema/db.js";
+import { getDb } from "#lib/server/db/index.js";
 import { eq, or } from "drizzle-orm";
 
 export const load: PageServerLoad = async (event) => {
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async (event) => {
 			const db = getDb(event);
 			const schoolId = Number(event.locals.user.school);
 			if (isNaN(schoolId)) {
-				return error(400, { message: "Invalid School ID" });
+				return error(400, "Invalid School ID");
 			}
 			const allAnnouncement = await db
 				.select()
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async (event) => {
 				form: await superValidate(zod4(formSchema)),
 			};
 		}
-		return error(404, { message: "Not Found" });
+		return error(404, "Not Found");
 	}
 	return redirect(302, "/signin");
 };
@@ -91,7 +91,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

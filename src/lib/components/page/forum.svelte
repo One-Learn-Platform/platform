@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Forum } from "$lib/schema/db";
+	import type { Forum } from "#lib/schema/db.js";
 	import { page } from "$app/state";
 	import { flip } from "svelte/animate";
 	import { expoOut } from "svelte/easing";
@@ -8,11 +8,11 @@
 	import ArrowDown from "@lucide/svelte/icons/arrow-down";
 	import ArrowUp from "@lucide/svelte/icons/arrow-up";
 
-	import * as Select from "$lib/components/ui/select/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { Separator } from "$lib/components/ui/separator/index.js";
+	import * as Select from "#lib/components/ui/select/index.js";
+	import { Button } from "#lib/components/ui/button/index.js";
+	import { Separator } from "#lib/components/ui/separator/index.js";
 
-	import ForumChild from "$lib/components/cards/forum.svelte";
+	import ForumChild from "#lib/components/cards/forum.svelte";
 
 	let {
 		forumList,

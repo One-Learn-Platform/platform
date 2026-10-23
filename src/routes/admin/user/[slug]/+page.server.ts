@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-import { formSchemaUploadImage, formSchemaWithoutPass } from "$lib/schema/user/schema";
+import { formSchemaUploadImage, formSchemaWithoutPass } from "#lib/schema/user/schema.js";
 import { eq, inArray } from "drizzle-orm";
 import { fail, setError, superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -17,11 +17,11 @@ import {
 	subject,
 	submission,
 	user,
-} from "$lib/schema/db";
-import { authRoleFor } from "$lib/server/auth";
-import { getDb } from "$lib/server/db";
-import { getR2 } from "$lib/server/r2";
-import { getFileName, getImageExtensionFromMimeType, getTimeStamp } from "$lib/utils";
+} from "#lib/schema/db.js";
+import { authRoleFor } from "#lib/server/auth.js";
+import { getDb } from "#lib/server/db/index.js";
+import { getR2 } from "#lib/server/r2/index.js";
+import { getFileName, getImageExtensionFromMimeType, getTimeStamp } from "#lib/utils.js";
 
 export const load: PageServerLoad = async (event) => {
 	const db = getDb(event);
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
 		if (event.locals.user.role === 1 || event.locals.user.role === 2) {
 			if (isNaN(userId)) {
-				return error(400, { message: "Invalid User ID" });
+				return error(400, "Invalid User ID");
 			} else {
 				const userData = await db.select().from(user).where(eq(user.id, userId)).get();
 				const schoolList = await db.select().from(school);
@@ -46,11 +46,11 @@ export const load: PageServerLoad = async (event) => {
 						uploadForm: await superValidate(zod4(formSchemaUploadImage)),
 					};
 				} else {
-					return error(404, { message: "User Not Found" });
+					return error(404, "User Not Found");
 				}
 			}
 		} else {
-			return error(404, { message: "Not Found" });
+			return error(404, "Not Found");
 		}
 	}
 	return redirect(302, "/signin");
@@ -62,7 +62,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to edit a user" });
+			return error(403, "You are not allowed to edit a user");
 		}
 		const db = getDb(event);
 		const params = event.params;
@@ -218,7 +218,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to upload a user's avatar" });
+			return error(403, "You are not allowed to upload a user's avatar");
 		}
 		const db = getDb(event);
 		const r2 = getR2(event);
@@ -335,7 +335,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to delete a user's avatar" });
+			return error(403, "You are not allowed to delete a user's avatar");
 		}
 		const db = getDb(event);
 		const r2 = getR2(event);
@@ -443,7 +443,7 @@ export const actions: Actions = {
 			return redirect(302, "/signin");
 		}
 		if (event.locals.user.role !== 1 && event.locals.user.role !== 2) {
-			return error(403, { message: "You are not allowed to delete a user" });
+			return error(403, "You are not allowed to delete a user");
 		}
 		const db = getDb(event);
 		const formData = await event.request.formData();

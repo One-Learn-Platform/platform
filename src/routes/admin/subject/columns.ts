@@ -1,12 +1,12 @@
-import type { Subject } from "$lib/schema/db";
-import type { DataTableColumnDef } from "$lib/components/ui/data-table/index.js";
+import type { Subject } from "#lib/schema/db.js";
+import type { DataTableColumnDef } from "#lib/components/ui/data-table/index.js";
 import { createRawSnippet } from "svelte";
 
-import { renderSnippet, renderComponent } from "$lib/components/ui/data-table/index.js";
+import { renderSnippet, renderComponent } from "#lib/components/ui/data-table/index.js";
 import DataTableActions from "./data-table-actions.svelte";
 
-import sortable from "$lib/components/table/sortable-header.svelte";
-import Checkbox from "$lib/components/table/data-table-checkbox.svelte";
+import sortable from "#lib/components/table/sortable-header.svelte";
+import Checkbox from "#lib/components/table/data-table-checkbox.svelte";
 
 type SubjectWithTeacher = Subject & {
 	teacherName: string | null;
