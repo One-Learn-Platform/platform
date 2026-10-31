@@ -58,7 +58,7 @@
 		"prettier-plugin-svelte": "^4.1.1",
 		"prettier-plugin-tailwindcss": "^0.8.1",
 		"rimraf": "^6.1.3",
-		"runed": "^0.37.1",
+		"runed": "^0.38.0",
 		"shadcn-svelte": "^1.7.0",
 		"simple-icons": "^16.35.0",
 		"svelte": "^5.57.2",
