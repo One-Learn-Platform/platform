@@ -331,8 +331,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0(svelte@5.57.2(@typescript-eslint/types@8.72.0))
       simple-icons:
-        specifier: ^16.35.0
-        version: 16.35.0
+        specifier: ^16.36.0
+        version: 16.36.0
       svelte:
         specifier: ^5.57.2
         version: 5.57.2(@typescript-eslint/types@8.72.0)
@@ -3189,8 +3189,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  simple-icons@16.35.0:
-    resolution: {integrity: sha512-TCfl/2+GTrx0nCo4pEWGvxhOb8c6NsqOU1OpwjtF4lwJAthB8IYVD0fuIMjLMg6JFuG1YBO0t1iETQqJLqkoJA==}
+  simple-icons@16.36.0:
+    resolution: {integrity: sha512-+VNPPkqSOLidFeSgBKUWX4n50WPpDC09hav+BgS26anIF1oQOlGBb8LvwGR+6fYRjo+B6CiKzNBceMPkSVXANQ==}
     engines: {node: '>=0.12.18'}
 
   sirv@3.0.2:
@@ -5875,7 +5875,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  simple-icons@16.35.0: {}
+  simple-icons@16.36.0: {}
 
   sirv@3.0.2:
     dependencies:
