@@ -61,7 +61,7 @@
 		"runed": "^0.37.1",
 		"shadcn-svelte": "^1.7.0",
 		"simple-icons": "^16.35.0",
-		"svelte": "^5.57.2",
+		"svelte": "^5.57.3",
 		"svelte-check": "^4.7.7",
 		"svelte-sonner": "^1.2.1",
 		"sveltekit-superforms": "^3.0.0",
